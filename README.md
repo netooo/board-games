@@ -11,6 +11,7 @@ e.g.) ヌメロン, リバーシ, ババ抜き...
 ベースbranchは main->feature/game-title とする。  
 1つのゲームに複数の機能が存在するので、作業branchは feature/game-title->feature/game-title/function1, feature/game-title/function2 とする。  
 PullRequest（以降PR）は出来るだけ機能単位で作成する。  
+アーキテクチャ選定はDDD+レイヤードアーキテクチャとする。  
 **全員初学者なので羞恥心や遠慮は捨てること**  
 **また質問やクソコードを馬鹿にしないこと**
 
