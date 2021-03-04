@@ -22,6 +22,13 @@ var (
 	Step    = flag.Int("step", 99999999, "step migrate versions")
 )
 
+// available command lists
+var AvailableExecCommands = map[string]string{
+	"up":      "Execute up sqls",
+	"steps":   "Execute readDown sqls",
+	"version": "Just check current migrate version",
+}
+
 func main() {
 	config.LoadEnv() // TODO: 後で作る
 	flag.Parse()
