@@ -58,3 +58,37 @@ func main() {
 	fmt.Println("Step: version", *Step)
 	applyQuery(m, version, dirty) // TODO: 後で作る
 }
+
+// exec up or down sqls
+func applyQuery(m *migrate.Migrate, version uint, dirty bool) {
+	if dirty && *Force {
+		fmt.Println("force=true: force execute current version sql")
+		_ = m.Force(int(version))
+	}
+
+	var err error
+	switch *Command {
+	case "up":
+		err = m.Up()
+	case "steps":
+		err = m.Steps(*Step)
+	case "version":
+		// do nothing
+		return
+	default:
+		fmt.Println("\nError: invalid command '" + *Command + "'\n")
+		showUsageMessage()
+		os.Exit(1)
+	}
+
+	if err != nil && err.Error() != "no change" {
+		fmt.Println("err", err)
+		os.Exit(1)
+	} else {
+		fmt.Println("Success:", *Command+"\n")
+		fmt.Println("updated version info")
+		version, dirty, err := m.Version()
+		showVersionInfo(version, dirty, err) // TODO: 後で作る
+	}
+
+}
