@@ -13,7 +13,12 @@ func NewUserPersistence() repository.UserRepository {
 }
 
 func (up userPersistence) Insert(DB *sql.DB, userID, name, email, password string) error {
-	panic("implement me")
+	stmt, err := DB.Prepare("INSERT INTO user(user_id, name, email, password) VALUES(?, ?, ?, ?)")
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(userID, name, email, password)
+	return err
 }
 
 func (up userPersistence) GetByUserID(DB *sql.DB, userID string) (*model.User, error) {
