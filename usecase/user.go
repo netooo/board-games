@@ -8,7 +8,7 @@ import (
 )
 
 type UserUseCase interface {
-	GetByUesrID(DB *sql.DB, userID string) (model.User, error)
+	GetByUserID(DB *sql.DB, userID string) (model.User, error)
 	Insert(DB *sql.DB, userID, name, email, password string) error
 }
 
