@@ -8,8 +8,8 @@ import (
 )
 
 type UserUseCase interface {
-	GetByUserID(DB *sql.DB, userID string) (model.User, error)
-	Insert(DB *sql.DB, userID, name, email, password string) error
+	GetByUserId(DB *sql.DB, userId string) (model.User, error)
+	Insert(DB *sql.DB, userId, name, email, password string) error
 }
 
 type userUseCase struct {
@@ -22,8 +22,8 @@ func NewUserUseCase(ur repository.UserRepository) *userUseCase {
 	}
 }
 
-func (uu userUseCase) GetByUserID(DB *sql.DB, userID string) (*model.User, error) {
-	user, err := uu.userRepository.GetByUserID(DB, userID)
+func (uu userUseCase) GetByUserId(DB *sql.DB, userId string) (*model.User, error) {
+	user, err := uu.userRepository.GetByUserId(DB, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -33,14 +33,14 @@ func (uu userUseCase) GetByUserID(DB *sql.DB, userID string) (*model.User, error
 func (uu userUseCase) Insert(DB *sql.DB, name, email, password string) error {
 	// 各種パラメータのバリデーションを行う
 
-	userID, err := uuid.NewRandom()
+	userId, err := uuid.NewRandom()
 	if err != nil {
 		return err
 	}
 
 	// domainを介してinfrastructureで実装した関数を呼び出す。
 	// Persistence（Repository）を呼出
-	err = uu.userRepository.Insert(DB, userID.String(), name, email, password)
+	err = uu.userRepository.Insert(DB, userId.String(), name, email, password)
 	if err != nil {
 		return err
 	}
