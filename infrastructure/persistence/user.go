@@ -2,39 +2,49 @@ package persistence
 
 import (
 	"database/sql"
+	"github.com/jinzhu/gorm"
+	"github.com/netooo/board-games/config"
 	"github.com/netooo/board-games/domain/model"
 	"github.com/netooo/board-games/domain/repository"
 )
 
-type userPersistence struct{}
-
-func NewUserPersistence() repository.UserRepository {
-	return &userPersistence{}
+type userPersistence struct {
+	Conn *gorm.DB
 }
 
-func (up userPersistence) Insert(DB *sql.DB, userId, name, email, password string) error {
-	stmt, err := DB.Prepare("INSERT INTO user(user_id, name, email, password) VALUES(?, ?, ?, ?)")
-	if err != nil {
+func NewUserPersistence(conn *gorm.DB) repository.UserRepository {
+	// TODO: 後で直す
+	return &userPersistence{Conn: conn}
+}
+
+func (up userPersistence) Insert(userId, name, email, password string) error {
+	user := model.User{UserId: userId, Name: name, Email: email, Password: password}
+
+	// DB接続確認
+	if err := up.Conn.Take(&user).Error; err != nil {
 		return err
 	}
-	_, err = stmt.Exec(userId, name, email, password)
-	return err
+
+	db := config.Connect()
+	defer config.Close()
+
+	db.Create(&user)
+
+	return nil
 }
 
 func (up userPersistence) GetByUserId(DB *sql.DB, userId string) (*model.User, error) {
-	row := DB.QueryRow("SELECT * FROM user WHERE user_id = ?", userId)
-	return convertToUser(row)
-}
-
-// row型をuser型に紐づける
-func convertToUser(row *sql.Row) (*model.User, error) {
 	user := model.User{}
-	err := row.Scan(&user.UserId, &user.Name, &user.Email)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
+
+	// DB接続確認
+	if err := up.Conn.Take(&user).Error; err != nil {
 		return nil, err
 	}
+
+	db := config.Connect()
+	defer config.Close()
+
+	db.Where("UserId = ?", userId).Find(&user)
+
 	return &user, nil
 }
