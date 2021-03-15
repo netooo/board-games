@@ -13,7 +13,6 @@ type userPersistence struct {
 }
 
 func NewUserPersistence(conn *gorm.DB) repository.UserRepository {
-	// TODO: 後で直す
 	return &userPersistence{Conn: conn}
 }
 
