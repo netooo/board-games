@@ -11,6 +11,8 @@ e.g.) ヌメロン, リバーシ, ババ抜き...
 ベースbranchは main->feature/game-title とする。  
 1つのゲームに複数の機能が存在するので、作業branchは feature/game-title->feature/game-title/function1, feature/game-title/function2 とする。  
 PullRequest（以降PR）は出来るだけ機能単位で作成する。  
+アーキテクチャ選定はDDD+レイヤードアーキテクチャとする。  
+（参考: [今すぐ「レイヤードアーキテクチャ+DDD」を理解しよう](https://qiita.com/tono-maron/items/345c433b86f74d314c8d) ）  
 **全員初学者なので羞恥心や遠慮は捨てること**  
 **また質問やクソコードを馬鹿にしないこと**
 
@@ -23,7 +25,7 @@ DataBaseはMySQLを使用。
 1. ゲームデータの特徴としてユーザをprimary keyとしたレコードが多いため。
 1. ボードゲームのレコードは大半がログでありRDBMSが好ましいため。
 
-（参照: [ゲームエンジニアのためのデータベース設計](https://www.slideshare.net/sairoutine/ss-62485460) ）
+（参考: [ゲームエンジニアのためのデータベース設計](https://www.slideshare.net/sairoutine/ss-62485460) ）
 
 ## 設計
 初めは、browser <-> local API -> local storage  
