@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/julienschmidt/httprouter"
 	"github.com/netooo/board-games/interfaces/response"
 	"github.com/netooo/board-games/usecase"
 	"io/ioutil"
@@ -10,8 +9,8 @@ import (
 )
 
 type UserHandler interface {
-	HandleUserGet(http.ResponseWriter, *http.Request, httprouter.Params)
-	HandleUserSignup(http.ResponseWriter, *http.Request, httprouter.Params)
+	HandleUserGet(http.ResponseWriter, *http.Request)
+	HandleUserSignup(http.ResponseWriter, *http.Request)
 }
 
 type userHandler struct {
@@ -31,7 +30,7 @@ func NewUserHandler(uu usecase.UserUseCase) UserHandler {
 	}
 }
 
-func (uh userHandler) HandleUserGet(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
+func (uh userHandler) HandleUserGet(writer http.ResponseWriter, request *http.Request) {
 	// Contextから認証済みのユーザIdを取得
 	userId := request.FormValue("userId")
 
@@ -46,7 +45,7 @@ func (uh userHandler) HandleUserGet(writer http.ResponseWriter, request *http.Re
 	response.Success(writer, user)
 }
 
-func (uh userHandler) HandleUserSignup(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
+func (uh userHandler) HandleUserSignup(writer http.ResponseWriter, request *http.Request) {
 	// リクエストボディを取得
 	body, err := ioutil.ReadAll(request.Body)
 	if err != nil {
