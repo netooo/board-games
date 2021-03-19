@@ -1,4 +1,4 @@
-package board_games
+package main
 
 import (
 	"github.com/netooo/board-games/routing"

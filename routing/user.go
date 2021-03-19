@@ -13,6 +13,7 @@ func UserInit(r *mux.Router) {
 	userPersistence := persistence.NewUserPersistence(config.Connect())
 	userUseCase := usecase.NewUserUseCase(userPersistence)
 	userHandler := handler.NewUserHandler(userUseCase)
+
 	r.HandleFunc("/users/{id}", userHandler.HandleUserGet).Methods("GET")
 	r.HandleFunc("/users", userHandler.HandleUserSignup).Methods("POST")
 }
