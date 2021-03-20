@@ -1,14 +1,16 @@
 FROM golang:1.16.2-alpine3.13
 
-WORKDIR /go/src/app
-
 ENV GO111MODULE=on
 
-RUN apk add --no-cache \
-        alpine-sdk \
-        git \
-    && go get github.com/pilu/fresh
+RUN apt-get update && \
+	apt-get -y install jq && \
+	go get -u \
+		github.com/kisielk/errcheck \
+		golang.org/x/tools/cmd/goimports \
+		golang.org/x/lint/golint \
+		github.com/securego/gosec/cmd/gosec \
+		golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow \
+		honnef.co/go/tools/cmd/staticcheck
 
-EXPOSE 8080
-
-CMD ["fresh"]
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
