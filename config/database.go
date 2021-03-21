@@ -2,6 +2,8 @@ package config
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/joho/godotenv"
+	"log"
 	"os"
 )
 
@@ -12,6 +14,10 @@ var (
 
 // DB接続
 func Connect() *gorm.DB {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	// 実行環境取得
 	DBName := os.Getenv("DB_NAME")
 	DBUser := os.Getenv("DB_USER")
