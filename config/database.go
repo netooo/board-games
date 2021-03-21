@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/joho/godotenv"
 	"os"
 )
 
@@ -14,20 +13,11 @@ var (
 // DB接続
 func Connect() *gorm.DB {
 	// 実行環境取得
-	env := os.Getenv("ENV")
+	DBName := os.Getenv("DB_NAME")
+	DBUser := os.Getenv("DB_USER")
+	DBPass := os.Getenv("DB_PASS")
 
-	if "production" == env {
-		env = "production"
-	} else {
-		env = "development"
-	}
-
-	// 環境変数取得
-	_ = godotenv.Load(".env." + env)
-	_ = godotenv.Load()
-
-	// DB接続
-	db, err = gorm.Open("mysql", os.Getenv("CONNECT"))
+	db, err = gorm.Open("mysql", DBUser+":"+DBPass+"@/"+DBName+"?charset=utf8&parseTime=True&loc=Local")
 
 	if err != nil {
 		panic(err)
