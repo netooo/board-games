@@ -1,7 +1,7 @@
 package persistence
 
 import (
-	_ "database/sql"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/netooo/board-games/config"
 	"github.com/netooo/board-games/domain/model"
