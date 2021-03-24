@@ -49,7 +49,7 @@ func main() {
 
 	fmt.Println("Command: exec", *Command)
 	fmt.Println("Step: version:", *Step)
-	// applyQuery(m, version, dirty) TODO: 後で追加する
+	applyQuery(m, version, dirty)
 }
 
 func showUsageMessage() {
@@ -69,4 +69,35 @@ func showVersionInfo(version uint, dirty bool, err error) {
 	fmt.Println("Dirty   : ", dirty)
 	fmt.Println("Error   : ", err)
 	fmt.Println("--------------------------------")
+}
+
+func applyQuery(m *migrate.Migrate, version uint, dirty bool) {
+	if dirty && *Force {
+		fmt.Println("force=true: force execute current version sql")
+		_ = m.Force(int(version))
+	}
+
+	var err error
+	switch *Command {
+	case "up":
+		err = m.Up()
+	case "steps":
+		err = m.Steps(*Step)
+	case "version":
+		return
+	default:
+		fmt.Println("Error: invalid command '" + *Command + "'")
+		showUsageMessage()
+		os.Exit(1)
+	}
+
+	if err != nil && err.Error() != "no change" {
+		fmt.Println("Error: ", err)
+		os.Exit(1)
+	} else {
+		fmt.Println("Success: ", *Command)
+		fmt.Println("Updated version info")
+		version, dirty, err := m.Version()
+		showVersionInfo(version, dirty, err)
+	}
 }
