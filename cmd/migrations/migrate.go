@@ -45,7 +45,7 @@ func main() {
 	}
 
 	version, dirty, err := m.Version()
-	// showVersionInfo(version, dirty, err) TODO: 後で追加する
+	showVersionInfo(version, dirty, err)
 
 	fmt.Println("Command: exec", *Command)
 	fmt.Println("Step: version:", *Step)
@@ -60,5 +60,13 @@ func showUsageMessage() {
 	for availableCommand, detail := range AvailableCommands {
 		fmt.Println("  " + availableCommand + " : " + detail)
 	}
+	fmt.Println("--------------------------------")
+}
+
+func showVersionInfo(version uint, dirty bool, err error) {
+	fmt.Println("--------------------------------")
+	fmt.Println("Version : ", version)
+	fmt.Println("Dirty   : ", dirty)
+	fmt.Println("Error   : ", err)
 	fmt.Println("--------------------------------")
 }
