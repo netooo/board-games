@@ -28,7 +28,7 @@ func main() {
 	flag.Parse()
 	if len(*Command) < 1 {
 		fmt.Println("\nError: no argument")
-		// showUsageMessage() TODO: 後で追加する
+		showUsageMessage()
 		os.Exit(1)
 		return
 	}
@@ -50,4 +50,15 @@ func main() {
 	fmt.Println("Command: exec", *Command)
 	fmt.Println("Step: version:", *Step)
 	// applyQuery(m, version, dirty) TODO: 後で追加する
+}
+
+func showUsageMessage() {
+	fmt.Println("--------------------------------")
+	fmt.Println("Usage")
+	fmt.Println("	go run migrate.go -exec <Command>")
+	fmt.Println("Available exec commands: ")
+	for availableCommand, detail := range AvailableCommands {
+		fmt.Println("  " + availableCommand + " : " + detail)
+	}
+	fmt.Println("--------------------------------")
 }
