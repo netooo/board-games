@@ -19,8 +19,8 @@ var (
 )
 
 var AvailableCommands = map[string]string{
-	"up":      "Execute up sqls",
-	"step":    "Execute readDown sqls",
+	"up     ": "Execute up sqls",
+	"step   ": "Execute readDown sqls",
 	"version": "Just check current migrate version",
 }
 
@@ -55,10 +55,10 @@ func main() {
 func showUsageMessage() {
 	fmt.Println("--------------------------------")
 	fmt.Println("Usage")
-	fmt.Println("	go run migrate.go -exec <Command>")
-	fmt.Println("Available exec commands: ")
+	fmt.Println("  go run migrate.go -exec <Command>")
+	fmt.Println("  Available exec commands: ")
 	for availableCommand, detail := range AvailableCommands {
-		fmt.Println("  " + availableCommand + " : " + detail)
+		fmt.Println("    " + availableCommand + " : " + detail)
 	}
 	fmt.Println("--------------------------------")
 }
