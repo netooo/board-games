@@ -36,7 +36,7 @@ func main() {
 
 	flag.Parse()
 	if len(*Command) < 1 {
-		fmt.Println("\nError: no argument")
+		fmt.Println("Error: no argument")
 		showUsageMessage()
 		os.Exit(1)
 		return
@@ -101,7 +101,7 @@ func applyQuery(m *migrate.Migrate, version uint, dirty bool) {
 	}
 
 	if err != nil && err.Error() != "no change" {
-		fmt.Println("Error: ", err)
+		fmt.Println("Error:", err)
 		os.Exit(1)
 	} else {
 		fmt.Println("Success: ", *Command)
