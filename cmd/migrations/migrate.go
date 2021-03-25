@@ -74,9 +74,9 @@ func showUsageMessage() {
 
 func showVersionInfo(version uint, dirty bool, err error) {
 	fmt.Println("--------------------------------")
-	fmt.Println("Version : ", version)
-	fmt.Println("Dirty   : ", dirty)
-	fmt.Println("Error   : ", err)
+	fmt.Println("Version :", version)
+	fmt.Println("Dirty   :", dirty)
+	fmt.Println("Error   :", err)
 	fmt.Println("--------------------------------")
 }
 
@@ -104,7 +104,7 @@ func applyQuery(m *migrate.Migrate, version uint, dirty bool) {
 		fmt.Println("Error:", err)
 		os.Exit(1)
 	} else {
-		fmt.Println("Success: ", *Command)
+		fmt.Println("Success:", *Command)
 		fmt.Println("Updated version info")
 		version, dirty, err := m.Version()
 		showVersionInfo(version, dirty, err)
