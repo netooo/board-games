@@ -1,9 +1,11 @@
 package usecase
 
 import (
+	"github.com/go-playground/validator"
 	"github.com/google/uuid"
 	"github.com/netooo/board-games/domain/model"
 	"github.com/netooo/board-games/domain/repository"
+	"github.com/netooo/board-games/usecase/validators"
 )
 
 type UserUseCase interface {
@@ -30,7 +32,20 @@ func (uu userUseCase) GetByUserId(userId string) (*model.User, error) {
 }
 
 func (uu userUseCase) Insert(name, email, password string) error {
-	// TODO: ここで各種パラメータのバリデーションを行う
+	ValidateUser := &validators.User{
+		Name:     name,
+		Email:    email,
+		Password: password,
+	}
+
+	validate := validator.New()
+	err := validate.Struct(ValidateUser)
+
+	//v := validators.MyValidator()
+
+	//if err := v(ValidateUser); err != nil {
+	//	return err
+	//}
 
 	userId, err := uuid.NewRandom()
 	if err != nil {
