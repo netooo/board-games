@@ -32,7 +32,7 @@ func (uu userUseCase) GetByUserId(userId string) (*model.User, error) {
 }
 
 func (uu userUseCase) Insert(name, email, password string) error {
-	ValidateUser := &validators.User{
+	ValidateUser := &validators.InsertUser{
 		Name:     name,
 		Email:    email,
 		Password: password,
