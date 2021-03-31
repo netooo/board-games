@@ -3,7 +3,7 @@ package validators
 import "github.com/go-playground/validator"
 
 // Validate User Struct
-type User struct {
+type InsertUser struct {
 	Name     string `validate:"required,max=12"`
 	Email    string `validate:"required,email"`
 	Password string `validate:"required,password_validation"`
