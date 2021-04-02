@@ -9,11 +9,11 @@ import (
 type InsertUser struct {
 	Name     string `validate:"required,max=12"`
 	Email    string `validate:"required,email"`
-	Password string `validate:"required,password_validation"`
+	Password string `validate:"required,min=8,max=255,password_validation"`
 }
 
 // Validate validate
-func UserValidate(i interface{}) error {
+func InsertUserValidate(i interface{}) error {
 	validate := validator.New()
 	_ = validate.RegisterValidation("password_validation", PasswordValidation)
 	return validate.Struct(i)
@@ -23,9 +23,6 @@ func UserValidate(i interface{}) error {
 func PasswordValidation(fl validator.FieldLevel) bool {
 	password := fl.Field().String()
 
-	if len(password) < 8 {
-		return false
-	}
 	if !checkRegexp(`[0-9]`, password) {
 		return false
 	}

@@ -38,7 +38,7 @@ func (uu userUseCase) Insert(name, email, password string) error {
 		Password: password,
 	}
 
-	if err := validators.UserValidate(ValidateUser); err != nil {
+	if err := validators.InsertUserValidate(ValidateUser); err != nil {
 		return err
 	}
 
