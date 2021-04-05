@@ -33,11 +33,13 @@ func (up userPersistence) Insert(userId, name, email, password string) error {
 	defer config.Close()
 
 	db.Create(&user)
+	// return new session
 
 	return nil
 }
 
 func (up userPersistence) GetByUserId(userId string) (*model.User, error) {
+	// check the session
 	user := model.User{}
 
 	// DB接続確認
