@@ -5,7 +5,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/netooo/board-games/domain/model"
 	"github.com/netooo/board-games/domain/repository"
-	"github.com/netooo/board-games/usecase/validators/users"
 )
 
 type UserUseCase interface {
@@ -32,16 +31,6 @@ func (uu userUseCase) GetByUserId(userId string) (*model.User, error) {
 }
 
 func (uu userUseCase) Insert(name, email, password string) error {
-	ValidateUser := &validators.InsertUser{
-		Name:     name,
-		Email:    email,
-		Password: password,
-	}
-
-	if err := validators.InsertUserValidate(ValidateUser); err != nil {
-		return err
-	}
-
 	userId, err := uuid.NewRandom()
 	if err != nil {
 		return err
