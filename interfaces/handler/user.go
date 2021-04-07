@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"github.com/netooo/board-games/interfaces/response"
-	validators "github.com/netooo/board-games/interfaces/validators/users"
 	"github.com/netooo/board-games/usecase"
 	"io/ioutil"
 	"net/http"
@@ -19,7 +18,6 @@ type userHandler struct {
 }
 
 type userSignupRequest struct {
-	UserId   string
 	Name     string
 	Email    string
 	Password string
@@ -57,18 +55,6 @@ func (uh userHandler) HandleUserSignup(writer http.ResponseWriter, request *http
 	// リクエストボディのパース
 	var requestBody userSignupRequest
 	_ = json.Unmarshal(body, &requestBody)
-
-	// リクエストパラメータのバリデーション
-	ValidateUser := &validators.InsertUser{
-		Name:     requestBody.Name,
-		Email:    requestBody.Email,
-		Password: requestBody.Password,
-	}
-
-	if err := validators.InsertUserValidate(ValidateUser); err != nil {
-		response.BadRequest(writer, "Invalid Request Body")
-		return
-	}
 
 	// UseCaseの呼び出し
 	err = uh.userUseCase.Insert(requestBody.Name, requestBody.Email, requestBody.Password)
