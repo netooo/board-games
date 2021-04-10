@@ -42,10 +42,5 @@ func (up userPersistence) GetByUserId(userId string) (*model.User, error) {
 		return nil, err
 	}
 
-	db := config.Connect()
-	defer config.Close()
-
-	db.Where("UserId = ?", userId).Find(&user)
-
 	return &user, nil
 }
