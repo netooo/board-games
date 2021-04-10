@@ -24,11 +24,6 @@ func (up userPersistence) Insert(userId, name, email, password string) error {
 		Password: password,
 	}
 
-	// DB接続確認
-	if err := up.Conn.Take(&user).Error; err != nil {
-		return err
-	}
-
 	db := config.Connect()
 	defer config.Close()
 
