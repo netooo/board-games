@@ -9,4 +9,5 @@ CREATE TABLE users (
     `deleted_at` TIMESTAMP COMMENT '更新日時',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_users_on_user_id` (`user_id`)
+    UNIQUE KEY `uniq_users_on_email` (`email`)
 )
