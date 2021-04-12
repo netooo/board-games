@@ -63,6 +63,8 @@ func (uh userHandler) HandleUserSignup(writer http.ResponseWriter, request *http
 		return
 	}
 
+	// Create and Return Session
+
 	// レスポンスに必要な情報を詰めて返却
 	response.Success(writer, "")
 }
