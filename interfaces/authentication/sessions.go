@@ -19,8 +19,8 @@ func sessionInit(writer http.ResponseWriter, request *http.Request) {
 
 	// Session Config
 	store.Options = &sessions.Options{
-		Domain:   "localhost", // とりあえず開発用に
-		Secure:   false,       // とりあえず開発用に
+		Secure:   false, // とりあえず開発用に
+		MaxAge:   60 * 15,
 		HttpOnly: true,
 	}
 
