@@ -24,4 +24,5 @@ func sessionInit(writer http.ResponseWriter, request *http.Request) {
 		HttpOnly: true,
 	}
 
+	session.Save(request, writer)
 }
