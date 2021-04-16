@@ -2,7 +2,6 @@ package authentication
 
 import (
 	"github.com/gorilla/sessions"
-	"net/http"
 	"os"
 )
 
@@ -13,10 +12,7 @@ const (
 	ContextSessionKey = "session"
 )
 
-func sessionInit(writer http.ResponseWriter, request *http.Request) {
-	// Create New Session
-	session := sessions.NewSession(store, SessionName)
-
+func sessionInit() *sessions.Session {
 	// Session Config
 	store.Options = &sessions.Options{
 		Secure:   false, // とりあえず開発用に
@@ -24,5 +20,6 @@ func sessionInit(writer http.ResponseWriter, request *http.Request) {
 		HttpOnly: true,
 	}
 
-	session.Save(request, writer)
+	// Create New Session
+	return sessions.NewSession(store, SessionName)
 }
