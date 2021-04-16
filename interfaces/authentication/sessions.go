@@ -16,7 +16,7 @@ func SessionInit() *sessions.Session {
 	// Session Config
 	store.Options = &sessions.Options{
 		Secure:   false, // とりあえず開発用に
-		MaxAge:   60 * 15,
+		MaxAge:   60 * 60 * 24,
 		HttpOnly: true,
 	}
 
