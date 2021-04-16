@@ -12,7 +12,7 @@ const (
 	ContextSessionKey = "session"
 )
 
-func sessionInit() *sessions.Session {
+func SessionInit() *sessions.Session {
 	// Session Config
 	store.Options = &sessions.Options{
 		Secure:   false, // とりあえず開発用に
