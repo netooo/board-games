@@ -28,7 +28,6 @@ func (up userPersistence) Insert(userId, name, email, password string) error {
 	defer config.Close()
 
 	db.Create(&user)
-	// return new session
 
 	return nil
 }
