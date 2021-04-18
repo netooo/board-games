@@ -16,7 +16,7 @@ func NewUserPersistence(conn *gorm.DB) repository.UserRepository {
 	return &userPersistence{Conn: conn}
 }
 
-func (up userPersistence) Insert(userId, name, email, password string) error {
+func (up userPersistence) Insert(userId, name, email, password string) (*model.User, error) {
 	user := model.User{
 		UserId:   userId,
 		Name:     name,
@@ -29,7 +29,7 @@ func (up userPersistence) Insert(userId, name, email, password string) error {
 
 	db.Create(&user)
 
-	return nil
+	return &user, nil
 }
 
 func (up userPersistence) GetByUserId(userId string) (*model.User, error) {
