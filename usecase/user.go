@@ -10,7 +10,7 @@ import (
 
 type UserUseCase interface {
 	GetByUserId(userId string) (*model.User, error)
-	Insert(name, email, password string) error
+	Insert(name, email, password string) (*model.User, error)
 }
 
 type userUseCase struct {
@@ -31,7 +31,7 @@ func (uu userUseCase) GetByUserId(userId string) (*model.User, error) {
 	return user, nil
 }
 
-func (uu userUseCase) Insert(name, email, password string) error {
+func (uu userUseCase) Insert(name, email, password string) (*model.User, error) {
 	// リクエストパラメータのバリデーション
 	ValidateUser := &validators.InsertUser{
 		Name:     name,
@@ -40,19 +40,19 @@ func (uu userUseCase) Insert(name, email, password string) error {
 	}
 
 	if err := validators.InsertUserValidate(ValidateUser); err != nil {
-		return err
+		return nil, err
 	}
 
 	userId, err := uuid.NewRandom()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// domainを介してinfrastructureで実装した関数を呼び出す。
 	// Persistence（Repository）を呼出
-	err = uu.userRepository.Insert(userId.String(), name, email, password)
+	user, err := uu.userRepository.Insert(userId.String(), name, email, password)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return user, nil
 }
