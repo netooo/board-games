@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/netooo/board-games/interfaces/authentication"
 	"github.com/netooo/board-games/interfaces/response"
 	"github.com/netooo/board-games/usecase"
 	"io/ioutil"
@@ -57,13 +58,15 @@ func (uh userHandler) HandleUserSignup(writer http.ResponseWriter, request *http
 	_ = json.Unmarshal(body, &requestBody)
 
 	// UseCaseの呼び出し
-	err = uh.userUseCase.Insert(requestBody.Name, requestBody.Email, requestBody.Password)
+	user, err := uh.userUseCase.Insert(requestBody.Name, requestBody.Email, requestBody.Password)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
 	}
 
 	// Create and Return Session
+	session := authentication.SessionCreate(user)
+	_ = session.Save(request, writer)
 
 	// レスポンスに必要な情報を詰めて返却
 	response.Success(writer, "")
