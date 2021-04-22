@@ -2,6 +2,8 @@ package authentication
 
 import (
 	"github.com/gorilla/sessions"
+	"github.com/netooo/board-games/config"
+	"github.com/netooo/board-games/domain/model"
 	"os"
 )
 
@@ -12,7 +14,7 @@ const (
 	ContextSessionKey = "session"
 )
 
-func SessionCreate() *sessions.Session {
+func SessionCreate(user *model.User) *sessions.Session {
 	// Session Config
 	store.Options = &sessions.Options{
 		Secure:   false, // とりあえず開発用に
@@ -20,6 +22,19 @@ func SessionCreate() *sessions.Session {
 		HttpOnly: true,
 	}
 
+	// TODO: interface層でDB操作はしたくないが, いずれredisにするので一旦はこれでOK
 	// Create New Session
-	return sessions.NewSession(store, SessionName)
+	sesison := sessions.NewSession(store, SessionName)
+	session := model.Session{
+		SessionId: sessionId,
+		Data:      nil,
+		User:      *user,
+	}
+
+	db := config.Connect()
+	defer config.Close()
+
+	db.Create(&sesison)
+
+	return sesison
 }
