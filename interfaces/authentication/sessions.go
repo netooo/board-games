@@ -1,10 +1,12 @@
 package authentication
 
 import (
+	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
 	"github.com/netooo/board-games/config"
 	"github.com/netooo/board-games/domain/model"
 	"os"
+	"strings"
 )
 
 var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
@@ -24,7 +26,11 @@ func SessionCreate(user *model.User) *sessions.Session {
 
 	// TODO: interface層でDB操作はしたくないが, いずれredisにするので一旦はこれでOK
 	// Create New Session
-	sesison := sessions.NewSession(store, SessionName)
+	randomId, _ := uuid.NewRandom()
+	sessionId := strings.Replace(randomId.String(), "-", "", -1)
+
+	newSession := sessions.NewSession(store, SessionName)
+	newSession.ID = sessionId
 	session := model.Session{
 		SessionId: sessionId,
 		Data:      nil,
@@ -34,7 +40,7 @@ func SessionCreate(user *model.User) *sessions.Session {
 	db := config.Connect()
 	defer config.Close()
 
-	db.Create(&sesison)
+	db.Create(&session)
 
-	return sesison
+	return newSession
 }
