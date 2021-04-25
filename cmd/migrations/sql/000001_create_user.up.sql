@@ -10,4 +10,4 @@ CREATE TABLE users (
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_users_on_user_id` (`user_id`),
     UNIQUE KEY `uniq_users_on_email` (`email`)
-)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
