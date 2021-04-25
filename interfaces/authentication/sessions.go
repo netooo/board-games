@@ -33,7 +33,7 @@ func SessionCreate(user *model.User) *sessions.Session {
 	newSession.ID = sessionId
 	session := model.Session{
 		SessionId: sessionId,
-		Data:      nil,
+		Data:      "",
 		User:      *user,
 	}
 
