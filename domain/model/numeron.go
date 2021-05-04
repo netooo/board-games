@@ -10,16 +10,13 @@ type Numeron struct {
 type Status int
 
 const (
-	Unknown Status = iota // Unknown  == 0
-	Ready                 // Ready    == 1
-	Play                  // Play     == 2
-	Finish                // Finish   == 3
+	Ready  Status = iota // Ready  == 0
+	Play                 // Play   == 1
+	Finish               // Finish == 2
 )
 
 func (s Status) String() string {
 	switch s {
-	case Unknown:
-		return "不明"
 	case Ready:
 		return "準備中"
 	case Play:
