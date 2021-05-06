@@ -9,8 +9,8 @@ import (
 )
 
 func NumeronInit(r *mux.Router) {
-	// 依存関係を注入
-	numeronPersistence := persistence.NewNumeronPersistence(config.Connect())
-	numeronUseCase := usecase.NewNumeronUseCase(numeronPersistence)
-	numeronHandler := handler.NewNumeronHandler(numeronUseCase)
+	// NumeronPlayer
+	numeronPlayerPersistence := persistence.NewNumeronPlayerPersistence(config.Connect())
+	numeronPlayerUseCase := usecase.NewNumeronPlayerUseCase(numeronPlayerPersistence)
+	numeronPlayerHandler := handler.NewNumeronPlayerHandler(numeronPlayerUseCase)
 }
