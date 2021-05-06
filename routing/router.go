@@ -14,6 +14,7 @@ func Init() *mux.Router {
 
 	// Read Various APIs
 	UserInit(s)
+	NumeronInit(s)
 
 	return s
 }
