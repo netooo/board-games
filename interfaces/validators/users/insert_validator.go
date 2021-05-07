@@ -5,37 +5,37 @@ import (
 	"regexp"
 )
 
-// Validate User Struct
+// InsertUser Validate User Struct
 type InsertUser struct {
 	Name     string `validate:"required,max=12"`
 	Email    string `validate:"required,email"`
 	Password string `validate:"required,min=8,max=255,password_validation"`
 }
 
-// Validate validate
+// InsertUserValidate Validate validate
 func InsertUserValidate(i interface{}) error {
 	validate := validator.New()
 	_ = validate.RegisterValidation("password_validation", PasswordValidation)
 	return validate.Struct(i)
 }
 
-// 計8文字以上/数字1文字以上/小文字1文字以上/大文字1文字以上
+// PasswordValidation 計8文字以上/数字1文字以上/小文字1文字以上/大文字1文字以上
 func PasswordValidation(fl validator.FieldLevel) bool {
 	password := fl.Field().String()
 
-	if !checkRegexp(`[0-9]`, password) {
+	if !checkExists(`[0-9]`, password) {
 		return false
 	}
-	if !checkRegexp(`[a-z]`, password) {
+	if !checkExists(`[a-z]`, password) {
 		return false
 	}
-	if !checkRegexp(`[A-Z]`, password) {
+	if !checkExists(`[A-Z]`, password) {
 		return false
 	}
 
 	return true
 }
 
-func checkRegexp(reg, str string) bool {
+func checkExists(reg, str string) bool {
 	return regexp.MustCompile(reg).Match([]byte(str))
 }
