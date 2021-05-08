@@ -21,7 +21,7 @@ func SetCodeValidate(i interface{}) error {
 func SetCodeValidation(fl validator.FieldLevel) bool {
 	code := fl.Field().String()
 
-	return checkDigit(`[^0-9]`, code) && !checkDuplication(code)
+	return checkDigit(`[^0-9]`, code) && checkDuplication(code)
 }
 
 // [0-9]のみ => true
