@@ -3,7 +3,6 @@ package validators
 import (
 	"github.com/go-playground/validator"
 	"regexp"
-	"strings"
 )
 
 // SetCode Validate Set Code
@@ -22,22 +21,15 @@ func SetCodeValidate(i interface{}) error {
 func SetCodeValidation(fl validator.FieldLevel) bool {
 	code := fl.Field().String()
 
-	if checkDigit(`[^0-9]`, code) || !checkDuplication(code) {
-		return false
-	}
-
-	return true
+	return checkDigit(`[^0-9]`, code) && !checkDuplication(code)
 }
 
-// 0-9チェック
+// [0-9]のみ => true
 func checkDigit(reg, str string) bool {
-	return regexp.MustCompile(reg).Match([]byte(str))
+	return !regexp.MustCompile(reg).Match([]byte(str))
 }
 
-// 重複チェック
-// TODO: チェック処理がイケてない。もっとスマートに書きたい。
+// 重複無し => true
 func checkDuplication(code string) bool {
-	first := code[0:1]
-	second := code[1:2]
-	return strings.Count(code, first) == 1 && strings.Count(code, second) == 1
+	return code[0:1] != code[1:2] && code[1:2] != code[2:3]
 }
