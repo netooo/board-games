@@ -17,7 +17,7 @@ func SetCodeValidate(i interface{}) error {
 	return validate.Struct(i)
 }
 
-// SetCodeValidation 3文字/0-9/重複不可
+// SetCodeValidation 0-9/重複不可
 func SetCodeValidation(fl validator.FieldLevel) bool {
 	code := fl.Field().String()
 
