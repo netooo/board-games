@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/netooo/board-games/config"
 	"github.com/netooo/board-games/domain/model"
+	"net/http"
 	"os"
 	"strings"
 )
@@ -43,4 +44,17 @@ func CreateSession(user *model.User) *sessions.Session {
 	db.Create(&session)
 
 	return newSession
+}
+
+func GetSessionUser(r *http.Request) (*model.User, error) {
+	session, err := store.Get(r, SessionName)
+	if err != nil {
+		return nil, err
+	}
+
+	sessionId := session.ID
+
+	db := config.Connect()
+	defer config.Close()
+
 }
