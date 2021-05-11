@@ -16,7 +16,7 @@ const (
 	ContextSessionKey = "session"
 )
 
-func SessionCreate(user *model.User) *sessions.Session {
+func CreateSession(user *model.User) *sessions.Session {
 	// Session Config
 	store.Options = &sessions.Options{
 		Secure:   false, // とりあえず開発用に
