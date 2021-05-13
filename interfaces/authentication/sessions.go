@@ -11,7 +11,7 @@ import (
 )
 
 var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
-var session = model.Session{}
+var session model.Session
 
 const (
 	SessionName       = "session-name"
@@ -58,7 +58,9 @@ func GetSessionUser(r *http.Request) (*model.User, error) {
 	db := config.Connect()
 	defer config.Close()
 
-	user := db.Where("session_id = ?", sessionId).First(&session).Related(&session.User)
+	db.Where("session_id = ?", sessionId).First(&session)
+	user := &session.User
+	db.Model(&session).Related(&user)
 
 	return user, nil
 }
