@@ -13,6 +13,7 @@ func Init() *mux.Router {
 		Subrouter()
 
 	// Read Various APIs
+	CommonInit(s)
 	UserInit(s)
 
 	return s
