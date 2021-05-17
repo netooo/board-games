@@ -36,11 +36,17 @@ func (cp commonPersistence) CreateRoom(user model.User, game string) (int, error
 	defer config.Close()
 
 	var room interface{}
+	var player interface{}
+
 	switch game {
 	case Numeron.String():
 		room = model.Numeron{
-			Owner:  user,
 			Status: "ready",
+		}
+
+		player = model.NumeronPlayer{
+			Numeron: room,
+			User:    user,
 		}
 	}
 
