@@ -51,6 +51,7 @@ func (cp commonPersistence) CreateRoom(user model.User, game string) (int, error
 	}
 
 	db.Create(&room)
+	db.Create(&player)
 
 	return room.id, nil
 }
