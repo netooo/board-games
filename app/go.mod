@@ -1,4 +1,4 @@
-module github.com/netooo/board-games
+module github.com/netooo/board-games/app
 
 go 1.15
 
