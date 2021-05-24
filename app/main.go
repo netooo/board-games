@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/netooo/board-games/routing"
+	"github.com/netooo/board-games/app/routing"
 	"log"
 	"net/http"
 )
