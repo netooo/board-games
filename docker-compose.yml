@@ -3,6 +3,7 @@ version: "3"
 services:
   db:
     build: ./mysql
+    container_name: dockerMySQL
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: user
@@ -19,11 +20,11 @@ services:
     environment:
       APP_MODE: local
       DB_USER: user
-      DB_PASSWORD: pass
-      DB_HOST: db
+      DB_PASS: pass
+      DB_HOST: dockerMySQL
       DB_PORT: 3306
       DB_NAME: board-games
-      DB_NAME_TEST: board-games_test
+      TEST_DB_NAME: board-games_test
       DB_LOC: Asia%2FTokyo
     volumes:
       - "./app:/app"
