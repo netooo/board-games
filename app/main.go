@@ -11,5 +11,5 @@ func main() {
 	r := routing.Init()
 
 	// サーバ起動
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServe(":9000", r))
 }
