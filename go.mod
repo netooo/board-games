@@ -4,6 +4,8 @@ go 1.15
 
 require (
 	github.com/d4l3k/go-pry v0.0.0-20181122210047-3e3af674fe57 // indirect
+	github.com/golang-migrate/migrate/v4 v4.14.1 // indirect
+	github.com/joho/godotenv v1.3.0 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-tty v0.0.3 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
