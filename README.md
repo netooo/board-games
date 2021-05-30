@@ -37,3 +37,10 @@ DataBaseはMySQLを使用。
 1. [Go言語基礎文法最速マスター](https://go-tour-jp.appspot.com/welcome/1)
 1. [Goの基礎](https://qiita.com/tfrcm/items/e2a3d7ce7ab8868e37f7)
 1. メルカリやDeNAの記事（日本では先駆者）
+
+## 環境構築
+1. `git clone "https://github.com/netooo/board-games.git`
+1. `cd board-games`
+1. `docker-compose up --build`
+1. `docker exec board-games_web_1 go run cmd/migrations/migrate.go -exec up`
+1. `docker exec board-games_web_1 go run main.go`
