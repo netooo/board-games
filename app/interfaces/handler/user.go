@@ -2,9 +2,9 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/netooo/board-games/interfaces/authentication"
-	"github.com/netooo/board-games/interfaces/response"
-	"github.com/netooo/board-games/usecase"
+	"github.com/netooo/board-games/app/interfaces/authentication"
+	"github.com/netooo/board-games/app/interfaces/response"
+	"github.com/netooo/board-games/app/usecase"
 	"io/ioutil"
 	"net/http"
 )
