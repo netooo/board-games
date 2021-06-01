@@ -3,8 +3,8 @@ package authentication
 import (
 	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
-	"github.com/netooo/board-games/config"
-	"github.com/netooo/board-games/domain/model"
+	"github.com/netooo/board-games/app/config"
+	"github.com/netooo/board-games/app/domain/model"
 	"os"
 	"strings"
 )
