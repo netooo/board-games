@@ -3,9 +3,9 @@ package usecase
 import (
 	_ "github.com/go-playground/validator"
 	"github.com/google/uuid"
-	"github.com/netooo/board-games/domain/model"
-	"github.com/netooo/board-games/domain/repository"
-	validators "github.com/netooo/board-games/interfaces/validators/users"
+	"github.com/netooo/board-games/app/domain/model"
+	"github.com/netooo/board-games/app/domain/repository"
+	validators "github.com/netooo/board-games/app/interfaces/validators/users"
 )
 
 type UserUseCase interface {
