@@ -2,10 +2,10 @@ package routing
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/netooo/board-games/config"
-	"github.com/netooo/board-games/infrastructure/persistence"
-	"github.com/netooo/board-games/interfaces/handler"
-	"github.com/netooo/board-games/usecase"
+	"github.com/netooo/board-games/app/config"
+	"github.com/netooo/board-games/app/infrastructure/persistence"
+	"github.com/netooo/board-games/app/interfaces/handler"
+	"github.com/netooo/board-games/app/usecase"
 )
 
 func CommonInit(r *mux.Router) {

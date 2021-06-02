@@ -3,9 +3,9 @@ package persistence
 import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
-	"github.com/netooo/board-games/config"
-	"github.com/netooo/board-games/domain/model"
-	"github.com/netooo/board-games/domain/repository"
+	"github.com/netooo/board-games/app/config"
+	"github.com/netooo/board-games/app/domain/model"
+	"github.com/netooo/board-games/app/domain/repository"
 )
 
 type commonPersistence struct {
