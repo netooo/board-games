@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/netooo/board-games/domain/model"
+	"github.com/netooo/board-games/app/domain/model"
 )
 
 type CommonRepository interface {

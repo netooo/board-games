@@ -2,8 +2,8 @@ package usecase
 
 import (
 	_ "github.com/go-playground/validator"
-	"github.com/netooo/board-games/domain/model"
-	"github.com/netooo/board-games/domain/repository"
+	"github.com/netooo/board-games/app/domain/model"
+	"github.com/netooo/board-games/app/domain/repository"
 )
 
 type CommonUseCase interface {
