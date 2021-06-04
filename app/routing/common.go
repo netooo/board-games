@@ -14,5 +14,5 @@ func CommonInit(r *mux.Router) {
 	commonUseCase := usecase.NewCommonUseCase(commonPersistence)
 	commonHandler := handler.NewCommonHandler(commonUseCase)
 
-	r.HandleFunc("/room", commonHandler.HandleRoomPost).Methods("POST")
+	r.HandleFunc("/room", commonHandler.HandleRoomCreate).Methods("POST")
 }
