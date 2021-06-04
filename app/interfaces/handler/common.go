@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/netooo/board-games/app/domain/model"
 	"github.com/netooo/board-games/app/interfaces/response"
 	"github.com/netooo/board-games/app/usecase"
 	"io/ioutil"
@@ -14,6 +15,10 @@ type CommonHandler interface {
 
 type commonHandler struct {
 	commonUseCase usecase.CommonUseCase
+}
+
+type roomCreateRequest struct {
+	Game string
 }
 
 func NewCommonHandler(cu usecase.CommonUseCase) CommonHandler {
@@ -31,7 +36,13 @@ func (ch commonHandler) HandleRoomCreate(writer http.ResponseWriter, request *ht
 		return
 	}
 
-	var requestBody userSignupRequest
+	var requestBody roomCreateRequest
 	_ = json.Unmarshal(body, &requestBody)
+
+	room, err := ch.commonUseCase.CreateRoom(user, requestBody.Game)
+	if err != nil {
+		response.InternalServerError(writer, "Internal Server Error")
+		return
+	}
 
 }
