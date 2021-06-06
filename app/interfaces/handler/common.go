@@ -39,11 +39,11 @@ func (ch commonHandler) HandleRoomCreate(writer http.ResponseWriter, request *ht
 	var requestBody roomCreateRequest
 	_ = json.Unmarshal(body, &requestBody)
 
-	room, err := ch.commonUseCase.CreateRoom(user, requestBody.Game)
+	roomId, err := ch.commonUseCase.CreateRoom(user, requestBody.Game)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
 	}
 
-	response.Success(writer, room)
+	response.Success(writer, roomId)
 }
