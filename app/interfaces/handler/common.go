@@ -45,4 +45,5 @@ func (ch commonHandler) HandleRoomCreate(writer http.ResponseWriter, request *ht
 		return
 	}
 
+	response.Success(writer, "")
 }
