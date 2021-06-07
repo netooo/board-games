@@ -22,5 +22,9 @@ func NewCommonUseCase(cr repository.CommonRepository) CommonUseCase {
 
 func (cu commonUseCase) CreateRoom(user model.User, game string) (int, error) {
 	// リクエストパラメータのバリデーション
-	// TBD
+	roomId, err := cu.commonRepository.CreateRoom(user, game)
+	if err != nil {
+		return -1, err
+	}
+	return roomId, nil
 }
