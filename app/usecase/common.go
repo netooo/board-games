@@ -4,6 +4,7 @@ import (
 	_ "github.com/go-playground/validator"
 	"github.com/netooo/board-games/app/domain/model"
 	"github.com/netooo/board-games/app/domain/repository"
+	validators "github.com/netooo/board-games/app/interfaces/validators/users"
 )
 
 type CommonUseCase interface {
@@ -21,7 +22,14 @@ func NewCommonUseCase(cr repository.CommonRepository) CommonUseCase {
 }
 
 func (cu commonUseCase) CreateRoom(user model.User, game string) (int, error) {
-	// リクエストパラメータのバリデーション
+	ValidateRoom := &validators.CreateRoom{
+		Game: game,
+	}
+
+	if err := validators.CreateRoomValidate(ValidateRoom); err != nil {
+		return -1, err
+	}
+
 	roomId, err := cu.commonRepository.CreateRoom(user, game)
 	if err != nil {
 		return -1, err
