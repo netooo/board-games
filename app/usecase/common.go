@@ -4,7 +4,7 @@ import (
 	_ "github.com/go-playground/validator"
 	"github.com/netooo/board-games/app/domain/model"
 	"github.com/netooo/board-games/app/domain/repository"
-	validators "github.com/netooo/board-games/app/interfaces/validators/users"
+	validators "github.com/netooo/board-games/app/interfaces/validators/commons"
 )
 
 type CommonUseCase interface {
