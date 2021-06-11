@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/netooo/board-games/app/domain/model"
+	"github.com/netooo/board-games/app/interfaces/authentication"
 	"github.com/netooo/board-games/app/interfaces/response"
 	"github.com/netooo/board-games/app/usecase"
 	"io/ioutil"
@@ -28,7 +29,12 @@ func NewCommonHandler(cu usecase.CommonUseCase) CommonHandler {
 }
 
 func (ch commonHandler) HandleRoomCreate(writer http.ResponseWriter, request *http.Request) {
-	//TODO: session check
+	user := authentication.SessionUser(request)
+	if user == nil {
+		response.Unauthorized(writer, "Invalid Session")
+		return
+	}
+
 	//TODO: request_user already join room check
 	body, err := ioutil.ReadAll(request.Body)
 	if err != nil {
