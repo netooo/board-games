@@ -30,11 +30,13 @@ func NewCommonHandler(cu usecase.CommonUseCase) CommonHandler {
 func (ch commonHandler) HandleRoomCreate(writer http.ResponseWriter, request *http.Request) {
 	user := authentication.SessionUser(request)
 	if user == nil {
+		// TODO: redirect user form
 		response.Unauthorized(writer, "Invalid Session")
 		return
 	}
 
-	//TODO: request_user already join room check
+	//TODO: Check request_user already join other room?
+	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
 	body, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		response.BadRequest(writer, "Invalid Request Body")
