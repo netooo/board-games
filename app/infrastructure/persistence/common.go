@@ -31,7 +31,7 @@ func NewCommonPersistence(conn *gorm.DB) repository.CommonRepository {
 	return &commonPersistence{Conn: conn}
 }
 
-func (cp commonPersistence) CreateRoom(user model.User, game string) (int, error) {
+func (cp commonPersistence) CreateRoom(user *model.User, game string) (int, error) {
 	db := config.Connect()
 	defer config.Close()
 

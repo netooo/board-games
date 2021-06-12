@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/netooo/board-games/app/domain/model"
 	"github.com/netooo/board-games/app/interfaces/authentication"
 	"github.com/netooo/board-games/app/interfaces/response"
 	"github.com/netooo/board-games/app/usecase"
