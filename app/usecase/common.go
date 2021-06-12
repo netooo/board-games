@@ -8,7 +8,7 @@ import (
 )
 
 type CommonUseCase interface {
-	CreateRoom(user model.User, game string) (int, error)
+	CreateRoom(user *model.User, game string) (int, error)
 }
 
 type commonUseCase struct {
@@ -21,7 +21,7 @@ func NewCommonUseCase(cr repository.CommonRepository) CommonUseCase {
 	}
 }
 
-func (cu commonUseCase) CreateRoom(user model.User, game string) (int, error) {
+func (cu commonUseCase) CreateRoom(user *model.User, game string) (int, error) {
 	ValidateRoom := &validators.CreateRoom{
 		Game: game,
 	}

@@ -5,5 +5,5 @@ import (
 )
 
 type CommonRepository interface {
-	CreateRoom(user model.User, game string) (int, error)
+	CreateRoom(user *model.User, game string) (int, error)
 }
