@@ -65,7 +65,7 @@ func (uh userHandler) HandleUserSignup(writer http.ResponseWriter, request *http
 	}
 
 	// Create and Return Session
-	session := authentication.CreateSession(user)
+	session := authentication.SessionCreate(user)
 	_ = session.Save(request, writer)
 
 	// レスポンスに必要な情報を詰めて返却

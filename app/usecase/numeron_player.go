@@ -2,8 +2,8 @@ package usecase
 
 import (
 	_ "github.com/go-playground/validator"
-	"github.com/netooo/board-games/domain/repository"
-	validators "github.com/netooo/board-games/interfaces/validators/numeron"
+	"github.com/netooo/board-games/app/domain/repository"
+	validators "github.com/netooo/board-games/app/interfaces/validators/numeron"
 )
 
 type NumeronPlayerUseCase interface {
