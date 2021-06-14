@@ -11,14 +11,13 @@ import (
 )
 
 var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
-var session model.Session
 
 const (
 	SessionName       = "session-name"
 	ContextSessionKey = "session"
 )
 
-func CreateSession(user *model.User) *sessions.Session {
+func SessionCreate(user *model.User) *sessions.Session {
 	// Session Config
 	store.Options = &sessions.Options{
 		Secure:   false, // とりあえず開発用に
@@ -33,7 +32,7 @@ func CreateSession(user *model.User) *sessions.Session {
 
 	newSession := sessions.NewSession(store, SessionName)
 	newSession.ID = sessionId
-	s := model.Session{
+	session := model.Session{
 		SessionId: sessionId,
 		Data:      "",
 		User:      *user,
@@ -42,25 +41,24 @@ func CreateSession(user *model.User) *sessions.Session {
 	db := config.Connect()
 	defer config.Close()
 
-	db.Create(&s)
+	db.Create(&session)
 
 	return newSession
 }
 
-func GetSessionUser(r *http.Request) (*model.User, error) {
-	s, err := store.Get(r, SessionName)
-	if err != nil {
-		return nil, err
-	}
-
+func SessionUser(r *http.Request) *model.User {
+	s, _ := store.Get(r, SessionName)
 	sessionId := s.ID
 
 	db := config.Connect()
 	defer config.Close()
 
-	db.Where("session_id = ?", sessionId).First(&session)
-	user := &session.User
-	db.Model(&session).Related(&user)
+	var user model.User
+	var session model.Session
 
-	return user, nil
+	if err := db.Where("SessionId = ?", sessionId).Find(&session).Related(&user).Error; err != nil {
+		return nil
+	}
+
+	return &user
 }

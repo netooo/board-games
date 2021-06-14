@@ -22,6 +22,11 @@ func BadRequest(writer http.ResponseWriter, message string) {
 	httpError(writer, http.StatusBadRequest, message)
 }
 
+// Unauthorized Status Code:401
+func Unauthorized(writer http.ResponseWriter, message string) {
+	httpError(writer, http.StatusUnauthorized, message)
+}
+
 // InternalServerError Status Code:500
 func InternalServerError(writer http.ResponseWriter, message string) {
 	httpError(writer, http.StatusInternalServerError, message)
