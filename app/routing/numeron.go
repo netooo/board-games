@@ -9,8 +9,10 @@ import (
 )
 
 func NumeronInit(r *mux.Router) {
-	// NumeronPlayer
-	numeronPlayerPersistence := persistence.NewNumeronPlayerPersistence(config.Connect())
-	numeronPlayerUseCase := usecase.NewNumeronPlayerUseCase(numeronPlayerPersistence)
-	numeronPlayerHandler := handler.NewNumeronPlayerHandler(numeronPlayerUseCase)
+	// Numeron
+	numeronPersistence := persistence.NewNumeronPersistence(config.Connect())
+	numeronUseCase := usecase.NewNumeronUseCase(numeronPersistence)
+	numeronHandler := handler.NewNumeronHandler(numeronUseCase)
+
+	r.HandleFunc("/numerons", numeronHandler.HandleRoomCreate).Methods("POST")
 }
