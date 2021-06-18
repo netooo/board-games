@@ -23,7 +23,7 @@ func NewNumeronUseCase(nr repository.NumeronRepository) NumeronUseCase {
 func (nu numeronUseCase) CreateRoom(user *model.User) (*model.Numeron, error) {
 	room, err := nu.numeronRepository.CreateRoom(user)
 	if err != nil {
-		return _, err
+		return nil, err
 	}
 
 	return room, nil
