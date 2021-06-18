@@ -16,7 +16,7 @@ func NewNumeronPersistence(conn *gorm.DB) repository.NumeronRepository {
 	return &numeronPersistence{Conn: conn}
 }
 
-func (np numeronPersistence) CreateRoom() (*model.Numeron, error) {
+func (np numeronPersistence) CreateRoom(user *model.User) (*model.Numeron, error) {
 	db := config.Connect()
 	defer config.Close()
 
