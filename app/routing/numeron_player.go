@@ -13,4 +13,6 @@ func NumeronPlayerInit(r *mux.Router) {
 	numeronPlayerPersistence := persistence.NewNumeronPlayerPersistence(config.Connect())
 	numeronPlayerUseCase := usecase.NewNumeronPlayerUseCase(numeronPlayerPersistence)
 	numeronPlayerHandler := handler.NewNumeronPlayerHandler(numeronPlayerUseCase)
+
+	r.HandleFunc("/numerons/{id}/code", numeronPlayerHandler.HandleNumeronSetCode).Methods("POST")
 }
