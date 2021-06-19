@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/netooo/board-games/app/interfaces/authentication"
 	"github.com/netooo/board-games/app/interfaces/response"
 	"github.com/netooo/board-games/app/usecase"
 	"io/ioutil"
@@ -27,6 +28,13 @@ func NewNumeronPlayerHandler(npu usecase.NumeronPlayerUseCase) NumeronPlayerHand
 }
 
 func (nph numeronPlayerHandler) HandleNumeronSetCode(writer http.ResponseWriter, request *http.Request) {
+	user := authentication.SessionUser(request)
+	if user == nil {
+		// TODO: redirect login form
+		response.Unauthorized(writer, "Invalid Session")
+		return
+	}
+
 	// リクエストボディを取得
 	body, err := ioutil.ReadAll(request.Body)
 	if err != nil {
@@ -39,7 +47,7 @@ func (nph numeronPlayerHandler) HandleNumeronSetCode(writer http.ResponseWriter,
 	_ = json.Unmarshal(body, &requestBody)
 
 	// UseCaseの呼び出し
-	err = nph.numeronPlayerUseCase.SetCode(requestBody.Code)
+	err = nph.numeronPlayerUseCase.SetCode(user, requestBody.Code)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
