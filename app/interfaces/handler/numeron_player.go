@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"github.com/netooo/board-games/app/interfaces/authentication"
 	"github.com/netooo/board-games/app/interfaces/response"
 	"github.com/netooo/board-games/app/usecase"
@@ -32,6 +33,15 @@ func (nph numeronPlayerHandler) HandleNumeronSetCode(writer http.ResponseWriter,
 	if user == nil {
 		// TODO: redirect login form
 		response.Unauthorized(writer, "Invalid Session")
+		return
+	}
+
+	// パスパラメータを取得
+	vars := mux.Vars(request)
+	id := vars["id"]
+
+	if id == "" {
+		response.StatusNotFound(writer, "Status Not Found")
 		return
 	}
 
