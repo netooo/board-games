@@ -57,7 +57,7 @@ func (nph numeronPlayerHandler) HandleNumeronSetCode(writer http.ResponseWriter,
 	_ = json.Unmarshal(body, &requestBody)
 
 	// UseCaseの呼び出し
-	err = nph.numeronPlayerUseCase.SetCode(user, requestBody.Code)
+	err = nph.numeronPlayerUseCase.SetCode(user, id, requestBody.Code)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return

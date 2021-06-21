@@ -8,7 +8,7 @@ import (
 )
 
 type NumeronPlayerUseCase interface {
-	SetCode(user *model.User, code string) error
+	SetCode(user *model.User, id string, code string) error
 }
 
 type numeronPlayerUseCase struct {
@@ -21,7 +21,7 @@ func NewNumeronPlayerUseCase(npr repository.NumeronPlayerRepository) NumeronPlay
 	}
 }
 
-func (npu numeronPlayerUseCase) SetCode(user *model.User, code string) error {
+func (npu numeronPlayerUseCase) SetCode(user *model.User, id string, code string) error {
 	// リクエストパラメータのバリデーション
 	ValidateCode := &validators.SetCode{
 		Code: code,
@@ -33,7 +33,7 @@ func (npu numeronPlayerUseCase) SetCode(user *model.User, code string) error {
 
 	// domainを介してinfrastructureで実装した関数を呼び出す。
 	// Persistence（Repository）を呼出
-	err := npu.numeronPlayerRepository.SetCode(user, code)
+	err := npu.numeronPlayerRepository.SetCode(user, id, code)
 	if err != nil {
 		return err
 	}

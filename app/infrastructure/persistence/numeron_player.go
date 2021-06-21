@@ -16,12 +16,14 @@ func NewNumeronPlayerPersistence(conn *gorm.DB) repository.NumeronPlayerReposito
 	return &numeronPlayerPersistence{Conn: conn}
 }
 
-func (npp numeronPlayerPersistence) SetCode(user *model.User, code string) error {
+func (npp numeronPlayerPersistence) SetCode(user *model.User, id string, code string) error {
 	db := config.Connect()
 	defer config.Close()
 
-	//db.UpdateColumn(&numeronPlayer)
-	//db.Model(&numeronPlayer).Update("Code", code)
+	//TODO: web socket から NumeronPlayer を特定
+	var player model.NumeronPlayer
+	db.First(&player, "NumeronId=? AND UserId=?", id, user.ID)
+	db.Model(&player).Update("Code", code)
 
 	return nil
 }
