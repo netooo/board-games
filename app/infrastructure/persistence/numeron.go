@@ -27,12 +27,7 @@ func (np numeronPersistence) CreateRoom(user *model.User) (*model.Numeron, error
 	db.Create(&numeron)
 
 	// Numeron の部屋を起動する
-	go Run(&numeron)
+	go numeron.Run()
 
 	return &numeron, nil
-}
-
-func Run(room *model.Numeron) {
-	// TODO: Numeron Room を起動
-	// Web Socket の開通
 }
