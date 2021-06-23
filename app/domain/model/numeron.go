@@ -1,6 +1,8 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+)
 
 type Numeron struct {
 	gorm.Model
@@ -25,4 +27,11 @@ func (s Status) String() string {
 		return "終了"
 	}
 	return "未定義"
+}
+
+/*
+ヌメロンルームを起動する
+*/
+func (n *Numeron) Run() {
+
 }
