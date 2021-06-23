@@ -1,12 +1,16 @@
 package model
 
 import (
+	_ "github.com/gorilla/websocket"
 	"github.com/jinzhu/gorm"
 )
 
 type Numeron struct {
 	gorm.Model
-	Status int `json:status`
+	Status  int `json:status`
+	Join    chan *NumeronPlayer
+	Leave   chan *NumeronPlayer
+	Players map[*NumeronPlayer]bool
 }
 
 type Status int
@@ -33,5 +37,14 @@ func (s Status) String() string {
 ヌメロンルームを起動する
 */
 func (n *Numeron) Run() {
+	for {
+		// チャネルの動きを監視し、処理を決定する
+		select {
 
+		/* joinチャネルに動きがあった場合(プレイヤーの入室) */
+		case client := <-n.Join:
+			// プレイヤーmapのbool値を真にする
+			n.Players[client] = true
+		}
+	}
 }
