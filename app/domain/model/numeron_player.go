@@ -8,9 +8,9 @@ import (
 type NumeronPlayer struct {
 	gorm.Model
 	NumeronId int `json:numeron_id`
-	Numeron   Numeron
+	Numeron   *Numeron
 	UserId    int `json:user_id`
-	User      User
+	User      *User
 	Order     int    `json:order`
 	Code      string `json:code`
 	Rank      int    `json:rank`
