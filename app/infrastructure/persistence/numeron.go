@@ -27,7 +27,7 @@ func (np numeronPersistence) CreateRoom(user *model.User, socket *websocket.Conn
 	}
 	db.Create(&numeron)
 
-	// 作成者を部屋に入室させる
+	// 作成者のプレイヤー情報を作成
 	player := model.NumeronPlayer{
 		Numeron: &numeron,
 		User:    user,
@@ -37,6 +37,12 @@ func (np numeronPersistence) CreateRoom(user *model.User, socket *websocket.Conn
 
 	// Numeron の部屋を起動する
 	go numeron.Run()
+
+	// 作成者を入室させる
+	numeron.Join <- &player
+	defer func() {
+		numeron.Leave <- &player
+	}()
 
 	return &numeron, nil
 }

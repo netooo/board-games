@@ -42,9 +42,12 @@ func (n *Numeron) Run() {
 		select {
 
 		/* joinチャネルに動きがあった場合(プレイヤーの入室) */
-		case client := <-n.Join:
-			// プレイヤーmapのbool値を真にする
-			n.Players[client] = true
+		case player := <-n.Join:
+			n.Players[player] = true
+
+		/* leaveチャネルに動きがあった場合(プレイヤーの退室) */
+		case player := <-n.Leave:
+			delete(n.Players, player)
 		}
 	}
 }
