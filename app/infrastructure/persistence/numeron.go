@@ -21,11 +21,19 @@ func (np numeronPersistence) CreateRoom(user *model.User, socket *websocket.Conn
 	db := config.Connect()
 	defer config.Close()
 
+	// Numeron の部屋を作成
 	numeron := model.Numeron{
 		Status: 0,
 	}
-
 	db.Create(&numeron)
+
+	// 作成者を部屋に入室させる
+	player := model.NumeronPlayer{
+		Numeron: &numeron,
+		User:    user,
+		Socket:  socket,
+	}
+	db.Create(&player)
 
 	// Numeron の部屋を起動する
 	go numeron.Run()
