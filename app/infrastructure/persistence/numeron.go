@@ -2,6 +2,7 @@ package persistence
 
 import (
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/websocket"
 	"github.com/jinzhu/gorm"
 	"github.com/netooo/board-games/app/config"
 	"github.com/netooo/board-games/app/domain/model"
@@ -16,7 +17,7 @@ func NewNumeronPersistence(conn *gorm.DB) repository.NumeronRepository {
 	return &numeronPersistence{Conn: conn}
 }
 
-func (np numeronPersistence) CreateRoom(user *model.User) (*model.Numeron, error) {
+func (np numeronPersistence) CreateRoom(user *model.User, socket *websocket.Conn) (*model.Numeron, error) {
 	db := config.Connect()
 	defer config.Close()
 
