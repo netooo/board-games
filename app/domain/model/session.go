@@ -9,5 +9,5 @@ type Session struct {
 	SessionId string `json:session_id`
 	Data      string `json:data`
 	UserId    int    `json:user_id`
-	User      User
+	User      *User
 }
