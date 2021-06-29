@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"github.com/netooo/board-games/app/interfaces/authentication"
 	"github.com/netooo/board-games/app/interfaces/response"
 	"github.com/netooo/board-games/app/usecase"
@@ -32,7 +33,8 @@ func NewUserHandler(uu usecase.UserUseCase) UserHandler {
 
 func (uh userHandler) HandleUserGet(writer http.ResponseWriter, request *http.Request) {
 	// Contextから認証済みのユーザIdを取得
-	userId := request.FormValue("userId")
+	vars := mux.Vars(request)
+	userId := vars["user_id"]
 
 	// UseCaseレイヤを操作して、ユーザデータ取得
 	user, err := uh.userUseCase.GetByUserId(userId)

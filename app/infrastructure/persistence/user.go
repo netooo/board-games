@@ -34,10 +34,12 @@ func (up userPersistence) Insert(userId, name, email, password string) (*model.U
 
 func (up userPersistence) GetByUserId(userId string) (*model.User, error) {
 	// check the session
-	user := model.User{}
+	var user model.User
 
-	// DB接続確認
-	if err := up.Conn.Take(&user).Error; err != nil {
+	db := config.Connect()
+	defer config.Close()
+
+	if err := db.First(&user, "user_id = ?", userId).Error; err != nil {
 		return nil, err
 	}
 
