@@ -25,7 +25,7 @@ func SessionCreate(user *model.User) *sessions.Session {
 		HttpOnly: true,
 	}
 
-	// TODO: interface層でDB操作はしたくないが, いずれredisにするので一旦はこれでOK
+	// TODO: interface層でDB操作はしたくないが, いずれmemcachedにするので一旦はこれでOK
 	// Create New Session
 	randomId, _ := uuid.NewRandom()
 	sessionId := strings.Replace(randomId.String(), "-", "", -1)
@@ -35,7 +35,7 @@ func SessionCreate(user *model.User) *sessions.Session {
 	session := model.Session{
 		SessionId: sessionId,
 		Data:      "",
-		User:      *user,
+		User:      user,
 	}
 
 	db := config.Connect()
