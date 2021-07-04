@@ -22,6 +22,7 @@ backendはGoを使用。
 複数クライアントが存在するので websocket を用いる。  
 frontendはなんでもいいが, Jsになると思う。  
 gopherjsなるものが存在し、Goでフロント実装も出来るが最初のうちはそこまでしなくて良い。  
+session情報はmemcachedに保存し、アプリケーションはGAEに置く予定。  
 DataBaseはMySQLを使用。  
 理由は
 1. ゲームデータの特徴としてユーザをprimary keyとしたレコードが多いため。
@@ -40,7 +41,7 @@ DataBaseはMySQLを使用。
 1. メルカリやDeNAの記事（日本では先駆者）
 
 ## 環境構築
-1. `git clone "https://github.com/netooo/board-games.git`
+1. `git clone "https://github.com/netooo/board-games.git"`
 1. `cd board-games`
 1. `docker-compose up --build`
 1. `docker exec board-games_web_1 go run cmd/migrations/migrate.go -exec up`
