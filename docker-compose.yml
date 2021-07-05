@@ -30,6 +30,7 @@ services:
       - "./app:/app"
     depends_on:
       - db
+      - memcached
 
   proxy:
     build: ./nginx
@@ -37,3 +38,8 @@ services:
       - 8082:80
     depends_on:
       - web
+
+  memcached:
+    image: memcached
+    ports:
+      - 11211:11211
