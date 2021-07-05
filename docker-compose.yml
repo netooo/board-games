@@ -1,18 +1,12 @@
 version: "3"
 
 services:
-  db:
-    build: ./mysql
-    container_name: dockerMySQL
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: user
-      MYSQL_PASSWORD: pass
-      TZ: Asia/Tokyo
-    volumes:
-      - ./mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+  proxy:
+    build: ./nginx
     ports:
-      - "3310:3306"
+      - 8082:80
+    depends_on:
+      - web
 
   web:
     build: .
@@ -32,12 +26,18 @@ services:
       - db
       - memcached
 
-  proxy:
-    build: ./nginx
+  db:
+    build: ./mysql
+    container_name: dockerMySQL
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      TZ: Asia/Tokyo
+    volumes:
+      - ./mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
-      - 8082:80
-    depends_on:
-      - web
+      - "3310:3306"
 
   memcached:
     image: memcached
