@@ -1,6 +1,7 @@
 package authentication
 
 import (
+	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
 	"github.com/netooo/board-games/app/config"
@@ -25,23 +26,25 @@ func SessionCreate(user *model.User) *sessions.Session {
 		HttpOnly: true,
 	}
 
-	// TODO: interface層でDB操作はしたくないが, いずれmemcachedにするので一旦はこれでOK
 	// Create New Session
 	randomId, _ := uuid.NewRandom()
 	sessionId := strings.Replace(randomId.String(), "-", "", -1)
 
 	newSession := sessions.NewSession(store, SessionName)
 	newSession.ID = sessionId
-	session := model.Session{
-		SessionId: sessionId,
-		Data:      "",
-		User:      user,
-	}
 
-	db := config.Connect()
-	defer config.Close()
+	mc := memcache.New("127.0.0.1:11211")
+	err := mc.Set(&memcache.Item{Key: "foo", Value: []byte("my value")})
+	//session := model.Session{
+	//	SessionId: sessionId,
+	//	Data:      "",
+	//	User:      user,
+	//}
 
-	db.Create(&session)
+	//db := config.Connect()
+	//defer config.Close()
+
+	//db.Create(&session)
 
 	return newSession
 }
