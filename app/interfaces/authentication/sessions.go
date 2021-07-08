@@ -18,7 +18,7 @@ const (
 	ContextSessionKey = "session"
 )
 
-func SessionCreate(user *model.User) *sessions.Session {
+func SessionCreate(user *model.User) (*sessions.Session, error) {
 	// Session Config
 	store.Options = &sessions.Options{
 		Secure:   false, // とりあえず開発用に
@@ -34,19 +34,13 @@ func SessionCreate(user *model.User) *sessions.Session {
 	newSession.ID = sessionId
 
 	mc := memcache.New("127.0.0.1:11211")
-	err := mc.Set(&memcache.Item{Key: "foo", Value: []byte("my value")})
-	//session := model.Session{
-	//	SessionId: sessionId,
-	//	Data:      "",
-	//	User:      user,
-	//}
+	err := mc.Set(&memcache.Item{Key: sessionId, Value: []byte(user.UserId)})
 
-	//db := config.Connect()
-	//defer config.Close()
+	if err != nil {
+		return nil, err
+	}
 
-	//db.Create(&session)
-
-	return newSession
+	return newSession, nil
 }
 
 func SessionUser(r *http.Request) *model.User {

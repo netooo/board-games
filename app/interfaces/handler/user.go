@@ -67,7 +67,10 @@ func (uh userHandler) HandleUserSignup(writer http.ResponseWriter, request *http
 	}
 
 	// Create and Return Session
-	session := authentication.SessionCreate(user)
+	session, err := authentication.SessionCreate(user)
+	if err != nil {
+		response.Unauthorized(writer, "Invalid Session")
+	}
 	_ = session.Save(request, writer)
 
 	// レスポンスに必要な情報を詰めて返却
