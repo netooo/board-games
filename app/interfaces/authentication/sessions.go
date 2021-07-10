@@ -33,7 +33,7 @@ func SessionCreate(userId string) (*sessions.Session, error) {
 	newSession := sessions.NewSession(store, SessionName)
 	newSession.ID = sessionId
 
-	mc := memcache.New("127.0.0.1:11211")
+	mc := memcache.New("memcached:11211")
 	err := mc.Set(&memcache.Item{Key: sessionId, Value: []byte(userId)})
 
 	if err != nil {
