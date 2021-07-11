@@ -41,8 +41,9 @@ func (nh numeronHandler) HandleRoomCreate(writer http.ResponseWriter, request *h
 		log.Fatalln("websocketの開設に失敗しました。:", err)
 	}
 
-	user := authentication.SessionUser(request)
-	if user == nil {
+	user, err := authentication.SessionUser(request)
+
+	if err != nil {
 		// TODO: redirect login form
 		response.Unauthorized(writer, "Invalid Session")
 		return
