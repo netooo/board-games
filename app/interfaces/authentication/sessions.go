@@ -43,19 +43,25 @@ func SessionCreate(userId string) (*sessions.Session, error) {
 	return newSession, nil
 }
 
-func SessionUser(r *http.Request) *model.User {
-	s, _ := store.Get(r, SessionName)
-	sessionId := s.ID
+func SessionUser(r *http.Request) (*model.User, error) {
+	session, _ := store.Get(r, SessionName)
+	sessionId := session.ID
 
 	db := config.Connect()
 	defer config.Close()
 
 	var user model.User
-	var session model.Session
 
-	if err := db.Where("SessionId = ?", sessionId).Find(&session).Related(&user).Error; err != nil {
-		return nil
+	mc := memcache.New("memcached:11211")
+	userId, err := mc.Get(sessionId)
+
+	if err != nil {
+		return nil, err
 	}
 
-	return &user
+	if err := db.Where("UserId = ?", userId).Find(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
