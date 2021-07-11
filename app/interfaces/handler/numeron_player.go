@@ -29,8 +29,9 @@ func NewNumeronPlayerHandler(npu usecase.NumeronPlayerUseCase) NumeronPlayerHand
 }
 
 func (nph numeronPlayerHandler) HandleNumeronSetCode(writer http.ResponseWriter, request *http.Request) {
-	user := authentication.SessionUser(request)
-	if user == nil {
+	user, err := authentication.SessionUser(request)
+
+	if err != nil {
 		// TODO: redirect login form
 		response.Unauthorized(writer, "Invalid Session")
 		return
