@@ -44,7 +44,10 @@ func SessionCreate(userId string) (*sessions.Session, error) {
 }
 
 func SessionUser(r *http.Request) (*model.User, error) {
-	session, _ := store.Get(r, SessionName)
+	session, err := store.Get(r, SessionName)
+	if err != nil {
+		return nil, err
+	}
 	sessionId := session.ID
 
 	db := config.Connect()
