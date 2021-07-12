@@ -50,9 +50,6 @@ func SessionUser(r *http.Request) (*model.User, error) {
 	}
 	sessionId := session.ID
 
-	db := config.Connect()
-	defer config.Close()
-
 	var user model.User
 
 	mc := memcache.New("memcached:11211")
@@ -61,6 +58,9 @@ func SessionUser(r *http.Request) (*model.User, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	db := config.Connect()
+	defer config.Close()
 
 	if err := db.Where("UserId = ?", userId).Find(&user).Error; err != nil {
 		return nil, err
