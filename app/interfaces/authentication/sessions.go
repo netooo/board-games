@@ -1,6 +1,7 @@
 package authentication
 
 import (
+	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
 	"github.com/netooo/board-games/app/config"
@@ -17,7 +18,7 @@ const (
 	ContextSessionKey = "session"
 )
 
-func SessionCreate(user *model.User) *sessions.Session {
+func SessionCreate(userId string) (*sessions.Session, error) {
 	// Session Config
 	store.Options = &sessions.Options{
 		Secure:   false, // とりあえず開発用に
@@ -25,40 +26,45 @@ func SessionCreate(user *model.User) *sessions.Session {
 		HttpOnly: true,
 	}
 
-	// TODO: interface層でDB操作はしたくないが, いずれredisにするので一旦はこれでOK
 	// Create New Session
 	randomId, _ := uuid.NewRandom()
 	sessionId := strings.Replace(randomId.String(), "-", "", -1)
 
 	newSession := sessions.NewSession(store, SessionName)
 	newSession.ID = sessionId
-	session := model.Session{
-		SessionId: sessionId,
-		Data:      "",
-		User:      *user,
+
+	mc := memcache.New("memcached:11211")
+	err := mc.Set(&memcache.Item{Key: sessionId, Value: []byte(userId)})
+
+	if err != nil {
+		return nil, err
 	}
 
-	db := config.Connect()
-	defer config.Close()
-
-	db.Create(&session)
-
-	return newSession
+	return newSession, nil
 }
 
-func SessionUser(r *http.Request) *model.User {
-	s, _ := store.Get(r, SessionName)
-	sessionId := s.ID
+func SessionUser(r *http.Request) (*model.User, error) {
+	session, err := store.Get(r, SessionName)
+	if err != nil {
+		return nil, err
+	}
+	sessionId := session.ID
+
+	var user model.User
+
+	mc := memcache.New("memcached:11211")
+	userId, err := mc.Get(sessionId)
+
+	if err != nil {
+		return nil, err
+	}
 
 	db := config.Connect()
 	defer config.Close()
 
-	var user model.User
-	var session model.Session
-
-	if err := db.Where("SessionId = ?", sessionId).Find(&session).Related(&user).Error; err != nil {
-		return nil
+	if err := db.Where("UserId = ?", userId).Find(&user).Error; err != nil {
+		return nil, err
 	}
 
-	return &user
+	return &user, nil
 }
