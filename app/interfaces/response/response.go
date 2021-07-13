@@ -27,6 +27,11 @@ func Unauthorized(writer http.ResponseWriter, message string) {
 	httpError(writer, http.StatusUnauthorized, message)
 }
 
+// StatusNotFound Status Code:404
+func StatusNotFound(writer http.ResponseWriter, message string) {
+	httpError(writer, http.StatusNotFound, message)
+}
+
 // InternalServerError Status Code:500
 func InternalServerError(writer http.ResponseWriter, message string) {
 	httpError(writer, http.StatusInternalServerError, message)

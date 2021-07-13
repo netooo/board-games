@@ -19,6 +19,7 @@ PullRequest（以降PR）は出来るだけ機能単位で作成する。
 
 ## 技術選定
 backendはGoを使用。  
+複数クライアントが存在するので websocket を用いる。  
 frontendはなんでもいいが, Jsになると思う。  
 gopherjsなるものが存在し、Goでフロント実装も出来るが最初のうちはそこまでしなくて良い。  
 session情報はmemcachedに保存し、アプリケーションはGAEに置く予定。  
