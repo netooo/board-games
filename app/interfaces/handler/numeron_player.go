@@ -12,6 +12,7 @@ import (
 
 type NumeronPlayerHandler interface {
 	HandleNumeronSetCode(http.ResponseWriter, *http.Request)
+	HandleNumeronJoinRoom(http.ResponseWriter, *http.Request)
 }
 
 type numeronPlayerHandler struct {
@@ -66,4 +67,14 @@ func (nph numeronPlayerHandler) HandleNumeronSetCode(writer http.ResponseWriter,
 
 	// レスポンスに必要な情報を詰めて返却
 	response.Success(writer, "")
+}
+
+func (nph numeronPlayerHandler) HandleNumeronJoinRoom(writer http.ResponseWriter, request *http.Request) {
+	user, err := authentication.SessionUser(request)
+
+	if err != nil {
+		// TODO: redirect login form
+		response.Unauthorized(writer, "Invalid Session")
+		return
+	}
 }
