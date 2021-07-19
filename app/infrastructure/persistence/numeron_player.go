@@ -32,3 +32,19 @@ func (npp numeronPlayerPersistence) SetCode(user *model.User, id string, code st
 
 	return nil
 }
+
+func (npp numeronPlayerPersistence) JoinRoom(user *model.User, id string) error {
+	db := config.Connect()
+	defer config.Close()
+
+	var numeron model.Numeron
+	db.First(&numeron, "Id=?", id)
+
+	player := model.NumeronPlayer{
+		Numeron: &numeron,
+		User:    user,
+	}
+	db.Create(&player)
+
+	return nil
+}
