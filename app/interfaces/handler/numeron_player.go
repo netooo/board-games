@@ -77,4 +77,23 @@ func (nph numeronPlayerHandler) HandleNumeronJoinRoom(writer http.ResponseWriter
 		response.Unauthorized(writer, "Invalid Session")
 		return
 	}
+
+	// パスパラメータを取得
+	vars := mux.Vars(request)
+	id := vars["id"]
+
+	if id == "" {
+		response.StatusNotFound(writer, "Status Not Found")
+		return
+	}
+
+	// UseCaseの呼び出し
+	err = nph.numeronPlayerUseCase.JoinRoom(user, id)
+	if err != nil {
+		response.InternalServerError(writer, "Internal Server Error")
+		return
+	}
+
+	// レスポンスに必要な情報を詰めて返却
+	response.Success(writer, "")
 }
