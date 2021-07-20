@@ -43,5 +43,11 @@ func (npp numeronPlayerPersistence) JoinRoom(user *model.User, id string) error 
 	}
 	db.Create(&player)
 
+	// Numeron の部屋に入室する
+	numeron.Join <- &player
+	defer func() {
+		numeron.Leave <- &player
+	}()
+
 	return nil
 }
