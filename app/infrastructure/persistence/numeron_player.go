@@ -33,7 +33,9 @@ func (npp numeronPlayerPersistence) JoinRoom(user *model.User, id string) error 
 	defer config.Close()
 
 	var numeron model.Numeron
-	db.First(&numeron, "Id=?", id)
+	if err := db.First(&numeron, "Id=?", id).Error; err != nil {
+		return err
+	}
 
 	player := model.NumeronPlayer{
 		Numeron: &numeron,
