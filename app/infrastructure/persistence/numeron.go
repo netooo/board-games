@@ -35,7 +35,9 @@ func (np numeronPersistence) CreateRoom(user *model.User, socket *websocket.Conn
 		User:    user,
 		Socket:  socket,
 	}
-	db.Create(&player)
+	if err := db.Create(&player).Error; err != nil {
+		return nil, err
+	}
 
 	// Numeron の部屋を起動する
 	go numeron.Run()
