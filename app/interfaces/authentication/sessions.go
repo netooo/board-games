@@ -22,7 +22,7 @@ func SessionCreate(userId string) (*sessions.Session, error) {
 	// Session Config
 	store.Options = &sessions.Options{
 		Secure:   false, // とりあえず開発用に
-		MaxAge:   60 * 60 * 24,
+		MaxAge:   60 * 60 * 24 * 1,
 		HttpOnly: true,
 	}
 
@@ -34,7 +34,11 @@ func SessionCreate(userId string) (*sessions.Session, error) {
 	newSession.ID = sessionId
 
 	mc := memcache.New("memcached:11211")
-	err := mc.Set(&memcache.Item{Key: sessionId, Value: []byte(userId)})
+	err := mc.Set(&memcache.Item{
+		Key:        sessionId,
+		Value:      []byte(userId),
+		Expiration: 60 * 60 * 24 * 1,
+	})
 
 	if err != nil {
 		return nil, err
@@ -53,7 +57,7 @@ func SessionUser(r *http.Request) (*model.User, error) {
 	var user model.User
 
 	mc := memcache.New("memcached:11211")
-	userId, err := mc.Get(sessionId)
+	byteUserId, err := mc.Get(sessionId)
 
 	if err != nil {
 		return nil, err
@@ -62,6 +66,7 @@ func SessionUser(r *http.Request) (*model.User, error) {
 	db := config.Connect()
 	defer config.Close()
 
+	userId := string(byteUserId.Value)
 	if err := db.Where("UserId = ?", userId).Find(&user).Error; err != nil {
 		return nil, err
 	}

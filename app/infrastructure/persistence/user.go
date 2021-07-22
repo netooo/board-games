@@ -27,7 +27,9 @@ func (up userPersistence) Insert(userId, name, email, password string) (*model.U
 	db := config.Connect()
 	defer config.Close()
 
-	db.Create(&user)
+	if err := db.Create(&user).Error; err != nil {
+		return nil, err
+	}
 
 	return &user, nil
 }

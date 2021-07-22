@@ -27,3 +27,27 @@ func (npp numeronPlayerPersistence) SetCode(user *model.User, id string, code st
 
 	return nil
 }
+
+func (npp numeronPlayerPersistence) JoinRoom(user *model.User, id string) error {
+	db := config.Connect()
+	defer config.Close()
+
+	var numeron model.Numeron
+	if err := db.First(&numeron, "Id=?", id).Error; err != nil {
+		return err
+	}
+
+	player := model.NumeronPlayer{
+		Numeron: &numeron,
+		User:    user,
+	}
+	db.Create(&player)
+
+	// Numeron の部屋に入室する
+	numeron.Join <- &player
+	defer func() {
+		numeron.Leave <- &player
+	}()
+
+	return nil
+}
