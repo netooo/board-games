@@ -8,6 +8,8 @@ import (
 type Numeron struct {
 	gorm.Model
 	Status  int `json:status`
+	OwnerId int `json:owner_id`
+	Owner   *NumeronPlayer
 	Join    chan *NumeronPlayer
 	Leave   chan *NumeronPlayer
 	Players map[*NumeronPlayer]bool
