@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/netooo/board-games/app/interfaces/authentication"
 	"github.com/netooo/board-games/app/interfaces/response"
@@ -46,14 +45,6 @@ func (nh numeronHandler) HandleRoomCreate(writer http.ResponseWriter, request *h
 	if err != nil {
 		// TODO: redirect login form
 		response.Unauthorized(writer, "Invalid Session")
-		return
-	}
-
-	vars := mux.Vars(request)
-	numeronId := vars["id"]
-
-	if numeronId == "" {
-		response.BadRequest(writer, "Invalid Request Body")
 		return
 	}
 
