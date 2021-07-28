@@ -8,6 +8,7 @@ import (
 	"github.com/netooo/board-games/app/usecase"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type NumeronHandler interface {
@@ -78,10 +79,18 @@ func (nh numeronHandler) HandleGameStart(writer http.ResponseWriter, request *ht
 	}
 
 	vars := mux.Vars(request)
-	numeronId := vars["id"]
+	id := vars["id"]
 
-	if numeronId == "" {
-		response.BadRequest(writer, "Invalid Request Body")
+	if id == "" {
+		response.BadRequest(writer, "Invalid path parameter")
+		return
+	}
+
+	var numeronId int
+	numeronId, err = strconv.Atoi(id)
+
+	if err != nil {
+		response.BadRequest(writer, "Invalid path patameter")
 		return
 	}
 
