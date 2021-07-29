@@ -22,8 +22,13 @@ func (npp numeronPlayerPersistence) SetCode(user *model.User, id string, code st
 
 	//TODO: web socket から NumeronPlayer を特定
 	var player model.NumeronPlayer
-	db.First(&player, "NumeronId=? AND UserId=?", id, user.ID)
-	db.Model(&player).Update("Code", code)
+	if err := db.First(&player, "NumeronId=? AND UserId=?", id, user.ID).Error; err != nil {
+		return err
+	}
+
+	if err := db.Model(&player).Update("Code", code).Error; err != nil {
+		return err
+	}
 
 	return nil
 }
