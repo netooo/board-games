@@ -46,3 +46,19 @@ func (np numeronPersistence) CreateRoom(user *model.User, socket *websocket.Conn
 
 	return &numeron, nil
 }
+
+func (np numeronPersistence) GameStart(user *model.User, socket *websocket.Conn, numeronId int) error {
+	db := config.Connect()
+	defer config.Close()
+
+	var numeron model.Numeron
+	if err := db.First(&numeron, "NumeronId=?", numeronId).Error; err != nil {
+		return err
+	}
+
+	if err := db.Model(&numeron).Update("Status", 1).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
