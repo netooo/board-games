@@ -97,11 +97,11 @@ func (nh numeronHandler) HandleGameStart(writer http.ResponseWriter, request *ht
 	//TODO: Check request_user already join other room?
 	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
 
-	order, err := nh.numeronUseCase.GameStart(user, socket, numeronId)
+	err := nh.numeronUseCase.GameStart(user, socket, numeronId)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
 	}
 
-	response.Success(writer, order)
+	response.Success(writer)
 }
