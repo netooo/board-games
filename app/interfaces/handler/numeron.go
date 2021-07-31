@@ -95,16 +95,6 @@ func (nh numeronHandler) HandleGameStart(writer http.ResponseWriter, request *ht
 		return
 	}
 
-	body, err := ioutil.ReadAll(request.Body)
-	if err != nil {
-		response.BadRequest(writer, "Invalid Request Body")
-		return
-	}
-
-	// TODO: request Body から先攻後攻を受け取る
-	var requestBody gameStartRequest
-	_ = json.Unmarshal(body, &requestBody)
-
 	var numeronId int
 	numeronId, err = strconv.Atoi(id)
 
@@ -112,6 +102,16 @@ func (nh numeronHandler) HandleGameStart(writer http.ResponseWriter, request *ht
 		response.BadRequest(writer, "Invalid path patameter")
 		return
 	}
+
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		response.BadRequest(writer, "Invalid Request Body")
+		return
+	}
+
+	// request Body から順番を受け取る
+	var requestBody gameStartRequest
+	_ = json.Unmarshal(body, &requestBody)
 
 	//TODO: Check request_user already join other room?
 	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
