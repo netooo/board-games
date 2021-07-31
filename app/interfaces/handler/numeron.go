@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/netooo/board-games/app/interfaces/authentication"
 	"github.com/netooo/board-games/app/interfaces/response"
 	"github.com/netooo/board-games/app/usecase"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -18,6 +20,13 @@ type NumeronHandler interface {
 
 type numeronHandler struct {
 	numeronUseCase usecase.NumeronUseCase
+}
+
+type gameStartRequest struct {
+	First  string
+	Second string
+	Third  string
+	Fourth string
 }
 
 const (
@@ -85,6 +94,16 @@ func (nh numeronHandler) HandleGameStart(writer http.ResponseWriter, request *ht
 		response.BadRequest(writer, "Invalid path parameter")
 		return
 	}
+
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		response.BadRequest(writer, "Invalid Request Body")
+		return
+	}
+
+	// TODO: request Body から先攻後攻を受け取る
+	var requestBody gameStartRequest
+	_ = json.Unmarshal(body, &requestBody)
 
 	var numeronId int
 	numeronId, err = strconv.Atoi(id)
