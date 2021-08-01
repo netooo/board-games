@@ -1,6 +1,7 @@
 package persistence
 
 import (
+	"errors"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/websocket"
 	"github.com/jinzhu/gorm"
@@ -54,6 +55,10 @@ func (np numeronPersistence) GameStart(user *model.User, socket *websocket.Conn,
 	var numeron model.Numeron
 	if err := db.First(&numeron, "NumeronId=?", numeronId).Error; err != nil {
 		return err
+	}
+
+	if numeron.Status != 0 {
+		return errors.New("Invalid room status")
 	}
 
 	if err := db.Model(&numeron).Update("Status", 1).Error; err != nil {
