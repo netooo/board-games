@@ -67,7 +67,7 @@ func SessionUser(r *http.Request) (*model.User, error) {
 	defer config.Close()
 
 	userId := string(byteUserId.Value)
-	if err := db.Where("userId = ?", userId).Find(&user).Error; err != nil {
+	if err := db.Where("user_id = ?", userId).Find(&user).Error; err != nil {
 		return nil, err
 	}
 
