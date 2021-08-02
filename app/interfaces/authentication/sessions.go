@@ -31,7 +31,7 @@ func SessionCreate(userId string) (*sessions.Session, error) {
 	sessionId := strings.Replace(randomId.String(), "-", "", -1)
 
 	newSession := sessions.NewSession(store, SessionName)
-	newSession.ID = sessionId
+	newSession.Values["id"] = sessionId
 
 	mc := memcache.New("memcached:11211")
 	err := mc.Set(&memcache.Item{
@@ -52,12 +52,12 @@ func SessionUser(r *http.Request) (*model.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	sessionId := session.ID
+	sessionId := session.Values["id"]
 
 	var user model.User
 
 	mc := memcache.New("memcached:11211")
-	byteUserId, err := mc.Get(sessionId)
+	byteUserId, err := mc.Get(sessionId.(string))
 
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func SessionUser(r *http.Request) (*model.User, error) {
 	defer config.Close()
 
 	userId := string(byteUserId.Value)
-	if err := db.Where("UserId = ?", userId).Find(&user).Error; err != nil {
+	if err := db.Where("userId = ?", userId).Find(&user).Error; err != nil {
 		return nil, err
 	}
 
