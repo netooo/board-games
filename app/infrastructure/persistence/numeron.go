@@ -26,7 +26,9 @@ func (np numeronPersistence) CreateRoom(user *model.User, socket *websocket.Conn
 	numeron := model.Numeron{
 		Status: 0,
 	}
-	db.Create(&numeron)
+	if err := db.Create(&numeron).Error; err != nil {
+		return nil, err
+	}
 
 	// 作成者のプレイヤー情報を作成
 	player := model.NumeronPlayer{
@@ -34,7 +36,9 @@ func (np numeronPersistence) CreateRoom(user *model.User, socket *websocket.Conn
 		User:    user,
 		Socket:  socket,
 	}
-	db.Create(&player)
+	if err := db.Create(&player).Error; err != nil {
+		return nil, err
+	}
 
 	// Numeron の部屋を起動する
 	go numeron.Run()
@@ -48,7 +52,7 @@ func (np numeronPersistence) CreateRoom(user *model.User, socket *websocket.Conn
 	return &numeron, nil
 }
 
-func (np numeronPersistence) GameStart(user *model.User, socket *websocket.Conn, numeronId int) error {
+func (np numeronPersistence) GameStart(user *model.User, socket *websocket.Conn, numeronId int, orders interface{}) error {
 	db := config.Connect()
 	defer config.Close()
 
