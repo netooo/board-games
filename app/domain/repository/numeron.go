@@ -7,5 +7,5 @@ import (
 
 type NumeronRepository interface {
 	CreateRoom(user *model.User, socket *websocket.Conn) (*model.Numeron, error)
-	GameStart(user *model.User, socket *websocket.Conn, numeronId int) error
+	GameStart(user *model.User, socket *websocket.Conn, numeronId int, orders interface{}) error
 }
