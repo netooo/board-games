@@ -67,7 +67,11 @@ func (np numeronPersistence) GameStart(user *model.User, socket *websocket.Conn,
 	}
 
 	if numeron.Status != 0 {
-		return errors.New("Invalid room status")
+		return errors.New("Invalid Room Status")
+	}
+
+	if numeron.Owner.User != user {
+		return errors.New("Not Allowed User")
 	}
 
 	if err := db.Model(&numeron).Update("Status", 1).Error; err != nil {
