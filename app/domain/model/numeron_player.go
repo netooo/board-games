@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/gorilla/websocket"
 	"github.com/jinzhu/gorm"
 )
 
@@ -14,7 +13,6 @@ type NumeronPlayer struct {
 	Order     int    `json:order`
 	Code      string `json:code`
 	Rank      int    `json:rank`
-	Socket    *websocket.Conn
 }
 
 type Order int
