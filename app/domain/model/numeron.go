@@ -1,7 +1,6 @@
 package model
 
 import (
-	_ "github.com/gorilla/websocket"
 	"github.com/jinzhu/gorm"
 )
 
@@ -10,10 +9,10 @@ type Numeron struct {
 	Status  int `json:status`
 	OwnerId int `json:owner_id`
 	Owner   *NumeronPlayer
-	Join    chan *NumeronPlayer
-	Leave   chan *NumeronPlayer
-	Players map[*NumeronPlayer]bool
 }
+
+var players = make(map[*NumeronPlayer]bool)
+var join = make(chan *NumeronPlayer)
 
 type Status int
 
@@ -38,18 +37,17 @@ func (s Status) String() string {
 /*
 ヌメロンルームを起動する
 */
-func (n *Numeron) Run() {
+func (n *Numeron) Run(player *NumeronPlayer) {
+	players[player] = true
 	for {
-		// チャネルの動きを監視し、処理を決定する
-		select {
+		//TODO: 部屋の常時起動
+	}
+}
 
-		/* joinチャネルに動きがあった場合(プレイヤーの入室) */
-		case player := <-n.Join:
-			n.Players[player] = true
-
-		/* leaveチャネルに動きがあった場合(プレイヤーの退室) */
-		case player := <-n.Leave:
-			delete(n.Players, player)
-		}
+func (n *Numeron) Join(player *NumeronPlayer) {
+	players[player] = true
+	// 現在接続しているクライアント全てに入室を通知する
+	for p := range players {
+		//TODO: socketを利用して、playersにplayerが入室したことを通知する
 	}
 }
