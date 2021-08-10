@@ -9,6 +9,7 @@ type Numeron struct {
 	Status  int `json:status`
 	OwnerId int `json:owner_id`
 	Owner   *NumeronPlayer
+	Players *[]NumeronPlayer
 }
 
 var players = make(map[*NumeronPlayer]bool)
