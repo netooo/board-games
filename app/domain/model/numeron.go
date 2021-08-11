@@ -8,8 +8,10 @@ type Numeron struct {
 	gorm.Model
 	Status  int `json:status`
 	OwnerId int `json:owner_id`
-	Owner   *NumeronPlayer
-	Players *[]NumeronPlayer
+	Owner   *User
+	Join    chan *User
+	Leave   chan *User
+	Players map[*User]bool
 }
 
 type Status int
