@@ -1,6 +1,9 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/gorilla/websocket"
+	"github.com/jinzhu/gorm"
+)
 
 type User struct {
 	gorm.Model
@@ -8,4 +11,5 @@ type User struct {
 	Name     string `json:name`
 	Email    string `json:email`
 	Password string `json:password`
+	Socket   *websocket.Conn
 }
