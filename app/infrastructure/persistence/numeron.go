@@ -24,35 +24,18 @@ func (np numeronPersistence) CreateRoom(user *model.User, socket *websocket.Conn
 
 	// Numeron の部屋を作成
 	numeron := model.Numeron{
-		Status: 0,
+		Owner:   user,
+		Status:  0,
+		Join:    make(chan *model.User),
+		Leave:   make(chan *model.User),
+		Players: make(map[*model.User]bool),
 	}
-	if err := db.Create(&numeron).Error; err != nil {
-		return nil, err
-	}
-
-	// 作成者のプレイヤー情報を作成
-	player := model.NumeronPlayer{
-		Numeron: &numeron,
-		User:    user,
-		Socket:  socket,
-	}
-	if err := db.Create(&player).Error; err != nil {
-		return nil, err
-	}
-
-	// Owner を更新
-	if err := db.Model(&numeron).Update("Owner", player).Error; err != nil {
+	if err := db.Omit("Join", "Leave", "Players").Create(&numeron).Error; err != nil {
 		return nil, err
 	}
 
 	// Numeron の部屋を起動する
 	go numeron.Run()
-
-	// 作成者を入室させる
-	numeron.Join <- &player
-	defer func() {
-		numeron.Leave <- &player
-	}()
 
 	return &numeron, nil
 }
@@ -68,10 +51,6 @@ func (np numeronPersistence) GameStart(user *model.User, socket *websocket.Conn,
 
 	if numeron.Status != 0 {
 		return errors.New("Invalid Room Status")
-	}
-
-	if numeron.Owner.User != user {
-		return errors.New("Not Allowed User")
 	}
 
 	if err := db.Model(&numeron).Update("Status", 1).Error; err != nil {
