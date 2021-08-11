@@ -12,9 +12,6 @@ type Numeron struct {
 	Players *[]NumeronPlayer
 }
 
-var players = make(map[*NumeronPlayer]bool)
-var join = make(chan *NumeronPlayer)
-
 type Status int
 
 const (
@@ -38,17 +35,19 @@ func (s Status) String() string {
 /*
 ヌメロンルームを起動する
 */
-func (n *Numeron) Run(player *NumeronPlayer) {
-	players[player] = true
+func (n *Numeron) Run() {
 	for {
-		//TODO: 部屋の常時起動
-	}
-}
+		// チャネルの動きを監視し、処理を決定する
+		select {
+		/* Joinチャネルに動きがあった場合(クライアントの入室) */
+		case player := <-n.Join:
+			// クライアントmapのbool値を真にする
+			n.Players[player] = true
 
-func (n *Numeron) Join(player *NumeronPlayer) {
-	players[player] = true
-	// 現在接続しているクライアント全てに入室を通知する
-	for p := range players {
-		//TODO: socketを利用して、playersにplayerが入室したことを通知する
+		/* Leaveチャネルに動きがあった場合(クライアントの退室) */
+		case player := <-n.Leave:
+			// クライアントmapから対象クライアントを削除する
+			delete(n.Players, player)
+		}
 	}
 }
