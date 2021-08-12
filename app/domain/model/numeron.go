@@ -37,7 +37,10 @@ func (s Status) String() string {
 /*
 ヌメロンルームを起動する
 */
-func (n *Numeron) Run() {
+func (n *Numeron) Run(user *User) {
+	// 作成者を入室させる
+	n.Players[user] = true
+
 	for {
 		// チャネルの動きを監視し、処理を決定する
 		select {
