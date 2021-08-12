@@ -34,8 +34,11 @@ func (np numeronPersistence) CreateRoom(user *model.User, socket *websocket.Conn
 		return nil, err
 	}
 
+	// 作成者のsocketをつなぐ
+	user.Socket = socket
+
 	// Numeron の部屋を起動する
-	go numeron.Run()
+	go numeron.Run(user)
 
 	return &numeron, nil
 }
