@@ -48,7 +48,7 @@ func (np numeronPersistence) GameStart(user *model.User, socket *websocket.Conn,
 	defer config.Close()
 
 	var numeron model.Numeron
-	if err := db.First(&numeron, "NumeronId=?", numeronId).Error; err != nil {
+	if err := db.Omit("Join", "Leave", "Players").First(&numeron, "NumeronId=?", numeronId).Error; err != nil {
 		return err
 	}
 
@@ -56,7 +56,7 @@ func (np numeronPersistence) GameStart(user *model.User, socket *websocket.Conn,
 		return errors.New("Invalid Room Status")
 	}
 
-	if err := db.Model(&numeron).Update("Status", 1).Error; err != nil {
+	if err := db.Omit("Join", "Leave", "Players").Model(&numeron).Update("Status", 1).Error; err != nil {
 		return err
 	}
 
