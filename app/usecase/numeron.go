@@ -9,7 +9,7 @@ import (
 
 type NumeronUseCase interface {
 	CreateRoom(user *model.User, socket *websocket.Conn) (*model.Numeron, error)
-	GameStart(user *model.User, socket *websocket.Conn, numeronId int, orders interface{}) error
+	GameStart(userId uint, socket *websocket.Conn, numeronId int, orders interface{}) error
 }
 
 type numeronUseCase struct {
@@ -31,8 +31,8 @@ func (nu numeronUseCase) CreateRoom(user *model.User, socket *websocket.Conn) (*
 	return room, nil
 }
 
-func (nu numeronUseCase) GameStart(user *model.User, socket *websocket.Conn, numeronId int, orders interface{}) error {
-	err := nu.numeronRepository.GameStart(user, socket, numeronId, orders)
+func (nu numeronUseCase) GameStart(userId uint, socket *websocket.Conn, numeronId int, orders interface{}) error {
+	err := nu.numeronRepository.GameStart(userId, socket, numeronId, orders)
 	if err != nil {
 		return err
 	}

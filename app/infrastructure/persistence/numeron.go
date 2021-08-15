@@ -43,7 +43,7 @@ func (np numeronPersistence) CreateRoom(user *model.User, socket *websocket.Conn
 	return &numeron, nil
 }
 
-func (np numeronPersistence) GameStart(user *model.User, socket *websocket.Conn, numeronId int, orders interface{}) error {
+func (np numeronPersistence) GameStart(userId uint, socket *websocket.Conn, numeronId int, orders interface{}) error {
 	db := config.Connect()
 	defer config.Close()
 
@@ -56,7 +56,7 @@ func (np numeronPersistence) GameStart(user *model.User, socket *websocket.Conn,
 		return errors.New("Invalid Room Status")
 	}
 
-	if user != numeron.Owner {
+	if userId != numeron.OwnerId {
 		return errors.New("Unauthorized User")
 	}
 
