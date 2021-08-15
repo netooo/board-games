@@ -48,7 +48,7 @@ func (np numeronPersistence) GameStart(user *model.User, socket *websocket.Conn,
 	defer config.Close()
 
 	var numeron model.Numeron
-	if err := db.Omit("Join", "Leave", "Players").First(&numeron, "NumeronId=?", numeronId).Error; err != nil {
+	if err := db.Omit("Join", "Leave", "Players").First(&numeron, numeronId).Error; err != nil {
 		return err
 	}
 
