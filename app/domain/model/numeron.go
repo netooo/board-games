@@ -7,7 +7,7 @@ import (
 type Numeron struct {
 	gorm.Model
 	Status  int            `json:"status"`
-	OwnerId int            `json:"owner_id"`
+	OwnerId uint           `json:"owner_id"`
 	Owner   *User          `json:"-"`
 	Join    chan *User     `json:"-"`
 	Leave   chan *User     `json:"-"`
