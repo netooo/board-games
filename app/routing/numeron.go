@@ -15,5 +15,5 @@ func NumeronInit(r *mux.Router) {
 	numeronHandler := handler.NewNumeronHandler(numeronUseCase)
 
 	r.HandleFunc("/numerons", numeronHandler.HandleRoomCreate).Methods("POST")
-	r.HandleFunc("/numerons/{id}/start", numeronHandler.HandleGameStart).Methods("POST")
+	r.HandleFunc("/numerons/start", numeronHandler.HandleGameStart)
 }
