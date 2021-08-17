@@ -44,14 +44,18 @@ func (n *Numeron) Run(user *User) {
 	for {
 		// チャネルの動きを監視し、処理を決定する
 		select {
-		/* Joinチャネルに動きがあった場合(クライアントの入室) */
+		/* Joinチャネルに動きがあった場合(ユーザの入室) */
 		case player := <-n.Join:
-			// クライアントmapのbool値を真にする
+			for p := range n.Players {
+				if err := p.Socket.WriteJSON(p); err != nil {
+					delete(n.Players, player)
+				}
+			}
 			n.Players[player] = true
 
-		/* Leaveチャネルに動きがあった場合(クライアントの退室) */
+		/* Leaveチャネルに動きがあった場合(ユーザの退室) */
 		case player := <-n.Leave:
-			// クライアントmapから対象クライアントを削除する
+			// Player mapから対象ユーザを削除する
 			delete(n.Players, player)
 		}
 	}
