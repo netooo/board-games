@@ -47,8 +47,8 @@ func (n *Numeron) Run(user *User) {
 		/* Joinチャネルに動きがあった場合(ユーザの入室) */
 		case player := <-n.Join:
 			for p := range n.Players {
-				if err := p.Socket.WriteJSON(p); err != nil {
-					delete(n.Players, player)
+				if err := p.Socket.WriteJSON(player); err != nil {
+					delete(n.Players, p)
 				}
 			}
 			n.Players[player] = true
