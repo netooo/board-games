@@ -36,7 +36,7 @@ func (u *User) Read() {
 		if err := u.Socket.ReadJSON(&msg); err != nil {
 			break
 		} else {
-			switch game := msg.Game; game {
+			switch msg.Game {
 			case "numeron":
 				var numeron Numeron
 				if err := db.Omit("Join", "Leave", "Players").First(&numeron, msg.Id).Error; err != nil {
