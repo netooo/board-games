@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"github.com/jinzhu/gorm"
 )
 
@@ -21,6 +22,11 @@ const (
 	Play                 // Play   == 1
 	Finish               // Finish == 2
 )
+
+type StartOrder struct {
+	First  string
+	Second string
+}
 
 func (s Status) String() string {
 	switch s {
@@ -58,5 +64,27 @@ func (n *Numeron) Run(user *User) {
 			// Player mapから対象ユーザを削除する
 			delete(n.Players, player)
 		}
+	}
+}
+
+func (n *Numeron) Read(action string, value string) {
+	switch action {
+	case "start":
+		var order StartOrder
+		if err := json.Unmarshal([]byte(value), &order); err != nil {
+			return
+		}
+		if len(n.Players) != 2 {
+			return
+		}
+
+		var first string = order.First
+		var second string = order.Second
+		if first == "" || second == "" {
+			//TODO: 順番の指定がない場合はランダムにしたい
+			return
+		}
+	default:
+
 	}
 }
