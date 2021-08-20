@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"github.com/jinzhu/gorm"
+	"github.com/netooo/board-games/app/config"
 )
 
 type Numeron struct {
@@ -67,9 +68,20 @@ func (n *Numeron) Run(user *User) {
 	}
 }
 
-func (n *Numeron) Read(action string, value string) {
+func (n *Numeron) Read(user *User, action string, value string) {
+	db := config.Connect()
+	defer config.Close()
+
 	switch action {
 	case "start":
+		if n.Status != 0 {
+			return
+		}
+
+		if user != n.Owner {
+			return
+		}
+
 		var order StartOrder
 		if err := json.Unmarshal([]byte(value), &order); err != nil {
 			return
