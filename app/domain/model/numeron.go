@@ -16,6 +16,10 @@ type Numeron struct {
 	Players map[*User]bool `json:"-"`
 }
 
+type NumeronAction struct {
+	Action string `json:"action"`
+}
+
 type Status int
 
 const (
@@ -95,6 +99,47 @@ func (n *Numeron) Read(user *User, action string, value string) {
 		if first == "" || second == "" {
 			//TODO: 順番の指定がない場合はランダムにしたい
 			return
+		}
+
+		var firstUser User
+		var secondUser User
+		if err := db.Omit("Socket").First(&firstUser, first).Error; err != nil {
+			return
+		}
+		if err := db.Omit("Socket").First(&secondUser, first).Error; err != nil {
+			return
+		}
+
+		firstPlayer := NumeronPlayer{
+			Numeron: n,
+			User:    &firstUser,
+			Order:   0,
+		}
+		if err := db.Create(firstPlayer).Error; err != nil {
+			return
+		}
+
+		secondPlayer := NumeronPlayer{
+			Numeron: n,
+			User:    &secondUser,
+			Order:   1,
+		}
+		if err := db.Create(secondPlayer).Error; err != nil {
+			return
+		}
+
+		if err := db.Omit("Join", "Leave", "Players").Model(&n).Update("Status", 1).Error; err != nil {
+			return
+		}
+
+		action := NumeronAction{
+			Action: "start",
+		}
+
+		for p := range n.Players {
+			if err := p.Socket.WriteJSON(action); err != nil {
+				delete(n.Players, p)
+			}
 		}
 	default:
 
