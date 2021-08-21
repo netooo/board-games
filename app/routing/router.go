@@ -11,7 +11,9 @@ func Init() *mux.Router {
 		Schemes("http"). // TODO: localではhttp, test/productionではhttpsを使う
 		Subrouter()
 
-	// Read Various APIs
+	
+	AuthInit(s)
+
 	UserInit(s)
 
 	// Numeron
