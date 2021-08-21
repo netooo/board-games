@@ -94,19 +94,19 @@ func (n *Numeron) Read(user *User, action string, value string) {
 			return
 		}
 
-		var first string = order.First
-		var second string = order.Second
-		if first == "" || second == "" {
+		var firstUserId string = order.First
+		var secondUserId string = order.Second
+		if firstUserId == "" || secondUserId == "" {
 			//TODO: 順番の指定がない場合はランダムにしたい
 			return
 		}
 
 		var firstUser User
 		var secondUser User
-		if err := db.Omit("Socket").First(&firstUser, first).Error; err != nil {
+		if err := db.Omit("Socket").First(&firstUser, firstUserId).Error; err != nil {
 			return
 		}
-		if err := db.Omit("Socket").First(&secondUser, first).Error; err != nil {
+		if err := db.Omit("Socket").First(&secondUser, firstUserId).Error; err != nil {
 			return
 		}
 
