@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
 	"github.com/netooo/board-games/app/interfaces/authentication"
 	"github.com/netooo/board-games/app/interfaces/response"
 	"github.com/netooo/board-games/app/usecase"
@@ -18,7 +17,7 @@ type authHandler struct {
 	authUseCase usecase.AuthUseCase
 }
 
-type authSignupRequest struct {
+type authSigninRequest struct {
 	Email    string
 	Password string
 }
@@ -29,7 +28,7 @@ func NewAuthHandler(ua usecase.AuthUseCase) AuthHandler {
 	}
 }
 
-func (ah authHandler) HandleAuthSignup(writer http.ResponseWriter, request *http.Request) {
+func (ah authHandler) HandleAuthSignin(writer http.ResponseWriter, request *http.Request) {
 	// リクエストボディを取得
 	body, err := ioutil.ReadAll(request.Body)
 	if err != nil {
@@ -38,7 +37,7 @@ func (ah authHandler) HandleAuthSignup(writer http.ResponseWriter, request *http
 	}
 
 	// リクエストボディのパース
-	var requestBody authSignupRequest
+	var requestBody authSigninRequest
 	_ = json.Unmarshal(body, &requestBody)
 
 	// UseCaseの呼び出し

@@ -7,18 +7,17 @@ import (
 	"github.com/netooo/board-games/app/config"
 	"github.com/netooo/board-games/app/domain/model"
 	"github.com/netooo/board-games/app/domain/repository"
-
 )
 
-type userPersistence struct {
+type authPersistence struct {
 	Conn *gorm.DB
 }
 
 func NewAuthPersistence(conn *gorm.DB) repository.AuthRepository {
-	return &userPersistence{Conn: conn}
+	return &authPersistence{Conn: conn}
 }
 
-func (up userPersistence) Signin(email, password string) (*model.User, error) {
+func (ap authPersistence) Signin(email, password string) (*model.User, error) {
 	var user model.User
 
 	db := config.Connect()
@@ -28,7 +27,7 @@ func (up userPersistence) Signin(email, password string) (*model.User, error) {
 		return nil, err
 	}
 
-	if *user.password != password {
+	if user.Password != password {
 		return nil, errors.New("invarit Email or Password")
 	}
 

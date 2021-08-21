@@ -14,5 +14,5 @@ func AuthInit(r *mux.Router) {
 	authUseCase := usecase.NewAuthUseCase(authPersistence)
 	authHandler := handler.NewAuthHandler(authUseCase)
 
-	r.HandleFunc("/signin", authHandler.HandleSignin).Methods("POST")
+	r.HandleFunc("/signin", authHandler.HandleAuthSignin).Methods("POST")
 }
