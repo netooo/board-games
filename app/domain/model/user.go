@@ -42,7 +42,7 @@ func (u *User) Read() {
 				if err := db.Omit("Join", "Leave", "Players").First(&numeron, msg.Id).Error; err != nil {
 					break
 				}
-				numeron.Read(msg.Action, msg.Value)
+				numeron.Read(u, msg.Action, msg.Value)
 			}
 		}
 	}
