@@ -1,7 +1,6 @@
 package persistence
 
 import (
-	"errors"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/websocket"
 	"github.com/jinzhu/gorm"
@@ -41,28 +40,4 @@ func (np numeronPersistence) CreateRoom(user *model.User, socket *websocket.Conn
 	go numeron.Run(user)
 
 	return &numeron, nil
-}
-
-func (np numeronPersistence) GameStart(userId uint, socket *websocket.Conn, numeronId int, orders interface{}) error {
-	db := config.Connect()
-	defer config.Close()
-
-	var numeron model.Numeron
-	if err := db.Omit("Join", "Leave", "Players").First(&numeron, numeronId).Error; err != nil {
-		return err
-	}
-
-	if numeron.Status != 0 {
-		return errors.New("Invalid Room Status")
-	}
-
-	if userId != numeron.OwnerId {
-		return errors.New("Unauthorized User")
-	}
-
-	if err := db.Omit("Join", "Leave", "Players").Model(&numeron).Update("Status", 1).Error; err != nil {
-		return err
-	}
-
-	return nil
 }
