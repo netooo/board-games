@@ -1,16 +1,23 @@
 package model
 
 import (
-	_ "github.com/gorilla/websocket"
+	"encoding/json"
 	"github.com/jinzhu/gorm"
+	"github.com/netooo/board-games/app/config"
 )
 
 type Numeron struct {
 	gorm.Model
-	Status  int `json:status`
-	Join    chan *NumeronPlayer
-	Leave   chan *NumeronPlayer
-	Players map[*NumeronPlayer]bool
+	Status  int            `json:"status"`
+	OwnerId uint           `json:"owner_id"`
+	Owner   *User          `json:"-"`
+	Join    chan *User     `json:"-"`
+	Leave   chan *User     `json:"-"`
+	Players map[*User]bool `json:"-"`
+}
+
+type NumeronAction struct {
+	Action string `json:"action"`
 }
 
 type Status int
@@ -20,6 +27,11 @@ const (
 	Play                 // Play   == 1
 	Finish               // Finish == 2
 )
+
+type StartOrder struct {
+	First  string
+	Second string
+}
 
 func (s Status) String() string {
 	switch s {
@@ -36,18 +48,100 @@ func (s Status) String() string {
 /*
 ヌメロンルームを起動する
 */
-func (n *Numeron) Run() {
+func (n *Numeron) Run(user *User) {
+	// 作成者を入室させる
+	n.Players[user] = true
+
 	for {
 		// チャネルの動きを監視し、処理を決定する
 		select {
-
-		/* joinチャネルに動きがあった場合(プレイヤーの入室) */
+		/* Joinチャネルに動きがあった場合(ユーザの入室) */
 		case player := <-n.Join:
+			for p := range n.Players {
+				if err := p.Socket.WriteJSON(player); err != nil {
+					delete(n.Players, p)
+				}
+			}
 			n.Players[player] = true
 
-		/* leaveチャネルに動きがあった場合(プレイヤーの退室) */
+		/* Leaveチャネルに動きがあった場合(ユーザの退室) */
 		case player := <-n.Leave:
+			// Player mapから対象ユーザを削除する
 			delete(n.Players, player)
 		}
+	}
+}
+
+func (n *Numeron) Read(user *User, action string, value string) {
+	db := config.Connect()
+	defer config.Close()
+
+	switch action {
+	case "start":
+		if n.Status != 0 {
+			return
+		}
+
+		if user != n.Owner {
+			return
+		}
+
+		var order StartOrder
+		if err := json.Unmarshal([]byte(value), &order); err != nil {
+			return
+		}
+		if len(n.Players) != 2 {
+			return
+		}
+
+		var firstUserId string = order.First
+		var secondUserId string = order.Second
+		if firstUserId == "" || secondUserId == "" {
+			//TODO: 順番の指定がない場合はランダムにしたい
+			return
+		}
+
+		var firstUser User
+		var secondUser User
+		if err := db.Omit("Socket").First(&firstUser, firstUserId).Error; err != nil {
+			return
+		}
+		if err := db.Omit("Socket").First(&secondUser, firstUserId).Error; err != nil {
+			return
+		}
+
+		firstPlayer := NumeronPlayer{
+			Numeron: n,
+			User:    &firstUser,
+			Order:   0,
+		}
+		if err := db.Create(firstPlayer).Error; err != nil {
+			return
+		}
+
+		secondPlayer := NumeronPlayer{
+			Numeron: n,
+			User:    &secondUser,
+			Order:   1,
+		}
+		if err := db.Create(secondPlayer).Error; err != nil {
+			return
+		}
+
+		if err := db.Omit("Join", "Leave", "Players").Model(&n).Update("Status", 1).Error; err != nil {
+			return
+		}
+
+		action := NumeronAction{
+			Action: "start",
+		}
+
+		for p := range n.Players {
+			if err := p.Socket.WriteJSON(action); err != nil {
+				delete(n.Players, p)
+			}
+		}
+	default:
+
 	}
 }

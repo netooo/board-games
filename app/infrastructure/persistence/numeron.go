@@ -23,26 +23,21 @@ func (np numeronPersistence) CreateRoom(user *model.User, socket *websocket.Conn
 
 	// Numeron の部屋を作成
 	numeron := model.Numeron{
-		Status: 0,
+		Owner:   user,
+		Status:  0,
+		Join:    make(chan *model.User),
+		Leave:   make(chan *model.User),
+		Players: make(map[*model.User]bool),
 	}
-	db.Create(&numeron)
+	if err := db.Omit("Join", "Leave", "Players").Create(&numeron).Error; err != nil {
+		return nil, err
+	}
 
-	// 作成者のプレイヤー情報を作成
-	player := model.NumeronPlayer{
-		Numeron: &numeron,
-		User:    user,
-		Socket:  socket,
-	}
-	db.Create(&player)
+	// 作成者のsocketをつなぐ
+	user.Socket = socket
 
 	// Numeron の部屋を起動する
-	go numeron.Run()
-
-	// 作成者を入室させる
-	numeron.Join <- &player
-	defer func() {
-		numeron.Leave <- &player
-	}()
+	go numeron.Run(user)
 
 	return &numeron, nil
 }
