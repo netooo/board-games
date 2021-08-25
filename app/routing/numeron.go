@@ -15,4 +15,5 @@ func NumeronInit(r *mux.Router) {
 	numeronHandler := handler.NewNumeronHandler(numeronUseCase)
 
 	r.HandleFunc("/numerons", numeronHandler.HandleRoomCreate).Methods("POST")
+	r.HandleFunc("/numerons/{id}/join", numeronHandler.HandleRoomJoin).Methods("POST")
 }
