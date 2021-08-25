@@ -53,13 +53,25 @@ func (np numeronPersistence) JoinRoom(numeronId string, user *model.User, socket
 		return err
 	}
 
+	// 部屋の状態をチェック
+	if numeron.Status != 0 {
+		return errors.New("Room is not Ready")
+	}
+
+	if len(numeron.Players) > 1 {
+		return errors.New("Limit User in Numeron Room")
+	}
+
+	for p := range numeron.Players {
+		if p == user {
+			return errors.New("Already Join the Numeron Room")
+		}
+	}
+
 	// 作成者のsocketをつなぐ
 	user.Socket = socket
 
 	// Numeron の部屋に入室する
-	if len(numeron.Players) > 1 {
-		return errors.New("Limit User in Numeron Room")
-	}
 	numeron.Join <- user
 
 	return nil
