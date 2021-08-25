@@ -9,6 +9,7 @@ import (
 
 type NumeronUseCase interface {
 	CreateRoom(user *model.User, socket *websocket.Conn) (*model.Numeron, error)
+	JoinRoom(numeronId string, user *model.User, socket *websocket.Conn) error
 }
 
 type numeronUseCase struct {
@@ -28,4 +29,13 @@ func (nu numeronUseCase) CreateRoom(user *model.User, socket *websocket.Conn) (*
 	}
 
 	return room, nil
+}
+
+func (nu numeronUseCase) JoinRoom(numeronId string, user *model.User, socket *websocket.Conn) error {
+	err := nu.numeronRepository.JoinRoom(numeronId, user, socket)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
