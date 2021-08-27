@@ -68,6 +68,8 @@ func (n *Numeron) Run(user *User) {
 		case player := <-n.Leave:
 			// Player mapから対象ユーザを削除する
 			delete(n.Players, player)
+
+		default:
 		}
 	}
 }
