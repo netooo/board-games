@@ -10,13 +10,13 @@ import (
 	"net/http"
 )
 
-type NumeronHandler interface {
+type RoomHandler interface {
 	HandleRoomCreate(http.ResponseWriter, *http.Request)
 	HandleRoomJoin(http.ResponseWriter, *http.Request)
 }
 
-type numeronHandler struct {
-	numeronUseCase usecase.NumeronUseCase
+type roomHandler struct {
+	roomUseCase usecase.RoomUseCase
 }
 
 const (
@@ -29,13 +29,13 @@ var upgrader = &websocket.Upgrader{
 	WriteBufferSize: socketBufferSize,
 }
 
-func NewNumeronHandler(nu usecase.NumeronUseCase) NumeronHandler {
-	return &numeronHandler{
-		numeronUseCase: nu,
+func NewRoomHandler(nu usecase.RoomUseCase) RoomHandler {
+	return &roomHandler{
+		roomUseCase: nu,
 	}
 }
 
-func (nh numeronHandler) HandleRoomCreate(writer http.ResponseWriter, request *http.Request) {
+func (nh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http.Request) {
 	/* websocketの開設 */
 	socket, err := upgrader.Upgrade(writer, request, nil)
 	if err != nil {
@@ -53,7 +53,7 @@ func (nh numeronHandler) HandleRoomCreate(writer http.ResponseWriter, request *h
 	//TODO: Check request_user already join other room?
 	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
 
-	room, err := nh.numeronUseCase.CreateRoom(user, socket)
+	room, err := nh.roomUseCase.CreateRoom(user, socket)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
@@ -62,7 +62,7 @@ func (nh numeronHandler) HandleRoomCreate(writer http.ResponseWriter, request *h
 	response.Success(writer, room)
 }
 
-func (nh numeronHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.Request) {
+func (nh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.Request) {
 	/* websocketの開設 */
 	socket, err := upgrader.Upgrade(writer, request, nil)
 	if err != nil {
@@ -86,7 +86,7 @@ func (nh numeronHandler) HandleRoomJoin(writer http.ResponseWriter, request *htt
 		return
 	}
 
-	err = nh.numeronUseCase.JoinRoom(id, user, socket)
+	err = nh.roomUseCase.JoinRoom(id, user, socket)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
