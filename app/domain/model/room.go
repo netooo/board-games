@@ -15,6 +15,11 @@ type Room struct {
 	Players map[*User]bool `json:"-"`
 }
 
+type StartOrder struct {
+	First  string
+	Second string
+}
+
 type Status int
 
 const (
@@ -33,4 +38,30 @@ func (s Status) String() string {
 		return "終了"
 	}
 	return "未定義"
+}
+
+func (r *Room) Run(user *User) {
+	// 作成者を入室させる
+	r.Players[user] = true
+
+	for {
+		// チャネルの動きを監視し、処理を決定する
+		select {
+		/* Joinチャネルに動きがあった場合(ユーザの入室) */
+		case player := <-r.Join:
+			for p := range r.Players {
+				if err := p.Socket.WriteJSON(player); err != nil {
+					delete(r.Players, p)
+				}
+			}
+			r.Players[player] = true
+
+		/* Leaveチャネルに動きがあった場合(ユーザの退室) */
+		case player := <-r.Leave:
+			// Player mapから対象ユーザを削除する
+			delete(r.Players, player)
+
+		default:
+		}
+	}
 }
