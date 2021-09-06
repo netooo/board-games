@@ -12,6 +12,8 @@ type User struct {
 	Name     string          `json:"name"`
 	Email    string          `json:"email"`
 	Password string          `json:"password"`
+	RoomId   int             `json:"room_id"`
+	Room     *Room           `json:"-"`
 	Socket   *websocket.Conn `json:"-"`
 }
 
