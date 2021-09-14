@@ -60,8 +60,6 @@ func (r *Room) Run(user *User) {
 		case player := <-r.Leave:
 			// Player mapから対象ユーザを削除する
 			delete(r.Players, player)
-
-		default:
 		}
 	}
 }
