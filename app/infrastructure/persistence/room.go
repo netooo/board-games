@@ -27,7 +27,7 @@ func (np roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) (
 
 	// Room の部屋を作成
 	room := model.Room{
-		Owner:   user,
+		OwnerId: user.ID,
 		Status:  0,
 		Join:    make(chan *model.User),
 		Leave:   make(chan *model.User),
