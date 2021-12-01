@@ -14,6 +14,9 @@ type roomPersistence struct {
 	Conn *gorm.DB
 }
 
+// 立ち上がっているRoomを格納した配列
+var Rooms []*model.Room
+
 func NewRoomPersistence(conn *gorm.DB) repository.RoomRepository {
 	return &roomPersistence{Conn: conn}
 }
@@ -33,6 +36,9 @@ func (np roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) (
 	if err := db.Omit("Join", "Leave", "Players").Create(&room).Error; err != nil {
 		return nil, err
 	}
+
+	// 作成されたroomをsliceに格納
+	Rooms = append(Rooms, &room)
 
 	// 作成者のsocketをつなぐ
 	user.Socket = socket
