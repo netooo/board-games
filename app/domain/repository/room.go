@@ -7,5 +7,5 @@ import (
 
 type RoomRepository interface {
 	CreateRoom(user *model.User, socket *websocket.Conn) (*model.Room, error)
-	JoinRoom(roomId string, user *model.User, socket *websocket.Conn) error
+	JoinRoom(roomId uint, user *model.User, socket *websocket.Conn) error
 }
