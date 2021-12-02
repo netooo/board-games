@@ -68,7 +68,7 @@ func (rp roomPersistence) JoinRoom(roomId uint, user *model.User, socket *websoc
 	}
 
 	for p := range room.Players {
-		if p == user {
+		if p.ID == user.ID {
 			return errors.New("Already Join the Room")
 		}
 	}
