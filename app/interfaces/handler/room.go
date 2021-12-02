@@ -29,13 +29,13 @@ var upgrader = &websocket.Upgrader{
 	WriteBufferSize: socketBufferSize,
 }
 
-func NewRoomHandler(nu usecase.RoomUseCase) RoomHandler {
+func NewRoomHandler(ru usecase.RoomUseCase) RoomHandler {
 	return &roomHandler{
-		roomUseCase: nu,
+		roomUseCase: ru,
 	}
 }
 
-func (nh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http.Request) {
+func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http.Request) {
 	/* websocketの開設 */
 	socket, err := upgrader.Upgrade(writer, request, nil)
 	//if err != nil {
@@ -53,7 +53,7 @@ func (nh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http
 	//TODO: Check request_user already join other room?
 	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
 
-	room, err := nh.roomUseCase.CreateRoom(user, socket)
+	room, err := rh.roomUseCase.CreateRoom(user, socket)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return

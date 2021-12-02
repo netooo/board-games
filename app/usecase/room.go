@@ -16,14 +16,14 @@ type roomUseCase struct {
 	roomRepository repository.RoomRepository
 }
 
-func NewRoomUseCase(nr repository.RoomRepository) RoomUseCase {
+func NewRoomUseCase(rr repository.RoomRepository) RoomUseCase {
 	return &roomUseCase{
-		roomRepository: nr,
+		roomRepository: rr,
 	}
 }
 
-func (nu roomUseCase) CreateRoom(user *model.User, socket *websocket.Conn) (*model.Room, error) {
-	room, err := nu.roomRepository.CreateRoom(user, socket)
+func (ru roomUseCase) CreateRoom(user *model.User, socket *websocket.Conn) (*model.Room, error) {
+	room, err := ru.roomRepository.CreateRoom(user, socket)
 	if err != nil {
 		return nil, err
 	}
@@ -31,8 +31,8 @@ func (nu roomUseCase) CreateRoom(user *model.User, socket *websocket.Conn) (*mod
 	return room, nil
 }
 
-func (nu roomUseCase) JoinRoom(roomId string, user *model.User, socket *websocket.Conn) error {
-	err := nu.roomRepository.JoinRoom(roomId, user, socket)
+func (ru roomUseCase) JoinRoom(roomId string, user *model.User, socket *websocket.Conn) error {
+	err := ru.roomRepository.JoinRoom(roomId, user, socket)
 	if err != nil {
 		return err
 	}
