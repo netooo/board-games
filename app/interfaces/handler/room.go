@@ -38,9 +38,9 @@ func NewRoomHandler(nu usecase.RoomUseCase) RoomHandler {
 func (nh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http.Request) {
 	/* websocketの開設 */
 	socket, err := upgrader.Upgrade(writer, request, nil)
-	if err != nil {
-		log.Fatalln("websocketの開設に失敗しました。:", err)
-	}
+	//if err != nil {
+	//	log.Fatalln("websocketの開設に失敗しました。:", err)
+	//}
 
 	user, err := authentication.SessionUser(request)
 
@@ -62,7 +62,7 @@ func (nh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http
 	response.Success(writer, room)
 }
 
-func (nh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.Request) {
+func (rh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.Request) {
 	/* websocketの開設 */
 	socket, err := upgrader.Upgrade(writer, request, nil)
 	if err != nil {
@@ -86,7 +86,7 @@ func (nh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.R
 		return
 	}
 
-	err = nh.roomUseCase.JoinRoom(id, user, socket)
+	err = rh.roomUseCase.JoinRoom(id, user, socket)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
