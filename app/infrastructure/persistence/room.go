@@ -21,7 +21,7 @@ func NewRoomPersistence(conn *gorm.DB) repository.RoomRepository {
 	return &roomPersistence{Conn: conn}
 }
 
-func (np roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) (*model.Room, error) {
+func (rp roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) (*model.Room, error) {
 	db := config.Connect()
 	defer config.Close()
 
@@ -49,15 +49,14 @@ func (np roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) (
 	return &room, nil
 }
 
-func (np roomPersistence) JoinRoom(roomId string, user *model.User, socket *websocket.Conn) error {
-	db := config.Connect()
-	defer config.Close()
-
+func (rp roomPersistence) JoinRoom(roomId uint, user *model.User, socket *websocket.Conn) error {
 	// Room の部屋を取得
-	var room model.Room
-	if err := db.Omit("Join", "Leave", "Players").First(&room, roomId).Error; err != nil {
+	index, err := searchRooms(Rooms, roomId)
+	if err != nil {
 		return err
 	}
+
+	var room *model.Room = Rooms[index]
 
 	// 部屋の状態をチェック
 	if room.Status != 0 {
@@ -81,4 +80,13 @@ func (np roomPersistence) JoinRoom(roomId string, user *model.User, socket *webs
 	room.Join <- user
 
 	return nil
+}
+
+func searchRooms(rooms []*model.Room, roomId uint) (int, error) {
+	for i, r := range rooms {
+		if r.ID == roomId {
+			return i, nil
+		}
+	}
+	return -1, errors.New("Room Not found")
 }
