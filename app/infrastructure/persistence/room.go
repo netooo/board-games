@@ -64,13 +64,13 @@ func (np roomPersistence) JoinRoom(roomId string, user *model.User, socket *webs
 		return errors.New("Room is not Ready")
 	}
 
-	if len(room.Players) > 1 {
-		return errors.New("Limit User in Room Room")
+	if len(room.Players) > 4 {
+		return errors.New("Limit User in Room")
 	}
 
 	for p := range room.Players {
 		if p == user {
-			return errors.New("Already Join the Room Room")
+			return errors.New("Already Join the Room")
 		}
 	}
 
