@@ -9,7 +9,7 @@ import (
 
 type RoomUseCase interface {
 	CreateRoom(user *model.User, socket *websocket.Conn) (*model.Room, error)
-	JoinRoom(roomId string, user *model.User, socket *websocket.Conn) error
+	JoinRoom(roomId uint, user *model.User, socket *websocket.Conn) error
 }
 
 type roomUseCase struct {
@@ -31,7 +31,7 @@ func (ru roomUseCase) CreateRoom(user *model.User, socket *websocket.Conn) (*mod
 	return room, nil
 }
 
-func (ru roomUseCase) JoinRoom(roomId string, user *model.User, socket *websocket.Conn) error {
+func (ru roomUseCase) JoinRoom(roomId uint, user *model.User, socket *websocket.Conn) error {
 	err := ru.roomRepository.JoinRoom(roomId, user, socket)
 	if err != nil {
 		return err

@@ -8,6 +8,7 @@ import (
 	"github.com/netooo/board-games/app/usecase"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type RoomHandler interface {
@@ -86,7 +87,14 @@ func (rh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.R
 		return
 	}
 
-	err = rh.roomUseCase.JoinRoom(id, user, socket)
+	roomId_, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		response.BadRequest(writer, "Invalid ID")
+	}
+
+	var roomId uint = uint(roomId_)
+
+	err = rh.roomUseCase.JoinRoom(roomId, user, socket)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
