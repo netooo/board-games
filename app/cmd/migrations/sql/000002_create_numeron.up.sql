@@ -1,7 +1,6 @@
 CREATE TABLE numerons (
     `id` integer unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `status` tinyint unsigned NOT NULL COMMENT 'ステータス',
-    `owner_id` bigint(20) unsigned NOT NULL COMMENT '作成者プレイヤーID',
+    `room_id` int COLLATE utf8_unicode_ci NOT NULL COMMENT 'ルームID',
     `created_at` TIMESTAMP COMMENT '作成日時',
     `updated_at` TIMESTAMP COMMENT '更新日時',
     `deleted_at` TIMESTAMP COMMENT '更新日時',
