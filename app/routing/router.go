@@ -13,9 +13,8 @@ func Init() *mux.Router {
 
 	// Read Various APIs
 	UserInit(s)
-
+	RoomInit(s)
 	// Numeron
-	NumeronInit(s)
 	NumeronPlayerInit(s)
 
 	return s
