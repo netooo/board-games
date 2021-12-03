@@ -9,6 +9,7 @@ import (
 
 type NumeronPlayerUseCase interface {
 	SetCode(user *model.User, id string, code string) error
+	JoinRoom(user *model.User, id string) error
 }
 
 type numeronPlayerUseCase struct {
@@ -34,6 +35,17 @@ func (npu numeronPlayerUseCase) SetCode(user *model.User, id string, code string
 	// domainを介してinfrastructureで実装した関数を呼び出す。
 	// Persistence（Repository）を呼出
 	err := npu.numeronPlayerRepository.SetCode(user, id, code)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (npu numeronPlayerUseCase) JoinRoom(user *model.User, id string) error {
+	// domainを介してinfrastructureで実装した関数を呼び出す。
+	// Persistence（Repository）を呼出
+	err := npu.numeronPlayerRepository.JoinRoom(user, id)
 	if err != nil {
 		return err
 	}
