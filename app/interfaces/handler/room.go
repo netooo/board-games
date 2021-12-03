@@ -8,7 +8,6 @@ import (
 	"github.com/netooo/board-games/app/usecase"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 type RoomHandler interface {
@@ -39,9 +38,9 @@ func NewRoomHandler(ru usecase.RoomUseCase) RoomHandler {
 func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http.Request) {
 	/* websocketの開設 */
 	socket, err := upgrader.Upgrade(writer, request, nil)
-	//if err != nil {
-	//	log.Fatalln("websocketの開設に失敗しました。:", err)
-	//}
+	if err != nil {
+		log.Fatalln("websocketの開設に失敗しました。:", err)
+	}
 
 	user, err := authentication.SessionUser(request)
 
@@ -82,21 +81,9 @@ func (rh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.R
 	vars := mux.Vars(request)
 	id := vars["id"]
 
-	if id == "" {
-		response.StatusNotFound(writer, "Status Not Found")
-		return
-	}
-
-	roomId_, err := strconv.ParseUint(id, 10, 64)
+	err = rh.roomUseCase.JoinRoom(id, user, socket)
 	if err != nil {
-		response.BadRequest(writer, "Invalid ID")
-	}
-
-	var roomId uint = uint(roomId_)
-
-	err = rh.roomUseCase.JoinRoom(roomId, user, socket)
-	if err != nil {
-		response.InternalServerError(writer, "Internal Server Error")
+		response.InternalServerError(writer, err.Error())
 		return
 	}
 
