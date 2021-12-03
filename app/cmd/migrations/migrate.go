@@ -83,6 +83,8 @@ func applyQuery(m *migrate.Migrate, version uint, dirty bool) {
 	switch *Command {
 	case "up":
 		err = m.Up()
+	case "down":
+		err = m.Down()
 	case "steps":
 		err = m.Steps(*Step)
 	case "version":
