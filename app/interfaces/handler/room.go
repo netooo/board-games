@@ -11,6 +11,7 @@ import (
 )
 
 type RoomHandler interface {
+	HandleRoomGet(http.ResponseWriter, *http.Request)
 	HandleRoomCreate(http.ResponseWriter, *http.Request)
 	HandleRoomJoin(http.ResponseWriter, *http.Request)
 }
@@ -33,6 +34,9 @@ func NewRoomHandler(ru usecase.RoomUseCase) RoomHandler {
 	return &roomHandler{
 		roomUseCase: ru,
 	}
+}
+func (rh roomHandler) HandleRoomGet(writer http.ResponseWriter, request *http.Request) {
+
 }
 
 func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http.Request) {

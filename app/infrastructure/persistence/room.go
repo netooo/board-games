@@ -21,6 +21,10 @@ func NewRoomPersistence(conn *gorm.DB) repository.RoomRepository {
 	return &roomPersistence{Conn: conn}
 }
 
+func (rp roomPersistence) GetRooms() ([]*model.Room, error) {
+
+}
+
 func (rp roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) (*model.Room, error) {
 	db := config.Connect()
 	defer config.Close()

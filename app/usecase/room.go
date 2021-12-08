@@ -10,6 +10,7 @@ import (
 )
 
 type RoomUseCase interface {
+	GetRooms() ([]*model.Room, error)
 	CreateRoom(user *model.User, socket *websocket.Conn) (*model.Room, error)
 	JoinRoom(id string, user *model.User, socket *websocket.Conn) error
 }
@@ -22,6 +23,10 @@ func NewRoomUseCase(rr repository.RoomRepository) RoomUseCase {
 	return &roomUseCase{
 		roomRepository: rr,
 	}
+}
+
+func (ru roomUseCase) GetRooms() ([]*model.Room, error) {
+
 }
 
 func (ru roomUseCase) CreateRoom(user *model.User, socket *websocket.Conn) (*model.Room, error) {

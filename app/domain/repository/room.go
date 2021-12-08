@@ -6,6 +6,7 @@ import (
 )
 
 type RoomRepository interface {
+	GetRooms() ([]*model.Room, error)
 	CreateRoom(user *model.User, socket *websocket.Conn) (*model.Room, error)
 	JoinRoom(roomId uint, user *model.User, socket *websocket.Conn) error
 }
