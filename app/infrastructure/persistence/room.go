@@ -14,6 +14,13 @@ type roomPersistence struct {
 	Conn *gorm.DB
 }
 
+type RespRoom struct {
+	Id      uint   `json:"id"`
+	Name    string `json:"name"`
+	Owner   string `json:"owner"`
+	Players int    `json:"players"`
+}
+
 // 立ち上がっているRoomを格納した配列
 var Rooms []*model.Room
 
@@ -21,8 +28,20 @@ func NewRoomPersistence(conn *gorm.DB) repository.RoomRepository {
 	return &roomPersistence{Conn: conn}
 }
 
-func (rp roomPersistence) GetRooms() ([]*model.Room, error) {
+func (rp roomPersistence) GetRooms() ([]*RespRoom, error) {
+	var activeRooms []*RespRoom
 
+	for _, r_ := range Rooms {
+		r := RespRoom{
+			Id:      r_.ID,
+			Name:    r_.Name,
+			Owner:   r_.Owner.Name,
+			Players: len(r_.Players),
+		}
+		activeRooms = append(activeRooms, &r)
+	}
+
+	return activeRooms, nil
 }
 
 func (rp roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) (*model.Room, error) {
