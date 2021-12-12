@@ -6,12 +6,11 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/netooo/board-games/app/domain/model"
 	"github.com/netooo/board-games/app/domain/repository"
-	"github.com/netooo/board-games/app/infrastructure/persistence"
 	"strconv"
 )
 
 type RoomUseCase interface {
-	GetRooms() ([]*persistence.RespRoom, error)
+	GetRooms() ([]*model.ResponseRoom, error)
 	CreateRoom(user *model.User, socket *websocket.Conn) (*model.Room, error)
 	JoinRoom(id string, user *model.User, socket *websocket.Conn) error
 }
@@ -26,7 +25,7 @@ func NewRoomUseCase(rr repository.RoomRepository) RoomUseCase {
 	}
 }
 
-func (ru roomUseCase) GetRooms() ([]*persistence.RespRoom, error) {
+func (ru roomUseCase) GetRooms() ([]*model.ResponseRoom, error) {
 	rooms, err := ru.roomRepository.GetRooms()
 	if err != nil {
 		return nil, err
