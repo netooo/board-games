@@ -11,6 +11,7 @@ import (
 )
 
 type RoomHandler interface {
+	HandleRoomGet(http.ResponseWriter, *http.Request)
 	HandleRoomCreate(http.ResponseWriter, *http.Request)
 	HandleRoomJoin(http.ResponseWriter, *http.Request)
 }
@@ -33,6 +34,26 @@ func NewRoomHandler(ru usecase.RoomUseCase) RoomHandler {
 	return &roomHandler{
 		roomUseCase: ru,
 	}
+}
+func (rh roomHandler) HandleRoomGet(writer http.ResponseWriter, request *http.Request) {
+	_, err := authentication.SessionUser(request)
+	if err != nil {
+		// TODO: redirect login form
+		response.Unauthorized(writer, "Invalid Session")
+		return
+	}
+
+	//TODO: Check request_user already join other room?
+	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
+
+	rooms, err := rh.roomUseCase.GetRooms()
+	if err != nil {
+		response.InternalServerError(writer, "Internal Server Error")
+		return
+	}
+
+	response.Success(writer, rooms)
+
 }
 
 func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http.Request) {
