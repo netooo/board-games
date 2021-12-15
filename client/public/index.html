@@ -1,0 +1,12 @@
+<button onclick="btnRooms();">Get Rooms</button>
+
+<script>
+    function btnRooms() {
+        const url = 'http://localhost:8082/api/rooms';
+        fetch(url).then(function(response) {
+            return response.text();
+        }).then(function(text) {
+            console.log(text);
+        });
+    }
+</script>
