@@ -1,9 +1,27 @@
-<button onclick="btnRooms();">Get Rooms</button>
+<form action="http://localhost:8082/api/users" method="post">
+    <label>Name</label><br>
+    <input type="text" name="name" maxlength="12" value="" placeholder="mitsue010101"><br>
+    <label>Address</label><br>
+    <input type="text" name="email" value="" placeholder="010101@example.com"><br>
+    <label>Password</label><br>
+    <input type="text" name="password" value="" placeholder="Password0"><br>
+    <input type="submit" value="SighUp">
+</form>
+
+<button onclick="signUp();">signUp</button>
 
 <script>
-    function btnRooms() {
-        const url = 'http://localhost:8082/api/rooms';
-        fetch(url).then(function(response) {
+    function signUp() {
+        const url = 'http://localhost:8082/api/users';
+        const data = {
+            "name": "mitsue121601",
+            "email": "121601@example.com",
+            "password": "Password0"
+        }
+        fetch(url,{
+            method: "POST",
+            body: JSON.stringify(data)
+        }).then(function(response) {
             return response.text();
         }).then(function(text) {
             console.log(text);
