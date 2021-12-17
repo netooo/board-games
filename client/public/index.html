@@ -1,23 +1,21 @@
-<form action="http://localhost:8082/api/users" method="post">
-    <label>Name</label><br>
-    <input type="text" name="name" maxlength="12" value="" placeholder="mitsue010101"><br>
-    <label>Address</label><br>
-    <input type="text" name="email" value="" placeholder="010101@example.com"><br>
-    <label>Password</label><br>
-    <input type="text" name="password" value="" placeholder="Password0"><br>
-    <input type="submit" value="SighUp">
-</form>
-
+<label>Name</label><br>
+<input type="text" id="name" name="name" maxlength="12" value="" placeholder="mitsue010101"><br>
+<label>Address</label><br>
+<input type="text" id="email" name="email" value="" placeholder="010101@example.com"><br>
+<label>Password</label><br>
+<input type="text" id="password" name="password" value="" placeholder="Password0"><br>
+<br>
 <button onclick="signUp();">signUp</button>
 
 <script>
     function signUp() {
         const url = 'http://localhost:8082/api/users';
         const data = {
-            "name": "mitsue121601",
-            "email": "121601@example.com",
-            "password": "Password0"
+            "name": document.getElementById("name").value,
+            "email": document.getElementById("email").value,
+            "password": document.getElementById("password").value
         }
+
         fetch(url,{
             method: "POST",
             body: JSON.stringify(data)
