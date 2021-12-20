@@ -14,7 +14,7 @@ import (
 var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 
 const (
-	SessionName       = "session-name"
+	SessionName       = "sessionId"
 	ContextSessionKey = "session"
 )
 
@@ -31,7 +31,7 @@ func SessionCreate(userId string) (*sessions.Session, error) {
 	sessionId := strings.Replace(randomId.String(), "-", "", -1)
 
 	newSession := sessions.NewSession(store, SessionName)
-	newSession.Values["id"] = sessionId
+	newSession.ID = sessionId
 
 	mc := memcache.New("memcached:11211")
 	err := mc.Set(&memcache.Item{

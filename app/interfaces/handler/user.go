@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/netooo/board-games/app/interfaces/authentication"
 	"github.com/netooo/board-games/app/interfaces/response"
 	"github.com/netooo/board-games/app/usecase"
@@ -71,7 +72,9 @@ func (uh userHandler) HandleUserSignup(writer http.ResponseWriter, request *http
 	if err != nil {
 		response.Unauthorized(writer, "Invalid Session")
 	}
-	_ = session.Save(request, writer)
+
+	// Set Cookie
+	http.SetCookie(writer, sessions.NewCookie(session.Name(), session.ID, session.Options))
 
 	// レスポンスに必要な情報を詰めて返却
 	response.Success(writer, "")
