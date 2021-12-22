@@ -10,8 +10,18 @@ import (
 func main() {
 	// ルーティングの設定
 	r := routing.Init()
-	c := cors.Default().Handler(r)
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{
+			http.MethodHead,
+			http.MethodGet,
+			http.MethodPost,
+		},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+	})
+	handler := c.Handler(r)
 
 	// サーバ起動
-	log.Fatal(http.ListenAndServe(":9000", c))
+	log.Fatal(http.ListenAndServe(":9000", handler))
 }
