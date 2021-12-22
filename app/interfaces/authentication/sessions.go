@@ -1,17 +1,18 @@
 package authentication
 
 import (
+	"fmt"
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
 	"github.com/netooo/board-games/app/config"
 	"github.com/netooo/board-games/app/domain/model"
+	"log"
 	"net/http"
-	"os"
 	"strings"
 )
 
-var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+var store = sessions.NewCookieStore([]byte("asdaskdhasdhgsajdgasdsadksakdhasidoajsdousahdopj"))
 
 const (
 	SessionName       = "sessionId"
@@ -50,14 +51,16 @@ func SessionCreate(userId string) (*sessions.Session, error) {
 func SessionUser(r *http.Request) (*model.User, error) {
 	session, err := store.Get(r, SessionName)
 	if err != nil {
+		log.Fatal(err.Error())
 		return nil, err
 	}
-	sessionId := session.Values["id"]
+	fmt.Println(session.ID)
+	sessionId := session.ID
 
 	var user model.User
 
 	mc := memcache.New("memcached:11211")
-	byteUserId, err := mc.Get(sessionId.(string))
+	byteUserId, err := mc.Get(sessionId)
 
 	if err != nil {
 		return nil, err
