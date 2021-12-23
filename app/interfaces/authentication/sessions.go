@@ -1,7 +1,6 @@
 package authentication
 
 import (
-	"fmt"
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
@@ -12,11 +11,11 @@ import (
 	"strings"
 )
 
-var store = sessions.NewCookieStore([]byte("asdaskdhasdhgsajdgasdsadksakdhasidoajsdousahdopj"))
+var store = sessions.NewCookieStore([]byte(ContextSessionKey))
 
 const (
 	SessionName       = "sessionId"
-	ContextSessionKey = "session"
+	ContextSessionKey = "sessionKey"
 )
 
 func SessionCreate(userId string) (*sessions.Session, error) {
@@ -54,14 +53,9 @@ func SessionUser(r *http.Request) (*model.User, error) {
 		log.Fatal(err.Error())
 		return nil, err
 	}
-	fmt.Println(session.ID)
-	sessionId := session.ID
-
-	var user model.User
 
 	mc := memcache.New("memcached:11211")
-	byteUserId, err := mc.Get(sessionId)
-
+	byteUserId, err := mc.Get(session.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -69,6 +63,7 @@ func SessionUser(r *http.Request) (*model.User, error) {
 	db := config.Connect()
 	defer config.Close()
 
+	var user model.User
 	userId := string(byteUserId.Value)
 	if err := db.Where("user_id = ?", userId).Find(&user).Error; err != nil {
 		return nil, err
