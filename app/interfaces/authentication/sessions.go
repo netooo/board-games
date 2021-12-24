@@ -6,7 +6,6 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/netooo/board-games/app/config"
 	"github.com/netooo/board-games/app/domain/model"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -50,7 +49,6 @@ func SessionCreate(userId string) (*sessions.Session, error) {
 func SessionUser(r *http.Request) (*model.User, error) {
 	session, err := store.Get(r, SessionName)
 	if err != nil {
-		log.Fatal(err.Error())
 		return nil, err
 	}
 
