@@ -16,6 +16,7 @@ func main() {
 			http.MethodHead,
 			http.MethodGet,
 			http.MethodPost,
+			http.MethodOptions,
 		},
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: true,
