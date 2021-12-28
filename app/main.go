@@ -11,7 +11,7 @@ func main() {
 	// ルーティングの設定
 	r := routing.Init()
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"},
+		AllowedOrigins: []string{"http://localhost:3000"},
 		AllowedMethods: []string{
 			http.MethodHead,
 			http.MethodGet,
