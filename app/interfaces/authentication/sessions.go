@@ -47,13 +47,13 @@ func SessionCreate(userId string) (*sessions.Session, error) {
 }
 
 func SessionUser(r *http.Request) (*model.User, error) {
-	session, err := store.Get(r, SessionName)
+	cookie, err := r.Cookie(SessionName)
 	if err != nil {
 		return nil, err
 	}
 
 	mc := memcache.New("memcached:11211")
-	byteUserId, err := mc.Get(session.ID)
+	byteUserId, err := mc.Get(cookie.Value)
 	if err != nil {
 		return nil, err
 	}
