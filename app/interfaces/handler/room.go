@@ -57,18 +57,17 @@ func (rh roomHandler) HandleRoomGet(writer http.ResponseWriter, request *http.Re
 }
 
 func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http.Request) {
-	/* websocketの開設 */
-	socket, err := upgrader.Upgrade(writer, request, nil)
-	if err != nil {
-		log.Fatalln("websocketの開設に失敗しました。:", err)
-	}
-
 	user, err := authentication.SessionUser(request)
-
 	if err != nil {
 		// TODO: redirect login form
 		response.Unauthorized(writer, "Invalid Session")
 		return
+	}
+
+	/* websocketの開設 */
+	socket, err := upgrader.Upgrade(writer, request, nil)
+	if err != nil {
+		log.Fatalln("websocketの開設に失敗しました。:", err)
 	}
 
 	//TODO: Check request_user already join other room?
