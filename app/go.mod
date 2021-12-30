@@ -15,7 +15,6 @@ require (
 	github.com/gorilla/sessions v1.2.1
 	github.com/gorilla/websocket v1.4.2
 	github.com/jinzhu/gorm v1.9.16
-	github.com/joho/godotenv v1.3.0
 	github.com/leodido/go-urn v1.2.1 // indirect
-	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+	github.com/rs/cors v1.8.0
 )

@@ -7,15 +7,14 @@ import (
 	"github.com/netooo/board-games/app/config"
 	"github.com/netooo/board-games/app/domain/model"
 	"net/http"
-	"os"
 	"strings"
 )
 
-var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+var store = sessions.NewCookieStore([]byte(ContextSessionKey))
 
 const (
-	SessionName       = "session-name"
-	ContextSessionKey = "session"
+	SessionName       = "sessionId"
+	ContextSessionKey = "sessionKey"
 )
 
 func SessionCreate(userId string) (*sessions.Session, error) {
@@ -31,7 +30,7 @@ func SessionCreate(userId string) (*sessions.Session, error) {
 	sessionId := strings.Replace(randomId.String(), "-", "", -1)
 
 	newSession := sessions.NewSession(store, SessionName)
-	newSession.Values["id"] = sessionId
+	newSession.ID = sessionId
 
 	mc := memcache.New("memcached:11211")
 	err := mc.Set(&memcache.Item{
@@ -48,17 +47,13 @@ func SessionCreate(userId string) (*sessions.Session, error) {
 }
 
 func SessionUser(r *http.Request) (*model.User, error) {
-	session, err := store.Get(r, SessionName)
+	cookie, err := r.Cookie(SessionName)
 	if err != nil {
 		return nil, err
 	}
-	sessionId := session.Values["id"]
-
-	var user model.User
 
 	mc := memcache.New("memcached:11211")
-	byteUserId, err := mc.Get(sessionId.(string))
-
+	byteUserId, err := mc.Get(cookie.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -66,6 +61,7 @@ func SessionUser(r *http.Request) (*model.User, error) {
 	db := config.Connect()
 	defer config.Close()
 
+	var user model.User
 	userId := string(byteUserId.Value)
 	if err := db.Where("user_id = ?", userId).Find(&user).Error; err != nil {
 		return nil, err

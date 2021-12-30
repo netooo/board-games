@@ -1,0 +1,57 @@
+<h2>ユーザ登録</h2>
+<label>Name</label><br>
+<input type="text" id="name" name="name" maxlength="12" value="" placeholder="mitsue010101"><br>
+<label>Address</label><br>
+<input type="text" id="email" name="email" value="" placeholder="010101@example.com"><br>
+<label>Password</label><br>
+<input type="text" id="password" name="password" value="" placeholder="Password0"><br>
+<br>
+<button onclick="signUp();">signUp</button>
+<br>
+<hr>
+<h2>部屋一覧(ログインしないと表示されない)</h2>
+<button onclick="getRooms();">部屋一覧表示</button>
+<button onclick="createRoom();">部屋作成</button>
+
+<script>
+    function signUp() {
+        const url = 'http://localhost:8082/api/users';
+        const data = JSON.stringify({
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+        });
+        const xhr = new XMLHttpRequest()
+        xhr.withCredentials = true
+
+        xhr.open('POST', url);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send(data);
+    }
+
+    function getRooms() {
+        const url = 'http://localhost:8082/api/rooms';
+        const xhr = new XMLHttpRequest()
+        xhr.withCredentials = true
+
+        xhr.addEventListener('readystatechange', function() {
+            if (this.readyState === this.DONE) {
+                console.log(this.responseText)
+            }
+        });
+
+        xhr.open('GET', url);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send();
+    }
+
+    function createRoom() {
+        const url = 'http://localhost:8082/api/rooms';
+        const xhr = new XMLHttpRequest()
+        xhr.withCredentials = true
+
+        xhr.open('POST', url);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send();
+    }
+</script>
