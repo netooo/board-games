@@ -53,7 +53,6 @@ func (rh roomHandler) HandleRoomGet(writer http.ResponseWriter, request *http.Re
 	}
 
 	response.Success(writer, rooms)
-
 }
 
 func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http.Request) {
