@@ -15,6 +15,6 @@ func RoomInit(r *mux.Router) {
 	roomHandler := handler.NewRoomHandler(roomUseCase)
 
 	r.HandleFunc("/rooms", roomHandler.HandleRoomGet).Methods("GET")
-	r.HandleFunc("/rooms", roomHandler.HandleRoomCreate).Methods("POST")
-	r.HandleFunc("/rooms/{id}/join", roomHandler.HandleRoomJoin).Methods("POST")
+	r.HandleFunc("/ws/rooms", roomHandler.HandleRoomCreate).Methods("GET")
+	r.HandleFunc("/ws/rooms/{id}/join", roomHandler.HandleRoomJoin).Methods("GET")
 }
