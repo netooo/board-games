@@ -1,0 +1,29 @@
+<h2>部屋一覧</h2>
+<hr>
+<ul id="room_list"></ul>
+
+<script>
+    window.addEventListener('load', getRooms);
+
+    function getRooms() {
+        let room_list = document.getElementById('room_list');
+        const url = 'http://localhost:8082/api/rooms';
+        const xhr = new XMLHttpRequest()
+        xhr.withCredentials = true
+
+        xhr.addEventListener('readystatechange', function() {
+            if (this.readyState === this.DONE) {
+                let rooms = JSON.parse(this.responseText)
+                console.log(rooms)
+                for(i = 0; i < rooms.length; i++) {
+                    room_list.innerHTML += '<li>' + rooms[i]['owner'] + '</li>';
+                }
+            }
+        });
+
+        xhr.open('GET', url);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send();
+    }
+</script>
+
