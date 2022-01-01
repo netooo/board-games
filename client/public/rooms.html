@@ -1,4 +1,5 @@
 <h2>部屋一覧</h2>
+<button onclick="createRoom();">部屋作成</button>
 <hr>
 <ul id="room_list"></ul>
 
@@ -15,15 +16,20 @@
             if (this.readyState === this.DONE) {
                 let rooms = JSON.parse(this.responseText)
                 console.log(rooms)
-                for(i = 0; i < rooms.length; i++) {
-                    room_list.innerHTML += '<li>' + rooms[i]['owner'] + '</li>';
-                }
             }
         });
 
         xhr.open('GET', url);
         xhr.setRequestHeader('content-type', 'application/json');
         xhr.send();
+    }
+
+    function createRoom() {
+        const url = 'ws://localhost:8082/api/ws/rooms';
+        const socket = new WebSocket(url);
+        socket.addEventListener('open', function (event) {
+            console.log('Hello Server!');
+        });
     }
 </script>
 
