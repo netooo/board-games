@@ -15,7 +15,15 @@
         xhr.addEventListener('readystatechange', function() {
             if (this.readyState === this.DONE) {
                 let rooms = JSON.parse(this.responseText)
-                console.log(rooms)
+                for(i = 0; i < rooms.length; i++) {
+                    room_list.innerHTML +=
+                        '<article>' +
+                        '<h3>ルーム名:' + rooms[i]['name'] + '</h3>' +
+                        '<h3>作成者:' + rooms[i]['owner'] + '</h3>' +
+                        '<h3>参加人数:' + rooms[i]['players'] + '人</h3>' +
+                        '<button onClick="joinRoom(' + rooms[i]['id'] + ');">入室</button>' +
+                        '</article><hr>';
+                }
             }
         });
 
@@ -28,7 +36,15 @@
         const url = 'ws://localhost:8082/api/ws/rooms';
         const socket = new WebSocket(url);
         socket.addEventListener('open', function (event) {
-            console.log('Hello Server!');
+            location.reload();
+        });
+    }
+
+    function joinRoom(id) {
+        const url = 'ws://localhost:8082/api/ws/rooms/' + id + '/join';
+        const socket = new WebSocket(url);
+        socket.addEventListener('open', function (event) {
+            console.log('Join Room!');
         });
     }
 </script>
