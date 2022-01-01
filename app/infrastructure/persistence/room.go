@@ -22,7 +22,7 @@ func NewRoomPersistence(conn *gorm.DB) repository.RoomRepository {
 }
 
 func (rp roomPersistence) GetRooms() ([]*model.ResponseRoom, error) {
-	var activeRooms []*model.ResponseRoom
+	activeRooms := []*model.ResponseRoom{}
 
 	for _, r_ := range Rooms {
 		r := model.ResponseRoom{
