@@ -1,0 +1,32 @@
+<h2 id="room_name"></h2>
+
+<script>
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    const room_id = params.get('id');
+    window.addEventListener('load', getRoom(room_id));
+
+    function getRoom(id) {
+        if (id == null) {
+            return
+        }
+        const room_name = document.getElementById('room_name');
+        const url = 'http://localhost:8082/api/rooms/'+id;
+        const xhr = new XMLHttpRequest()
+        xhr.withCredentials = true
+        xhr.open('GET', url);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send();
+
+        xhr.addEventListener('readystatechange', function() {
+            if (this.readyState === this.DONE) {
+                if (this.status === 200 ) {
+                    room_name.innerHTML = "";
+                }
+            }
+        });
+
+
+    }
+</script>
+

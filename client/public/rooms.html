@@ -7,10 +7,13 @@
     window.addEventListener('load', getRooms);
 
     function getRooms() {
-        let room_list = document.getElementById('room_list');
+        const room_list = document.getElementById('room_list');
         const url = 'http://localhost:8082/api/rooms';
         const xhr = new XMLHttpRequest()
         xhr.withCredentials = true
+        xhr.open('GET', url);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send();
 
         xhr.addEventListener('readystatechange', function() {
             if (this.readyState === this.DONE) {
@@ -26,25 +29,26 @@
                 }
             }
         });
-
-        xhr.open('GET', url);
-        xhr.setRequestHeader('content-type', 'application/json');
-        xhr.send();
     }
 
     function createRoom() {
         const url = 'ws://localhost:8082/api/ws/rooms';
         const socket = new WebSocket(url);
-        socket.addEventListener('open', function (event) {
-            location.reload();
-        });
+
+        socket.addEventListener('message', function (event) {
+            let roomId = JSON.parse(event.data)['RoomId'];
+            if (roomId != null ) {
+                window.location.href = 'http://localhost:3000/room.html?id='+roomId;
+            }
+        })
     }
 
     function joinRoom(id) {
         const url = 'ws://localhost:8082/api/ws/rooms/' + id + '/join';
         const socket = new WebSocket(url);
+
         socket.addEventListener('open', function (event) {
-            console.log('Join Room!');
+            window.location.href = 'http://localhost:3000/room.html?id='+id;
         });
     }
 </script>
