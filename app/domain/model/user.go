@@ -23,13 +23,14 @@ type Message struct {
 	Value  string
 }
 
+type PushMessage struct {
+	RoomId uint
+}
+
 /*
 対象ユーザから送られてきたsocketメッセージを受け取る
 */
 func (u *User) Read() {
-	//db := config.Connect()
-	//defer config.Close()
-
 	// websocketからjson形式でメッセージを読み出す。
 	// 読み込みは無限ループで実行される。
 	for {

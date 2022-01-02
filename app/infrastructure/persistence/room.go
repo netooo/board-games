@@ -63,6 +63,14 @@ func (rp roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) e
 	// Room の部屋を起動する
 	go room.Run(user)
 
+	pushMsg := model.PushMessage{
+		RoomId: room.ID,
+	}
+	if err := socket.WriteJSON(pushMsg); err != nil {
+		room.Leave <- user
+		return err
+	}
+
 	return nil
 }
 
