@@ -72,13 +72,12 @@ func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http
 	//TODO: Check request_user already join other room?
 	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
 
-	room, err := rh.roomUseCase.CreateRoom(user, socket)
-	if err != nil {
+	if err := rh.roomUseCase.CreateRoom(user, socket); err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
 	}
 
-	response.Success(writer, room)
+	response.Success(writer, "")
 }
 
 func (rh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.Request) {
