@@ -7,11 +7,6 @@
 <input type="text" id="password" name="password" value="" placeholder="Password0"><br>
 <br>
 <button onclick="signUp();">signUp</button>
-<br>
-<hr>
-<h2>部屋一覧(ログインしないと表示されない)</h2>
-<button onclick="getRooms();">部屋一覧表示</button>
-<button onclick="createRoom();">部屋作成</button>
 
 <script>
     function signUp() {
@@ -24,33 +19,16 @@
         const xhr = new XMLHttpRequest()
         xhr.withCredentials = true
 
-        xhr.open('POST', url);
-        xhr.setRequestHeader('content-type', 'application/json');
-        xhr.send(data);
-    }
-
-    function getRooms() {
-        const url = 'http://localhost:8082/api/rooms';
-        const xhr = new XMLHttpRequest()
-        xhr.withCredentials = true
-
         xhr.addEventListener('readystatechange', function() {
             if (this.readyState === this.DONE) {
-                console.log(this.responseText)
+                if (this.status === 200 ) {
+                    window.location.href = 'http://localhost:3000/rooms.html';
+                }
             }
         });
 
-        xhr.open('GET', url);
+        xhr.open('POST', url);
         xhr.setRequestHeader('content-type', 'application/json');
-        xhr.send();
-    }
-
-    function createRoom() {
-        const url = 'ws://localhost:8082/api/ws/rooms';
-        const socket = new WebSocket(url);
-        // 接続が開いたときのイベント
-        socket.addEventListener('open', function (event) {
-            console.log('Hello Server!');
-        });
+        xhr.send(data);
     }
 </script>

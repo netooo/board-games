@@ -22,7 +22,7 @@ func NewRoomPersistence(conn *gorm.DB) repository.RoomRepository {
 }
 
 func (rp roomPersistence) GetRooms() ([]*model.ResponseRoom, error) {
-	var activeRooms []*model.ResponseRoom
+	activeRooms := []*model.ResponseRoom{}
 
 	for _, r_ := range Rooms {
 		r := model.ResponseRoom{
@@ -37,7 +37,7 @@ func (rp roomPersistence) GetRooms() ([]*model.ResponseRoom, error) {
 	return activeRooms, nil
 }
 
-func (rp roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) (*model.Room, error) {
+func (rp roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) error {
 	db := config.Connect()
 	defer config.Close()
 
@@ -51,7 +51,7 @@ func (rp roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) (
 		Players: make(map[*model.User]bool),
 	}
 	if err := db.Omit("Join", "Leave", "Players").Create(&room).Error; err != nil {
-		return nil, err
+		return err
 	}
 
 	// 作成されたroomをsliceに格納
@@ -63,7 +63,15 @@ func (rp roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) (
 	// Room の部屋を起動する
 	go room.Run(user)
 
-	return &room, nil
+	pushMsg := model.PushMessage{
+		RoomId: room.ID,
+	}
+	if err := socket.WriteJSON(pushMsg); err != nil {
+		room.Leave <- user
+		return err
+	}
+
+	return nil
 }
 
 func (rp roomPersistence) JoinRoom(roomId uint, user *model.User, socket *websocket.Conn) error {
