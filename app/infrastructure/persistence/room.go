@@ -76,7 +76,7 @@ func (rp roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) e
 
 func (rp roomPersistence) JoinRoom(roomId uint, user *model.User, socket *websocket.Conn) error {
 	// Room の部屋を取得
-	index, err := searchRooms(Rooms, roomId)
+	index, err := model.SearchRoom(Rooms, roomId)
 	if err != nil {
 		return err
 	}
@@ -105,13 +105,4 @@ func (rp roomPersistence) JoinRoom(roomId uint, user *model.User, socket *websoc
 	room.Join <- user
 
 	return nil
-}
-
-func searchRooms(rooms []*model.Room, roomId uint) (int, error) {
-	for i, r := range rooms {
-		if r.ID == roomId {
-			return i, nil
-		}
-	}
-	return -1, errors.New("Room Not found")
 }

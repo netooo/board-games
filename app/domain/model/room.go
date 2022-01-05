@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"github.com/jinzhu/gorm"
 )
 
@@ -69,4 +70,13 @@ func (r *Room) Run(user *User) {
 			delete(r.Players, player)
 		}
 	}
+}
+
+func SearchRoom(rooms []*Room, roomId uint) (int, error) {
+	for i, r := range rooms {
+		if r.ID == roomId {
+			return i, nil
+		}
+	}
+	return -1, errors.New("Room Not found")
 }
