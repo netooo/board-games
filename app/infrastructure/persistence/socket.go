@@ -45,11 +45,7 @@ func (sp socketPersistence) ConnectSocket(user *model.User, socket *websocket.Co
 }
 
 func (sp socketPersistence) DisconnectSocket(user *model.User, socket *websocket.Conn) error {
-	index, err := model.SearchUser(SocketUsers, user.ID)
-	if err != nil {
-		return err
-	}
-
+	index, _ := model.SearchUser(SocketUsers, user.ID)
 	if index == -1 {
 		return nil
 	}
