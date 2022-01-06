@@ -48,8 +48,6 @@ func (sh socketHandler) HandleSocketConnect(writer http.ResponseWriter, request 
 		log.Fatalln("websocketの開設に失敗しました。:", err)
 	}
 
-	// check to already connect socket
-
 	if err := sh.socketUseCase.ConnectSocket(user, socket); err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
