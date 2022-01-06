@@ -72,11 +72,11 @@ func (r *Room) Run(user *User) {
 	}
 }
 
-func SearchRoom(rooms []*Room, roomId uint) (*Room, error) {
-	for _, r := range rooms {
+func SearchRoom(rooms []*Room, roomId uint) (int, error) {
+	for i, r := range rooms {
 		if r.ID == roomId {
-			return r, nil
+			return i, nil
 		}
 	}
-	return nil, errors.New("Room Not found")
+	return -1, errors.New("Room Not found")
 }

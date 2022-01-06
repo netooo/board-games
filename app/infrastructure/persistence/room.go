@@ -76,10 +76,11 @@ func (rp roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) e
 
 func (rp roomPersistence) JoinRoom(roomId uint, user *model.User, socket *websocket.Conn) error {
 	// Room の部屋を取得
-	room, err := model.SearchRoom(Rooms, roomId)
+	index, err := model.SearchRoom(Rooms, roomId)
 	if err != nil {
 		return err
 	}
+	room := Rooms[index]
 
 	// 部屋の状態をチェック
 	if room.Status != 0 {
