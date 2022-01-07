@@ -16,13 +16,6 @@ type Room struct {
 	Players map[*User]bool `json:"-"`
 }
 
-type ResponseRoom struct {
-	Id      uint   `json:"id"`
-	Name    string `json:"name"`
-	Owner   string `json:"owner"`
-	Players int    `json:"players"`
-}
-
 type StartOrder struct {
 	First  string
 	Second string

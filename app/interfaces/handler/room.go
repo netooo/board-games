@@ -20,14 +20,11 @@ type roomHandler struct {
 	roomUseCase usecase.RoomUseCase
 }
 
-const (
-	socketBufferSize = 1024
-)
-
-/* websocket用の変数 */
-var upgrader = &websocket.Upgrader{
-	ReadBufferSize:  socketBufferSize,
-	WriteBufferSize: socketBufferSize,
+type getResponse struct {
+	Id      uint   `json:"id"`
+	Name    string `json:"name"`
+	Owner   string `json:"owner"`
+	Players int    `json:"players"`
 }
 
 func NewRoomHandler(ru usecase.RoomUseCase) RoomHandler {
@@ -52,7 +49,18 @@ func (rh roomHandler) HandleRoomGet(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
-	response.Success(writer, rooms)
+	var res []*getResponse
+	for _, r_ := range rooms {
+		r := getResponse{
+			Id:      r_.ID,
+			Name:    r_.Name,
+			Owner:   r_.Owner.Name,
+			Players: len(r_.Players),
+		}
+		res = append(res, &r)
+	}
+
+	response.Success(writer, res)
 }
 
 func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http.Request) {

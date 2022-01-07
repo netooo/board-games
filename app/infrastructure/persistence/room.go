@@ -21,20 +21,8 @@ func NewRoomPersistence(conn *gorm.DB) repository.RoomRepository {
 	return &roomPersistence{Conn: conn}
 }
 
-func (rp roomPersistence) GetRooms() ([]*model.ResponseRoom, error) {
-	activeRooms := []*model.ResponseRoom{}
-
-	for _, r_ := range Rooms {
-		r := model.ResponseRoom{
-			Id:      r_.ID,
-			Name:    r_.Name,
-			Owner:   r_.Owner.Name,
-			Players: len(r_.Players),
-		}
-		activeRooms = append(activeRooms, &r)
-	}
-
-	return activeRooms, nil
+func (rp roomPersistence) GetRooms() ([]*model.Room, error) {
+	return Rooms, nil
 }
 
 func (rp roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) error {
