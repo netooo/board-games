@@ -11,7 +11,6 @@ type User struct {
 	Name     string          `json:"name"`
 	Email    string          `json:"email"`
 	Password string          `json:"password"`
-	RoomId   int             `json:"room_id"`
 	Room     *Room           `json:"-"`
 	Socket   *websocket.Conn `json:"-"`
 }
@@ -30,16 +29,16 @@ type PushMessage struct {
 /*
 対象ユーザから送られてきたsocketメッセージを受け取る
 */
-func (u *User) Read() {
+func (user *User) Read() {
 	// websocketからjson形式でメッセージを読み出す。
 	// 読み込みは無限ループで実行される。
 	for {
 		var msg *Message
-		if err := u.Socket.ReadJSON(&msg); err != nil {
+		if err := user.Socket.ReadJSON(&msg); err != nil {
 			break
 		} else {
 
 		}
 	}
-	_ = u.Socket.Close()
+	_ = user.Socket.Close()
 }

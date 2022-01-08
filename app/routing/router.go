@@ -12,6 +12,7 @@ func Init() *mux.Router {
 		Subrouter()
 
 	// Read Various APIs
+	SocketInit(s)
 	UserInit(s)
 	RoomInit(s)
 	// Numeron
