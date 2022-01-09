@@ -57,8 +57,8 @@ func (rp roomPersistence) CreateRoom(user *model.User) (uint, error) {
 	return room.ID, nil
 }
 
-func (rp roomPersistence) JoinRoom(roomId uint, user *model.User, socket *websocket.Conn) error {
-	// Room の部屋を取得
+func (rp roomPersistence) JoinRoom(roomId uint, user *model.User) error {
+	// Roomsからroomを取得
 	index, err := model.SearchRoom(Rooms, roomId)
 	if err != nil {
 		return err
@@ -74,14 +74,19 @@ func (rp roomPersistence) JoinRoom(roomId uint, user *model.User, socket *websoc
 		return errors.New("Limit User in Room")
 	}
 
+	// SocketUsersからuserを取得
+	index, err = model.SearchUser(SocketUsers, user.ID)
+	if err != nil {
+		return err
+	}
+	user = SocketUsers[index]
+
+	// 既に入室済みの場合は弾く
 	for p := range room.Players {
 		if p.ID == user.ID {
 			return errors.New("Already Join the Room")
 		}
 	}
-
-	// 作成者のsocketをつなぐ
-	user.Socket = socket
 
 	// Room の部屋に入室する
 	room.Join <- user
