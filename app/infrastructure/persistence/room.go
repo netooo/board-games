@@ -3,7 +3,6 @@ package persistence
 import (
 	"errors"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gorilla/websocket"
 	"github.com/jinzhu/gorm"
 	"github.com/netooo/board-games/app/config"
 	"github.com/netooo/board-games/app/domain/model"
@@ -25,7 +24,7 @@ func (rp roomPersistence) GetRooms() ([]*model.Room, error) {
 	return Rooms, nil
 }
 
-func (rp roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) error {
+func (rp roomPersistence) CreateRoom(user *model.User) (uint, error) {
 	db := config.Connect()
 	defer config.Close()
 
@@ -39,27 +38,23 @@ func (rp roomPersistence) CreateRoom(user *model.User, socket *websocket.Conn) e
 		Players: make(map[*model.User]bool),
 	}
 	if err := db.Omit("Join", "Leave", "Players").Create(&room).Error; err != nil {
-		return err
+		return 0, err
 	}
 
 	// 作成されたroomをsliceに格納
 	Rooms = append(Rooms, &room)
 
-	// 作成者のsocketをつなぐ
-	user.Socket = socket
+	// SocketUsersからuserを取得
+	index, err := model.SearchUser(SocketUsers, user.ID)
+	if err != nil {
+		return 0, err
+	}
+	user = SocketUsers[index]
 
 	// Room の部屋を起動する
 	go room.Run(user)
 
-	pushMsg := model.PushMessage{
-		RoomId: room.ID,
-	}
-	if err := socket.WriteJSON(pushMsg); err != nil {
-		room.Leave <- user
-		return err
-	}
-
-	return nil
+	return room.ID, nil
 }
 
 func (rp roomPersistence) JoinRoom(roomId uint, user *model.User, socket *websocket.Conn) error {
