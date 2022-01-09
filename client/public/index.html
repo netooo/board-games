@@ -22,7 +22,7 @@
         xhr.addEventListener('readystatechange', function() {
             if (this.readyState === this.DONE) {
                 if (this.status === 200 ) {
-                    window.location.href = 'http://localhost:3000/rooms.html';
+                    connectSocket()
                 }
             }
         });
@@ -30,5 +30,14 @@
         xhr.open('POST', url);
         xhr.setRequestHeader('content-type', 'application/json');
         xhr.send(data);
+    }
+
+    function connectSocket() {
+        const url = 'ws://localhost:8082/api/ws/connect';
+        const socket = new WebSocket(url);
+
+        socket.addEventListener('open', function (event) {
+            window.location.href = 'http://localhost:3000/rooms.html';
+        });
     }
 </script>
