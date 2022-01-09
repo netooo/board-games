@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"github.com/gorilla/websocket"
 	"github.com/jinzhu/gorm"
 )
@@ -41,4 +42,13 @@ func (user *User) Read() {
 		}
 	}
 	_ = user.Socket.Close()
+}
+
+func SearchUser(users []*User, userId uint) (int, error) {
+	for i, u := range users {
+		if u.ID == userId {
+			return i, nil
+		}
+	}
+	return -1, errors.New("User Not found")
 }
