@@ -9,12 +9,11 @@ import (
 )
 
 func RoomInit(r *mux.Router) {
-	// Room
 	roomPersistence := persistence.NewRoomPersistence(config.Connect())
 	roomUseCase := usecase.NewRoomUseCase(roomPersistence)
 	roomHandler := handler.NewRoomHandler(roomUseCase)
 
 	r.HandleFunc("/rooms", roomHandler.HandleRoomGet).Methods("GET")
-	r.HandleFunc("/ws/rooms", roomHandler.HandleRoomCreate).Methods("GET")
-	r.HandleFunc("/ws/rooms/{id}/join", roomHandler.HandleRoomJoin).Methods("GET")
+	r.HandleFunc("/rooms", roomHandler.HandleRoomCreate).Methods("POST")
+	r.HandleFunc("/rooms/{id}", roomHandler.HandleRoomJoin).Methods("POST")
 }
