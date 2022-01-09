@@ -3,7 +3,6 @@ package usecase
 import (
 	"errors"
 	_ "github.com/go-playground/validator"
-	"github.com/gorilla/websocket"
 	"github.com/netooo/board-games/app/domain/model"
 	"github.com/netooo/board-games/app/domain/repository"
 	"strconv"
@@ -11,8 +10,8 @@ import (
 
 type RoomUseCase interface {
 	GetRooms() ([]*model.Room, error)
-	CreateRoom(user *model.User, socket *websocket.Conn) error
-	JoinRoom(id string, user *model.User, socket *websocket.Conn) error
+	CreateRoom(user *model.User) (uint, error)
+	JoinRoom(id string, user *model.User) error
 }
 
 type roomUseCase struct {
@@ -34,15 +33,16 @@ func (ru roomUseCase) GetRooms() ([]*model.Room, error) {
 	return rooms, nil
 }
 
-func (ru roomUseCase) CreateRoom(user *model.User, socket *websocket.Conn) error {
-	if err := ru.roomRepository.CreateRoom(user, socket); err != nil {
-		return err
+func (ru roomUseCase) CreateRoom(user *model.User) (uint, error) {
+	roomId, err := ru.roomRepository.CreateRoom(user)
+	if err != nil {
+		return 0, err
 	}
 
-	return nil
+	return roomId, nil
 }
 
-func (ru roomUseCase) JoinRoom(id string, user *model.User, socket *websocket.Conn) error {
+func (ru roomUseCase) JoinRoom(id string, user *model.User) error {
 	if id == "" {
 		return errors.New("ID Not Found")
 	}
@@ -54,7 +54,7 @@ func (ru roomUseCase) JoinRoom(id string, user *model.User, socket *websocket.Co
 
 	var roomId uint = uint(roomId_)
 
-	err = ru.roomRepository.JoinRoom(roomId, user, socket)
+	err = ru.roomRepository.JoinRoom(roomId, user)
 	if err != nil {
 		return err
 	}
