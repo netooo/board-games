@@ -18,38 +18,52 @@
         xhr.addEventListener('readystatechange', function() {
             if (this.readyState === this.DONE) {
                 let rooms = JSON.parse(this.responseText)
-                for(i = 0; i < rooms.length; i++) {
-                    room_list.innerHTML +=
-                        '<article>' +
-                        '<h3>ルーム名:' + rooms[i]['name'] + '</h3>' +
-                        '<h3>作成者:' + rooms[i]['owner'] + '</h3>' +
-                        '<h3>参加人数:' + rooms[i]['players'] + '人</h3>' +
-                        '<button onClick="joinRoom(' + rooms[i]['id'] + ');">入室</button>' +
-                        '</article><hr>';
+                if (rooms != null) {
+                    for (i = 0; i < rooms.length; i++) {
+                        room_list.innerHTML +=
+                            '<article>' +
+                            '<h3>ルーム名:' + rooms[i]['name'] + '</h3>' +
+                            '<h3>作成者:' + rooms[i]['owner'] + '</h3>' +
+                            '<h3>参加人数:' + rooms[i]['players'] + '人</h3>' +
+                            '<button onClick="joinRoom(' + rooms[i]['id'] + ');">入室</button>' +
+                            '</article><hr>';
+                    }
                 }
             }
         });
     }
 
     function createRoom() {
-        const url = 'ws://localhost:8082/api/ws/rooms';
-        const socket = new WebSocket(url);
+        const url = 'http://localhost:8082/api/rooms';
+        const xhr = new XMLHttpRequest()
+        xhr.withCredentials = true
+        xhr.open('POST', url);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send();
 
-        socket.addEventListener('message', function (event) {
-            let roomId = JSON.parse(event.data)['RoomId'];
-            if (roomId != null ) {
-                window.location.href = 'http://localhost:3000/room.html?id='+roomId;
+        xhr.addEventListener('readystatechange', function () {
+            if (this.readyState === this.DONE) {
+                let roomId = JSON.parse(this.responseText)['RoomId'];
+                if (roomId != null) {
+                    window.location.href = 'http://localhost:3000/room.html?id='+roomId;
+                }
             }
         })
     }
 
     function joinRoom(id) {
-        const url = 'ws://localhost:8082/api/ws/rooms/' + id + '/join';
-        const socket = new WebSocket(url);
+        const url = 'http://localhost:8082/api/rooms/'+id;
+        const xhr = new XMLHttpRequest()
+        xhr.withCredentials = true
+        xhr.open('POST', url);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send();
 
-        socket.addEventListener('open', function (event) {
-            window.location.href = 'http://localhost:3000/room.html?id='+id;
-        });
+        xhr.addEventListener('readystatechange', function () {
+            if (this.readyState === this.DONE) {
+                window.location.href = 'http://localhost:3000/room.html?id='+id;
+            }
+        })
     }
 </script>
 

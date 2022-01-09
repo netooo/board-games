@@ -2,11 +2,9 @@ package handler
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/gorilla/websocket"
 	"github.com/netooo/board-games/app/interfaces/authentication"
 	"github.com/netooo/board-games/app/interfaces/response"
 	"github.com/netooo/board-games/app/usecase"
-	"log"
 	"net/http"
 )
 
@@ -25,6 +23,10 @@ type getResponse struct {
 	Name    string `json:"name"`
 	Owner   string `json:"owner"`
 	Players int    `json:"players"`
+}
+
+type createResponse struct {
+	RoomId uint
 }
 
 func NewRoomHandler(ru usecase.RoomUseCase) RoomHandler {
@@ -71,32 +73,23 @@ func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http
 		return
 	}
 
-	/* websocketの開設 */
-	socket, err := upgrader.Upgrade(writer, request, nil)
-	if err != nil {
-		log.Fatalln("websocketの開設に失敗しました。:", err)
-	}
-
 	//TODO: Check request_user already join other room?
 	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
 
-	if err := rh.roomUseCase.CreateRoom(user, socket); err != nil {
-		response.InternalServerError(writer, "Internal Server Error")
+	roomId, err := rh.roomUseCase.CreateRoom(user)
+	if err != nil {
+		response.InternalServerError(writer, err.Error())
 		return
 	}
 
-	response.Success(writer, "")
+	res := createResponse{
+		RoomId: roomId,
+	}
+	response.Success(writer, res)
 }
 
 func (rh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.Request) {
-	/* websocketの開設 */
-	socket, err := upgrader.Upgrade(writer, request, nil)
-	if err != nil {
-		log.Fatalln("websocketの開設に失敗しました。:", err)
-	}
-
 	user, err := authentication.SessionUser(request)
-
 	if err != nil {
 		// TODO: redirect login form
 		response.Unauthorized(writer, "Invalid Session")
@@ -107,7 +100,7 @@ func (rh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.R
 	vars := mux.Vars(request)
 	id := vars["id"]
 
-	err = rh.roomUseCase.JoinRoom(id, user, socket)
+	err = rh.roomUseCase.JoinRoom(id, user)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
