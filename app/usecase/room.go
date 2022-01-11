@@ -5,12 +5,13 @@ import (
 	_ "github.com/go-playground/validator"
 	"github.com/netooo/board-games/app/domain/model"
 	"github.com/netooo/board-games/app/domain/repository"
+	validators "github.com/netooo/board-games/app/interfaces/validators/rooms"
 	"strconv"
 )
 
 type RoomUseCase interface {
 	GetRooms() ([]*model.Room, error)
-	CreateRoom(user *model.User) (uint, error)
+	CreateRoom(name string, user *model.User) (uint, error)
 	JoinRoom(id string, user *model.User) error
 }
 
@@ -33,8 +34,17 @@ func (ru roomUseCase) GetRooms() ([]*model.Room, error) {
 	return rooms, nil
 }
 
-func (ru roomUseCase) CreateRoom(user *model.User) (uint, error) {
-	roomId, err := ru.roomRepository.CreateRoom(user)
+func (ru roomUseCase) CreateRoom(name string, user *model.User) (uint, error) {
+	// リクエストパラメータのバリデーション
+	validateRoom := &validators.CreateRoom{
+		Name: name,
+	}
+
+	if err := validators.CreateRoomValidate(validateRoom); err != nil {
+		return 0, err
+	}
+
+	roomId, err := ru.roomRepository.CreateRoom(name, user)
 	if err != nil {
 		return 0, err
 	}

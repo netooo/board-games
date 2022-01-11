@@ -92,7 +92,7 @@ func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http
 	var requestBody createRoomRequest
 	_ = json.Unmarshal(body, &requestBody)
 
-	roomId, err := rh.roomUseCase.CreateRoom(user)
+	roomId, err := rh.roomUseCase.CreateRoom(requestBody.Name, user)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
