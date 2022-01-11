@@ -1,0 +1,28 @@
+<label>Name</label><br>
+<input type="text" id="name" name="name" maxlength="50" value="room1"><br>
+<button onclick="createRoom();">作成</button>
+
+<script>
+    function createRoom() {
+        const url = 'http://localhost:8082/api/rooms';
+        const data = JSON.stringify({
+            name: document.getElementById("name").value
+        });
+
+        const xhr = new XMLHttpRequest()
+        xhr.withCredentials = true
+        xhr.open('POST', url);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send(data);
+
+        xhr.addEventListener('readystatechange', function () {
+            if (this.readyState === this.DONE) {
+                let roomId = JSON.parse(this.responseText)['RoomId'];
+                if (roomId != null) {
+                    window.location.href = 'http://localhost:3000/room.html?id='+roomId;
+                }
+            }
+        })
+    }
+</script>
+
