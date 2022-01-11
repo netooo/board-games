@@ -30,6 +30,7 @@ func (rp roomPersistence) CreateRoom(name string, user *model.User) (uint, error
 
 	// Room の部屋を作成
 	room := model.Room{
+		Name:    name,
 		Owner:   user,
 		OwnerId: user.ID,
 		Status:  0,
