@@ -33,13 +33,13 @@ func (uu userUseCase) GetByUserId(userId string) (*model.User, error) {
 
 func (uu userUseCase) Insert(name, email, password string) (*model.User, error) {
 	// リクエストパラメータのバリデーション
-	ValidateUser := &validators.InsertUser{
+	validateUser := &validators.InsertUser{
 		Name:     name,
 		Email:    email,
 		Password: password,
 	}
 
-	if err := validators.InsertUserValidate(ValidateUser); err != nil {
+	if err := validators.InsertUserValidate(validateUser); err != nil {
 		return nil, err
 	}
 
