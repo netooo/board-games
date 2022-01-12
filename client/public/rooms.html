@@ -1,5 +1,5 @@
 <h2>部屋一覧</h2>
-<button onclick="createRoom();">部屋作成</button>
+<button onclick="location.href='http://localhost:3000/create_room.html'">部屋作成</button>
 <hr>
 <ul id="room_list"></ul>
 
@@ -31,24 +31,6 @@
                 }
             }
         });
-    }
-
-    function createRoom() {
-        const url = 'http://localhost:8082/api/rooms';
-        const xhr = new XMLHttpRequest()
-        xhr.withCredentials = true
-        xhr.open('POST', url);
-        xhr.setRequestHeader('content-type', 'application/json');
-        xhr.send();
-
-        xhr.addEventListener('readystatechange', function () {
-            if (this.readyState === this.DONE) {
-                let roomId = JSON.parse(this.responseText)['RoomId'];
-                if (roomId != null) {
-                    window.location.href = 'http://localhost:3000/room.html?id='+roomId;
-                }
-            }
-        })
     }
 
     function joinRoom(id) {

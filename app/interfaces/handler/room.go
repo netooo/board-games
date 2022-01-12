@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/netooo/board-games/app/interfaces/authentication"
 	"github.com/netooo/board-games/app/interfaces/response"
 	"github.com/netooo/board-games/app/usecase"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -16,6 +18,10 @@ type RoomHandler interface {
 
 type roomHandler struct {
 	roomUseCase usecase.RoomUseCase
+}
+
+type createRoomRequest struct {
+	Name string
 }
 
 type getResponse struct {
@@ -76,7 +82,17 @@ func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http
 	//TODO: Check request_user already join other room?
 	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
 
-	roomId, err := rh.roomUseCase.CreateRoom(user)
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		response.BadRequest(writer, "Invalid Request Body")
+		return
+	}
+
+	// リクエストボディのパース
+	var requestBody createRoomRequest
+	_ = json.Unmarshal(body, &requestBody)
+
+	roomId, err := rh.roomUseCase.CreateRoom(requestBody.Name, user)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return

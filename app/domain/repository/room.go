@@ -6,6 +6,6 @@ import (
 
 type RoomRepository interface {
 	GetRooms() ([]*model.Room, error)
-	CreateRoom(user *model.User) (uint, error)
+	CreateRoom(name string, user *model.User) (uint, error)
 	JoinRoom(roomId uint, user *model.User) error
 }

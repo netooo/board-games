@@ -24,12 +24,13 @@ func (rp roomPersistence) GetRooms() ([]*model.Room, error) {
 	return Rooms, nil
 }
 
-func (rp roomPersistence) CreateRoom(user *model.User) (uint, error) {
+func (rp roomPersistence) CreateRoom(name string, user *model.User) (uint, error) {
 	db := config.Connect()
 	defer config.Close()
 
 	// Room の部屋を作成
 	room := model.Room{
+		Name:    name,
 		Owner:   user,
 		OwnerId: user.ID,
 		Status:  0,
