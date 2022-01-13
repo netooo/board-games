@@ -13,6 +13,7 @@ import (
 type RoomHandler interface {
 	HandleRoomGet(http.ResponseWriter, *http.Request)
 	HandleRoomCreate(http.ResponseWriter, *http.Request)
+	HandleRoomShow(http.ResponseWriter, *http.Request)
 	HandleRoomJoin(http.ResponseWriter, *http.Request)
 }
 
@@ -102,6 +103,26 @@ func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http
 		RoomId: roomId,
 	}
 	response.Success(writer, res)
+}
+
+func (rh roomHandler) HandleRoomShow(writer http.ResponseWriter, request *http.Request) {
+	_, err := authentication.SessionUser(request)
+	if err != nil {
+		// TODO: redirect login form
+		response.Unauthorized(writer, "Invalid Session")
+		return
+	}
+
+	vars := mux.Vars(request)
+	roomId := vars["id"]
+
+	room, err := rh.roomUseCase.ShowRoom(roomId)
+	if err != nil {
+		response.InternalServerError(writer, "Internal Server Error")
+		return
+	}
+
+	response.Success(writer, room)
 }
 
 func (rh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.Request) {
