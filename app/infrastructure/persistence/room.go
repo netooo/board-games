@@ -94,3 +94,20 @@ func (rp roomPersistence) JoinRoom(roomId uint, user *model.User) error {
 
 	return nil
 }
+
+func (rp roomPersistence) ShowRoom(roomId uint) (*model.Room, error) {
+	// Roomsからroomを取得
+	index, err := model.SearchRoom(Rooms, roomId)
+	if err != nil {
+		return nil, err
+	}
+	room := Rooms[index]
+
+	// 部屋の状態をチェック
+	// TODO: 観戦(Status=1)はいつか対応
+	if room.Status != 0 {
+		return nil, errors.New("Room is not Ready")
+	}
+
+	return room, nil
+}
