@@ -13,6 +13,7 @@ import (
 type RoomHandler interface {
 	HandleRoomGet(http.ResponseWriter, *http.Request)
 	HandleRoomCreate(http.ResponseWriter, *http.Request)
+	HandleRoomShow(http.ResponseWriter, *http.Request)
 	HandleRoomJoin(http.ResponseWriter, *http.Request)
 }
 
@@ -33,6 +34,14 @@ type getResponse struct {
 
 type createResponse struct {
 	RoomId uint
+}
+
+type showResponse struct {
+	Id      uint     `json:"id"`
+	Name    string   `json:"name"`
+	Status  int      `json:"status"`
+	Owner   string   `json:"owner"`
+	Players []string `json:"players"`
 }
 
 func NewRoomHandler(ru usecase.RoomUseCase) RoomHandler {
@@ -101,6 +110,39 @@ func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http
 	res := createResponse{
 		RoomId: roomId,
 	}
+	response.Success(writer, res)
+}
+
+func (rh roomHandler) HandleRoomShow(writer http.ResponseWriter, request *http.Request) {
+	_, err := authentication.SessionUser(request)
+	if err != nil {
+		// TODO: redirect login form
+		response.Unauthorized(writer, "Invalid Session")
+		return
+	}
+
+	vars := mux.Vars(request)
+	roomId := vars["id"]
+
+	room, err := rh.roomUseCase.ShowRoom(roomId)
+	if err != nil {
+		response.InternalServerError(writer, "Internal Server Error")
+		return
+	}
+
+	var names []string
+	for k, _ := range room.Players {
+		names = append(names, k.Name)
+	}
+
+	res := showResponse{
+		Id:      room.ID,
+		Name:    room.Name,
+		Status:  room.Status,
+		Owner:   room.Owner.Name,
+		Players: names,
+	}
+
 	response.Success(writer, res)
 }
 

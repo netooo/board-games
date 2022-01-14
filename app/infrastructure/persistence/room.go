@@ -94,3 +94,14 @@ func (rp roomPersistence) JoinRoom(roomId uint, user *model.User) error {
 
 	return nil
 }
+
+func (rp roomPersistence) ShowRoom(roomId uint) (*model.Room, error) {
+	// Roomsからroomを取得
+	index, err := model.SearchRoom(Rooms, roomId)
+	if err != nil {
+		return nil, err
+	}
+	room := Rooms[index]
+
+	return room, nil
+}

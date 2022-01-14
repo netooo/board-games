@@ -12,6 +12,7 @@ import (
 type RoomUseCase interface {
 	GetRooms() ([]*model.Room, error)
 	CreateRoom(name string, user *model.User) (uint, error)
+	ShowRoom(id string) (*model.Room, error)
 	JoinRoom(id string, user *model.User) error
 }
 
@@ -50,6 +51,26 @@ func (ru roomUseCase) CreateRoom(name string, user *model.User) (uint, error) {
 	}
 
 	return roomId, nil
+}
+
+func (ru roomUseCase) ShowRoom(id string) (*model.Room, error) {
+	if id == "" {
+		return nil, errors.New("ID Not Found")
+	}
+
+	roomId_, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return nil, errors.New("Invalid ID")
+	}
+
+	var roomId uint = uint(roomId_)
+
+	room, err := ru.roomRepository.ShowRoom(roomId)
+	if err != nil {
+		return nil, err
+	}
+
+	return room, nil
 }
 
 func (ru roomUseCase) JoinRoom(id string, user *model.User) error {
