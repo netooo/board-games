@@ -9,4 +9,5 @@ type RoomRepository interface {
 	CreateRoom(name string, user *model.User) (uint, error)
 	ShowRoom(roomId uint) (*model.Room, error)
 	JoinRoom(roomId uint, user *model.User) error
+	StartRoom(roomId uint, user *model.User) error
 }

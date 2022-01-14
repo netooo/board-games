@@ -3,7 +3,7 @@ Status: <a id="room_status"></a>
 <br>
 Participant: <a id="room_participants"></a>
 <br>
-<!--<button onclick="startGame();">開始</button>-->
+<button onclick="startGame();">開始</button>
 
 <script>
     const url = new URL(window.location.href);
@@ -52,6 +52,28 @@ Participant: <a id="room_participants"></a>
                                 '<ul>参加者' + (i+1) + ': ' + participants[i] + '</ul>';
                         }
                     }
+                }
+            }
+        });
+    }
+
+    function startGame() {
+        if (room_id == null) {
+            return
+        }
+
+        const url = 'http://localhost:8082/api/rooms/'+room_id+'/start';
+        const xhr = new XMLHttpRequest()
+        xhr.withCredentials = true
+        xhr.open('POST', url);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send();
+
+        xhr.addEventListener('readystatechange', function() {
+
+            if (this.readyState === this.DONE) {
+                if (this.status === 200) {
+                    console.log("game start!!")
                 }
             }
         });

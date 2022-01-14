@@ -105,3 +105,42 @@ func (rp roomPersistence) ShowRoom(roomId uint) (*model.Room, error) {
 
 	return room, nil
 }
+
+func (rp roomPersistence) StartRoom(roomId uint, user *model.User) error {
+	// Roomsからroomを取得
+	index, err := model.SearchRoom(Rooms, roomId)
+	if err != nil {
+		return err
+	}
+	room := Rooms[index]
+
+	// 部屋の状態をチェック
+	if room.Status != 0 {
+		return errors.New("Room is not Ready")
+	}
+
+	// 開始人数を上回っているかチェック
+	if len(room.Players) != 2 {
+		return errors.New("Inappropriate Number of Players")
+	}
+
+	// Request UserがRoomsに存在しない場合は弾く
+	var userIds []uint
+	for k, _ := range room.Players {
+		userIds = append(userIds, k.ID)
+	}
+	if !isContains(userIds, user.ID) {
+		return errors.New("Invalid Request User")
+	}
+
+	return nil
+}
+
+func isContains(ids []uint, id uint) bool {
+	for _, i := range ids {
+		if i == id {
+			return true
+		}
+	}
+	return false
+}
