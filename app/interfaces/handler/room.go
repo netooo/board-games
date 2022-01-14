@@ -36,6 +36,13 @@ type createResponse struct {
 	RoomId uint
 }
 
+type showResponse struct {
+	Id      uint     `json:"id"`
+	Name    string   `json:"name"`
+	Owner   string   `json:"owner"`
+	Players []string `json:"players"`
+}
+
 func NewRoomHandler(ru usecase.RoomUseCase) RoomHandler {
 	return &roomHandler{
 		roomUseCase: ru,
@@ -122,7 +129,19 @@ func (rh roomHandler) HandleRoomShow(writer http.ResponseWriter, request *http.R
 		return
 	}
 
-	response.Success(writer, room)
+	var names []string
+	for k, _ := range room.Players {
+		names = append(names, k.Name)
+	}
+
+	res := showResponse{
+		Id:      room.ID,
+		Name:    room.Name,
+		Owner:   room.Owner.Name,
+		Players: names,
+	}
+
+	response.Success(writer, res)
 }
 
 func (rh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.Request) {
