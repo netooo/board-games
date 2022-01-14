@@ -15,6 +15,7 @@ type RoomHandler interface {
 	HandleRoomCreate(http.ResponseWriter, *http.Request)
 	HandleRoomShow(http.ResponseWriter, *http.Request)
 	HandleRoomJoin(http.ResponseWriter, *http.Request)
+	HandleRoomStart(http.ResponseWriter, *http.Request)
 }
 
 type roomHandler struct {
@@ -159,6 +160,27 @@ func (rh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.R
 	id := vars["id"]
 
 	err = rh.roomUseCase.JoinRoom(id, user)
+	if err != nil {
+		response.InternalServerError(writer, err.Error())
+		return
+	}
+
+	response.Success(writer, "")
+}
+
+func (rh roomHandler) HandleRoomStart(writer http.ResponseWriter, request *http.Request) {
+	user, err := authentication.SessionUser(request)
+	if err != nil {
+		// TODO: redirect login form
+		response.Unauthorized(writer, "Invalid Session")
+		return
+	}
+
+	// パスパラメータを取得
+	vars := mux.Vars(request)
+	id := vars["id"]
+
+	err = rh.roomUseCase.StartRoom(id, user)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
