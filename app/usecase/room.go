@@ -14,6 +14,7 @@ type RoomUseCase interface {
 	CreateRoom(name string, user *model.User) (uint, error)
 	ShowRoom(id string) (*model.Room, error)
 	JoinRoom(id string, user *model.User) error
+	StartRoom(id string, user *model.User) error
 }
 
 type roomUseCase struct {
@@ -86,6 +87,26 @@ func (ru roomUseCase) JoinRoom(id string, user *model.User) error {
 	var roomId uint = uint(roomId_)
 
 	err = ru.roomRepository.JoinRoom(roomId, user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (ru roomUseCase) StartRoom(id string, user *model.User) error {
+	if id == "" {
+		return errors.New("ID Not Found")
+	}
+
+	roomId_, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return errors.New("Invalid ID")
+	}
+
+	var roomId uint = uint(roomId_)
+
+	err = ru.roomRepository.StartRoom(roomId, user)
 	if err != nil {
 		return err
 	}
