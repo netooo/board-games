@@ -39,6 +39,7 @@ type createResponse struct {
 type showResponse struct {
 	Id      uint     `json:"id"`
 	Name    string   `json:"name"`
+	Status  int      `json:"status"`
 	Owner   string   `json:"owner"`
 	Players []string `json:"players"`
 }
@@ -137,6 +138,7 @@ func (rh roomHandler) HandleRoomShow(writer http.ResponseWriter, request *http.R
 	res := showResponse{
 		Id:      room.ID,
 		Name:    room.Name,
+		Status:  room.Status,
 		Owner:   room.Owner.Name,
 		Players: names,
 	}
