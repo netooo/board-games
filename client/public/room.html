@@ -1,4 +1,9 @@
 <h2 id="room_name"></h2>
+Status: <a id="room_status"></a>
+<br>
+Participant: <a id="room_participants"></a>
+<br>
+<!--<button onclick="startGame();">開始</button>-->
 
 <script>
     const url = new URL(window.location.href);
@@ -11,6 +16,8 @@
             return
         }
         const room_name = document.getElementById('room_name');
+        const room_status = document.getElementById('room_status');
+        const room_participants = document.getElementById('room_participants');
         const url = 'http://localhost:8082/api/rooms/'+id;
         const xhr = new XMLHttpRequest()
         xhr.withCredentials = true
@@ -18,15 +25,36 @@
         xhr.setRequestHeader('content-type', 'application/json');
         xhr.send();
 
+        function statusToString(status) {
+            switch (status) {
+                case 0:
+                    return "Ready";
+                case 1:
+                    return "Playing";
+                case 2:
+                    return "Finished";
+                default:
+                    return "Unknown";
+            }
+        }
+
         xhr.addEventListener('readystatechange', function() {
+            let participants;
+
             if (this.readyState === this.DONE) {
-                if (this.status === 200 ) {
-                    room_name.innerHTML = "";
+                if (this.status === 200) {
+                    room_name.innerHTML = JSON.parse(this.responseText)['name'];
+                    room_status.innerHTML = statusToString(JSON.parse(this.responseText)['status']);
+                    participants = JSON.parse(this.responseText)['players'];
+                    if (participants != null) {
+                        for (let i = 0; i < participants.length; i++) {
+                            room_participants.innerHTML +=
+                                '<ul>参加者' + (i+1) + ': ' + participants[i] + '</ul>';
+                        }
+                    }
                 }
             }
         });
-
-
     }
 </script>
 
