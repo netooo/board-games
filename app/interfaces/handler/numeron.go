@@ -10,19 +10,19 @@ import (
 	"net/http"
 )
 
-type RoomHandler interface {
-	HandleRoomGet(http.ResponseWriter, *http.Request)
-	HandleRoomCreate(http.ResponseWriter, *http.Request)
-	HandleRoomShow(http.ResponseWriter, *http.Request)
-	HandleRoomJoin(http.ResponseWriter, *http.Request)
-	HandleRoomStart(http.ResponseWriter, *http.Request)
+type NumeronHandler interface {
+	HandleNumeronGet(http.ResponseWriter, *http.Request)
+	HandleNumeronCreate(http.ResponseWriter, *http.Request)
+	HandleNumeronShow(http.ResponseWriter, *http.Request)
+	HandleNumeronEntry(http.ResponseWriter, *http.Request)
+	HandleNumeronStart(http.ResponseWriter, *http.Request)
 }
 
-type roomHandler struct {
-	roomUseCase usecase.RoomUseCase
+type numeronHandler struct {
+	numeronUseCase usecase.NumeronUseCase
 }
 
-type createRoomRequest struct {
+type createRequest struct {
 	Name string
 }
 
@@ -34,7 +34,7 @@ type getResponse struct {
 }
 
 type createResponse struct {
-	RoomId uint
+	NumeronId uint
 }
 
 type showResponse struct {
@@ -45,12 +45,12 @@ type showResponse struct {
 	Players []string `json:"players"`
 }
 
-func NewRoomHandler(ru usecase.RoomUseCase) RoomHandler {
-	return &roomHandler{
-		roomUseCase: ru,
+func NewNumeronHandler(ru usecase.NumeronUseCase) NumeronHandler {
+	return &numeronHandler{
+		numeronUseCase: ru,
 	}
 }
-func (rh roomHandler) HandleRoomGet(writer http.ResponseWriter, request *http.Request) {
+func (rh numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *http.Request) {
 	_, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
@@ -58,17 +58,17 @@ func (rh roomHandler) HandleRoomGet(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
-	//TODO: Check request_user already join other room?
+	//TODO: Check request_user already join other numeron?
 	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
 
-	rooms, err := rh.roomUseCase.GetRooms()
+	numerons, err := rh.numeronUseCase.GetNumerons()
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
 	}
 
 	var res []*getResponse
-	for _, r_ := range rooms {
+	for _, r_ := range numerons {
 		r := getResponse{
 			Id:      r_.ID,
 			Name:    r_.Name,
@@ -81,7 +81,7 @@ func (rh roomHandler) HandleRoomGet(writer http.ResponseWriter, request *http.Re
 	response.Success(writer, res)
 }
 
-func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http.Request) {
+func (rh numeronHandler) HandleNumeronCreate(writer http.ResponseWriter, request *http.Request) {
 	user, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
@@ -89,7 +89,7 @@ func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http
 		return
 	}
 
-	//TODO: Check request_user already join other room?
+	//TODO: Check request_user already join other numeron?
 	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
 
 	body, err := ioutil.ReadAll(request.Body)
@@ -99,22 +99,22 @@ func (rh roomHandler) HandleRoomCreate(writer http.ResponseWriter, request *http
 	}
 
 	// リクエストボディのパース
-	var requestBody createRoomRequest
+	var requestBody createRequest
 	_ = json.Unmarshal(body, &requestBody)
 
-	roomId, err := rh.roomUseCase.CreateRoom(requestBody.Name, user)
+	numeronId, err := rh.numeronUseCase.CreateNumeron(requestBody.Name, user)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
 	}
 
 	res := createResponse{
-		RoomId: roomId,
+		NumeronId: numeronId,
 	}
 	response.Success(writer, res)
 }
 
-func (rh roomHandler) HandleRoomShow(writer http.ResponseWriter, request *http.Request) {
+func (rh numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *http.Request) {
 	_, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
@@ -123,31 +123,31 @@ func (rh roomHandler) HandleRoomShow(writer http.ResponseWriter, request *http.R
 	}
 
 	vars := mux.Vars(request)
-	roomId := vars["id"]
+	numeronId := vars["id"]
 
-	room, err := rh.roomUseCase.ShowRoom(roomId)
+	numeron, err := rh.numeronUseCase.ShowNumeron(numeronId)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
 	}
 
 	var names []string
-	for k, _ := range room.Players {
+	for k, _ := range numeron.Players {
 		names = append(names, k.Name)
 	}
 
 	res := showResponse{
-		Id:      room.ID,
-		Name:    room.Name,
-		Status:  room.Status,
-		Owner:   room.Owner.Name,
+		Id:      numeron.ID,
+		Name:    numeron.Name,
+		Status:  numeron.Status,
+		Owner:   numeron.Owner.Name,
 		Players: names,
 	}
 
 	response.Success(writer, res)
 }
 
-func (rh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.Request) {
+func (rh numeronHandler) HandleNumeronEntry(writer http.ResponseWriter, request *http.Request) {
 	user, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
@@ -159,7 +159,7 @@ func (rh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.R
 	vars := mux.Vars(request)
 	id := vars["id"]
 
-	err = rh.roomUseCase.JoinRoom(id, user)
+	err = rh.numeronUseCase.EntryNumeron(id, user)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
@@ -168,7 +168,7 @@ func (rh roomHandler) HandleRoomJoin(writer http.ResponseWriter, request *http.R
 	response.Success(writer, "")
 }
 
-func (rh roomHandler) HandleRoomStart(writer http.ResponseWriter, request *http.Request) {
+func (rh numeronHandler) HandleNumeronStart(writer http.ResponseWriter, request *http.Request) {
 	user, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
@@ -180,7 +180,7 @@ func (rh roomHandler) HandleRoomStart(writer http.ResponseWriter, request *http.
 	vars := mux.Vars(request)
 	id := vars["id"]
 
-	err = rh.roomUseCase.StartRoom(id, user)
+	err = rh.numeronUseCase.StartNumeron(id, user)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
