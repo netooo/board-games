@@ -4,11 +4,11 @@ import (
 	"github.com/go-playground/validator"
 )
 
-type CreateRoom struct {
+type CreateNumeron struct {
 	Name string `validate:"required,max=50"`
 }
 
-func CreateRoomValidate(i interface{}) error {
+func CreateNumeronValidate(i interface{}) error {
 	validate := validator.New()
 	return validate.Struct(i)
 }
