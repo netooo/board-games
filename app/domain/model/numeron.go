@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"github.com/jinzhu/gorm"
 )
 
@@ -64,13 +63,4 @@ func (n *Numeron) Run(user *User) {
 			delete(n.Players, player)
 		}
 	}
-}
-
-func SearchNumeron(numerons []*Numeron, numeronId uint) (int, error) {
-	for i, n := range numerons {
-		if n.ID == numeronId {
-			return i, nil
-		}
-	}
-	return -1, errors.New("Numeron Not found")
 }
