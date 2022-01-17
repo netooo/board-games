@@ -3,6 +3,7 @@ package persistence
 import (
 	"errors"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	"github.com/netooo/board-games/app/config"
 	"github.com/netooo/board-games/app/domain/model"
@@ -14,7 +15,7 @@ type numeronPersistence struct {
 }
 
 // 立ち上がっているNumeronを格納した配列
-var Numerons []*model.Numeron
+var Numerons map[string]*model.Numeron
 
 func NewNumeronPersistence(conn *gorm.DB) repository.NumeronRepository {
 	return &numeronPersistence{Conn: conn}
@@ -25,25 +26,22 @@ func (p numeronPersistence) GetNumerons() ([]*model.Numeron, error) {
 }
 
 func (p numeronPersistence) CreateNumeron(name string, user *model.User) (uint, error) {
-	db := config.Connect()
-	defer config.Close()
-
-	// Numeron の部屋を作成
+	// Numeron のインスタンスを作成
+	// DBへの登録はゲーム開始時に行う
+	displayId := generateDisplayId()
 	numeron := model.Numeron{
-		Name:    name,
-		Owner:   user,
-		OwnerId: user.ID,
-		Status:  0,
-		Join:    make(chan *model.User),
-		Leave:   make(chan *model.User),
-		Players: make(map[*model.User]bool),
-	}
-	if err := db.Omit("Join", "Leave", "Players").Create(&numeron).Error; err != nil {
-		return 0, err
+		DisplayId: displayId,
+		Name:      name,
+		Owner:     user,
+		OwnerId:   user.ID,
+		Status:    0,
+		Join:      make(chan *model.User),
+		Leave:     make(chan *model.User),
+		Players:   make(map[*model.User]bool),
 	}
 
-	// 作成されたnumeronをsliceに格納
-	Numerons = append(Numerons, &numeron)
+	// 作成されたnumeronをmapに格納
+	Numerons[numeron.DisplayId] = &numeron
 
 	// SocketUsersからuserを取得
 	index, err := model.SearchUser(SocketUsers, user.ID)
@@ -143,4 +141,30 @@ func isContains(ids []uint, id uint) bool {
 		}
 	}
 	return false
+}
+
+func generateDisplayId() string {
+	db := config.Connect()
+	defer config.Close()
+
+	var id string
+
+	for true {
+		id = "NMR" + uuid.NewString()[0:8]
+
+		// 起動中のゲームから同一のIDを検索
+		if _, ok := Numerons[id]; ok {
+			continue
+		}
+
+		// DBから同一のIDを検索
+		numeron := model.Numeron{}
+		if !db.First(&numeron, "Display_id = ?", id).RecordNotFound() {
+			continue
+		}
+
+		break
+	}
+
+	return id
 }
