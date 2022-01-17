@@ -22,7 +22,12 @@ func NewNumeronPersistence(conn *gorm.DB) repository.NumeronRepository {
 }
 
 func (p numeronPersistence) GetNumerons() ([]*model.Numeron, error) {
-	return Numerons, nil
+	var numerons []*model.Numeron
+	for _, v := range Numerons {
+		numerons = append(numerons, v)
+	}
+
+	return numerons, nil
 }
 
 func (p numeronPersistence) CreateNumeron(name string, user *model.User) (uint, error) {
@@ -56,25 +61,24 @@ func (p numeronPersistence) CreateNumeron(name string, user *model.User) (uint, 
 	return numeron.ID, nil
 }
 
-func (p numeronPersistence) EntryNumeron(numeronId uint, user *model.User) error {
+func (p numeronPersistence) EntryNumeron(id string, user *model.User) error {
 	// Numeronsからnumeronを取得
-	index, err := model.SearchNumeron(Numerons, numeronId)
-	if err != nil {
-		return err
+	numeron, ok := Numerons[id]
+	if !ok {
+		return errors.New("Numeron Not Found")
 	}
-	numeron := Numerons[index]
 
 	// 部屋の状態をチェック
 	if numeron.Status != 0 {
 		return errors.New("Numeron is not Ready")
 	}
 
-	if len(numeron.Players) > 4 {
+	if len(numeron.Players) > 2 {
 		return errors.New("Limit User in Numeron")
 	}
 
 	// SocketUsersからuserを取得
-	index, err = model.SearchUser(SocketUsers, user.ID)
+	index, err := model.SearchUser(SocketUsers, user.ID)
 	if err != nil {
 		return err
 	}
@@ -93,31 +97,32 @@ func (p numeronPersistence) EntryNumeron(numeronId uint, user *model.User) error
 	return nil
 }
 
-func (p numeronPersistence) ShowNumeron(numeronId uint) (*model.Numeron, error) {
+func (p numeronPersistence) ShowNumeron(id string) (*model.Numeron, error) {
 	// Numeronsからnumeronを取得
-	index, err := model.SearchNumeron(Numerons, numeronId)
-	if err != nil {
-		return nil, err
+	numeron, ok := Numerons[id]
+	if !ok {
+		return nil, errors.New("Numeron Not Found")
 	}
-	numeron := Numerons[index]
 
 	return numeron, nil
 }
 
-func (p numeronPersistence) StartNumeron(numeronId uint, user *model.User) error {
+func (p numeronPersistence) StartNumeron(id string, user *model.User) error {
+	db := config.Connect()
+	defer config.Close()
+
 	// Numeronsからnumeronを取得
-	index, err := model.SearchNumeron(Numerons, numeronId)
-	if err != nil {
-		return err
+	numeron, ok := Numerons[id]
+	if !ok {
+		return errors.New("Numeron Not Found")
 	}
-	numeron := Numerons[index]
 
 	// 部屋の状態をチェック
 	if numeron.Status != 0 {
 		return errors.New("Numeron is not Ready")
 	}
 
-	// 開始人数を上回っているかチェック
+	// 人数が妥当かチェック
 	if len(numeron.Players) != 2 {
 		return errors.New("Inappropriate Number of Players")
 	}
@@ -127,8 +132,17 @@ func (p numeronPersistence) StartNumeron(numeronId uint, user *model.User) error
 	for k, _ := range numeron.Players {
 		userIds = append(userIds, k.ID)
 	}
+
 	if !isContains(userIds, user.ID) {
 		return errors.New("Invalid Request User")
+	}
+
+	// Play中に変更
+	// TODO: numeron_playerなども作成
+	numeron.Status = 1
+
+	if err := db.Omit("Join", "Leave", "Players").Create(&numeron).Error; err != nil {
+		return err
 	}
 
 	return nil

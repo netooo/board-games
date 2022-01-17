@@ -5,7 +5,6 @@ import (
 	"github.com/netooo/board-games/app/domain/model"
 	"github.com/netooo/board-games/app/domain/repository"
 	validators "github.com/netooo/board-games/app/interfaces/validators/numeron"
-	"strconv"
 )
 
 type NumeronUseCase interface {
@@ -58,14 +57,7 @@ func (u numeronUseCase) ShowNumeron(id string) (*model.Numeron, error) {
 		return nil, errors.New("ID Not Found")
 	}
 
-	numeronId_, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		return nil, errors.New("Invalid ID")
-	}
-
-	var numeronId uint = uint(numeronId_)
-
-	numeron, err := u.numeronRepository.ShowNumeron(numeronId)
+	numeron, err := u.numeronRepository.ShowNumeron(id)
 	if err != nil {
 		return nil, err
 	}
@@ -78,14 +70,7 @@ func (u numeronUseCase) EntryNumeron(id string, user *model.User) error {
 		return errors.New("ID Not Found")
 	}
 
-	numeronId_, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		return errors.New("Invalid ID")
-	}
-
-	var numeronId uint = uint(numeronId_)
-
-	err = u.numeronRepository.EntryNumeron(numeronId, user)
+	err := u.numeronRepository.EntryNumeron(id, user)
 	if err != nil {
 		return err
 	}
@@ -98,14 +83,7 @@ func (u numeronUseCase) StartNumeron(id string, user *model.User) error {
 		return errors.New("ID Not Found")
 	}
 
-	numeronId_, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		return errors.New("Invalid ID")
-	}
-
-	var numeronId uint = uint(numeronId_)
-
-	err = u.numeronRepository.StartNumeron(numeronId, user)
+	err := u.numeronRepository.StartNumeron(id, user)
 	if err != nil {
 		return err
 	}
