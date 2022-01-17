@@ -45,12 +45,12 @@ type showResponse struct {
 	Players []string `json:"players"`
 }
 
-func NewNumeronHandler(ru usecase.NumeronUseCase) NumeronHandler {
+func NewNumeronHandler(u usecase.NumeronUseCase) NumeronHandler {
 	return &numeronHandler{
-		numeronUseCase: ru,
+		numeronUseCase: u,
 	}
 }
-func (rh numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *http.Request) {
+func (h numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *http.Request) {
 	_, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
@@ -61,7 +61,7 @@ func (rh numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *h
 	//TODO: Check request_user already join other numeron?
 	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
 
-	numerons, err := rh.numeronUseCase.GetNumerons()
+	numerons, err := h.numeronUseCase.GetNumerons()
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
@@ -81,7 +81,7 @@ func (rh numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *h
 	response.Success(writer, res)
 }
 
-func (rh numeronHandler) HandleNumeronCreate(writer http.ResponseWriter, request *http.Request) {
+func (h numeronHandler) HandleNumeronCreate(writer http.ResponseWriter, request *http.Request) {
 	user, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
@@ -102,7 +102,7 @@ func (rh numeronHandler) HandleNumeronCreate(writer http.ResponseWriter, request
 	var requestBody createRequest
 	_ = json.Unmarshal(body, &requestBody)
 
-	numeronId, err := rh.numeronUseCase.CreateNumeron(requestBody.Name, user)
+	numeronId, err := h.numeronUseCase.CreateNumeron(requestBody.Name, user)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
@@ -114,7 +114,7 @@ func (rh numeronHandler) HandleNumeronCreate(writer http.ResponseWriter, request
 	response.Success(writer, res)
 }
 
-func (rh numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *http.Request) {
+func (h numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *http.Request) {
 	_, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
@@ -125,7 +125,7 @@ func (rh numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *
 	vars := mux.Vars(request)
 	numeronId := vars["id"]
 
-	numeron, err := rh.numeronUseCase.ShowNumeron(numeronId)
+	numeron, err := h.numeronUseCase.ShowNumeron(numeronId)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
@@ -147,7 +147,7 @@ func (rh numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *
 	response.Success(writer, res)
 }
 
-func (rh numeronHandler) HandleNumeronEntry(writer http.ResponseWriter, request *http.Request) {
+func (h numeronHandler) HandleNumeronEntry(writer http.ResponseWriter, request *http.Request) {
 	user, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
@@ -159,7 +159,7 @@ func (rh numeronHandler) HandleNumeronEntry(writer http.ResponseWriter, request 
 	vars := mux.Vars(request)
 	id := vars["id"]
 
-	err = rh.numeronUseCase.EntryNumeron(id, user)
+	err = h.numeronUseCase.EntryNumeron(id, user)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
@@ -168,7 +168,7 @@ func (rh numeronHandler) HandleNumeronEntry(writer http.ResponseWriter, request 
 	response.Success(writer, "")
 }
 
-func (rh numeronHandler) HandleNumeronStart(writer http.ResponseWriter, request *http.Request) {
+func (h numeronHandler) HandleNumeronStart(writer http.ResponseWriter, request *http.Request) {
 	user, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
@@ -180,7 +180,7 @@ func (rh numeronHandler) HandleNumeronStart(writer http.ResponseWriter, request 
 	vars := mux.Vars(request)
 	id := vars["id"]
 
-	err = rh.numeronUseCase.StartNumeron(id, user)
+	err = h.numeronUseCase.StartNumeron(id, user)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return

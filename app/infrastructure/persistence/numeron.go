@@ -20,11 +20,11 @@ func NewNumeronPersistence(conn *gorm.DB) repository.NumeronRepository {
 	return &numeronPersistence{Conn: conn}
 }
 
-func (rp numeronPersistence) GetNumerons() ([]*model.Numeron, error) {
+func (p numeronPersistence) GetNumerons() ([]*model.Numeron, error) {
 	return Numerons, nil
 }
 
-func (rp numeronPersistence) CreateNumeron(name string, user *model.User) (uint, error) {
+func (p numeronPersistence) CreateNumeron(name string, user *model.User) (uint, error) {
 	db := config.Connect()
 	defer config.Close()
 
@@ -58,7 +58,7 @@ func (rp numeronPersistence) CreateNumeron(name string, user *model.User) (uint,
 	return numeron.ID, nil
 }
 
-func (rp numeronPersistence) EntryNumeron(numeronId uint, user *model.User) error {
+func (p numeronPersistence) EntryNumeron(numeronId uint, user *model.User) error {
 	// Numeronsからnumeronを取得
 	index, err := model.SearchNumeron(Numerons, numeronId)
 	if err != nil {
@@ -95,7 +95,7 @@ func (rp numeronPersistence) EntryNumeron(numeronId uint, user *model.User) erro
 	return nil
 }
 
-func (rp numeronPersistence) ShowNumeron(numeronId uint) (*model.Numeron, error) {
+func (p numeronPersistence) ShowNumeron(numeronId uint) (*model.Numeron, error) {
 	// Numeronsからnumeronを取得
 	index, err := model.SearchNumeron(Numerons, numeronId)
 	if err != nil {
@@ -106,7 +106,7 @@ func (rp numeronPersistence) ShowNumeron(numeronId uint) (*model.Numeron, error)
 	return numeron, nil
 }
 
-func (rp numeronPersistence) StartNumeron(numeronId uint, user *model.User) error {
+func (p numeronPersistence) StartNumeron(numeronId uint, user *model.User) error {
 	// Numeronsからnumeronを取得
 	index, err := model.SearchNumeron(Numerons, numeronId)
 	if err != nil {
