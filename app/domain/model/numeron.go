@@ -7,13 +7,14 @@ import (
 
 type Numeron struct {
 	gorm.Model
-	Name    string         `json:"name"`
-	Status  int            `json:"status"`
-	OwnerId uint           `json:"owner_id"`
-	Owner   *User          `json:"-"`
-	Join    chan *User     `json:"-"`
-	Leave   chan *User     `json:"-"`
-	Players map[*User]bool `json:"-"`
+	DisplayId string         `json:"display_id"`
+	Name      string         `json:"name"`
+	Status    int            `json:"status"`
+	OwnerId   uint           `json:"owner_id"`
+	Owner     *User          `json:"-"`
+	Join      chan *User     `json:"-"`
+	Leave     chan *User     `json:"-"`
+	Players   map[*User]bool `json:"-"`
 }
 
 type StartOrder struct {

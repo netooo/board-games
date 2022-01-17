@@ -1,5 +1,6 @@
 CREATE TABLE numerons (
     `id` integer unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `display_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT '表示名',
     `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT '部屋名',
     `status` tinyint unsigned NOT NULL COMMENT 'ステータス',
     `owner_id` bigint(20) unsigned NOT NULL COMMENT 'オーナーID',
