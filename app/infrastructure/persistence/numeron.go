@@ -31,11 +31,16 @@ func (p numeronPersistence) GetNumerons() ([]*model.Numeron, error) {
 }
 
 func (p numeronPersistence) CreateNumeron(name string, user *model.User) (uint, error) {
+	// SocketUsersからuserを取得
+	user, ok := SocketUsers[user.UserId]
+	if !ok {
+		return 0, errors.New("Invalid Request User")
+	}
+
 	// Numeron のインスタンスを作成
 	// DBへの登録はゲーム開始時に行う
-	displayId := generateDisplayId()
 	numeron := model.Numeron{
-		DisplayId: displayId,
+		DisplayId: generateDisplayId(),
 		Name:      name,
 		Owner:     user,
 		OwnerId:   user.ID,
@@ -47,13 +52,6 @@ func (p numeronPersistence) CreateNumeron(name string, user *model.User) (uint, 
 
 	// 作成されたnumeronをmapに格納
 	Numerons[numeron.DisplayId] = &numeron
-
-	// SocketUsersからuserを取得
-	index, err := model.SearchUser(SocketUsers, user.ID)
-	if err != nil {
-		return 0, err
-	}
-	user = SocketUsers[index]
 
 	// Numeron の部屋を起動する
 	go numeron.Run(user)
@@ -78,11 +76,10 @@ func (p numeronPersistence) EntryNumeron(id string, user *model.User) error {
 	}
 
 	// SocketUsersからuserを取得
-	index, err := model.SearchUser(SocketUsers, user.ID)
-	if err != nil {
-		return err
+	user, ok = SocketUsers[user.UserId]
+	if !ok {
+		return errors.New("Invalid Request User")
 	}
-	user = SocketUsers[index]
 
 	// 既に入室済みの場合は弾く
 	for p := range numeron.Players {
