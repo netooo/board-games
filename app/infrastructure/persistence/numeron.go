@@ -21,7 +21,13 @@ func NewNumeronPersistence(conn *gorm.DB) repository.NumeronRepository {
 	return &numeronPersistence{Conn: conn}
 }
 
-func (p numeronPersistence) GetNumerons() ([]*model.Numeron, error) {
+func (p numeronPersistence) GetNumerons(userId string) ([]*model.Numeron, error) {
+	// SocketUsersからuserを取得
+	_, ok := SocketUsers[userId]
+	if !ok {
+		return nil, errors.New("Invalid Request User")
+	}
+
 	var numerons []*model.Numeron
 	for _, v := range Numerons {
 		numerons = append(numerons, v)
@@ -30,9 +36,9 @@ func (p numeronPersistence) GetNumerons() ([]*model.Numeron, error) {
 	return numerons, nil
 }
 
-func (p numeronPersistence) CreateNumeron(name string, user *model.User) (uint, error) {
+func (p numeronPersistence) CreateNumeron(name string, userId string) (uint, error) {
 	// SocketUsersからuserを取得
-	user, ok := SocketUsers[user.UserId]
+	user, ok := SocketUsers[userId]
 	if !ok {
 		return 0, errors.New("Invalid Request User")
 	}
@@ -59,7 +65,7 @@ func (p numeronPersistence) CreateNumeron(name string, user *model.User) (uint, 
 	return numeron.ID, nil
 }
 
-func (p numeronPersistence) EntryNumeron(id string, user *model.User) error {
+func (p numeronPersistence) EntryNumeron(id string, userId string) error {
 	// Numeronsからnumeronを取得
 	numeron, ok := Numerons[id]
 	if !ok {
@@ -76,7 +82,7 @@ func (p numeronPersistence) EntryNumeron(id string, user *model.User) error {
 	}
 
 	// SocketUsersからuserを取得
-	user, ok = SocketUsers[user.UserId]
+	user, ok := SocketUsers[userId]
 	if !ok {
 		return errors.New("Invalid Request User")
 	}
@@ -94,7 +100,13 @@ func (p numeronPersistence) EntryNumeron(id string, user *model.User) error {
 	return nil
 }
 
-func (p numeronPersistence) ShowNumeron(id string) (*model.Numeron, error) {
+func (p numeronPersistence) ShowNumeron(id string, userId string) (*model.Numeron, error) {
+	// SocketUsersからuserを取得
+	_, ok := SocketUsers[userId]
+	if !ok {
+		return nil, errors.New("Invalid Request User")
+	}
+
 	// Numeronsからnumeronを取得
 	numeron, ok := Numerons[id]
 	if !ok {
@@ -104,9 +116,12 @@ func (p numeronPersistence) ShowNumeron(id string) (*model.Numeron, error) {
 	return numeron, nil
 }
 
-func (p numeronPersistence) StartNumeron(id string, user *model.User) error {
-	db := config.Connect()
-	defer config.Close()
+func (p numeronPersistence) StartNumeron(id string, userId string) error {
+	// SocketUsersからuserを取得
+	_, ok := SocketUsers[userId]
+	if !ok {
+		return errors.New("Invalid Request User")
+	}
 
 	// Numeronsからnumeronを取得
 	numeron, ok := Numerons[id]
@@ -125,12 +140,12 @@ func (p numeronPersistence) StartNumeron(id string, user *model.User) error {
 	}
 
 	// Request UserがNumeronsに存在しない場合は弾く
-	var userIds []uint
+	var userIds []string
 	for k, _ := range numeron.Players {
-		userIds = append(userIds, k.ID)
+		userIds = append(userIds, k.UserId)
 	}
 
-	if !isContains(userIds, user.ID) {
+	if !isContains(userIds, userId) {
 		return errors.New("Invalid Request User")
 	}
 
@@ -138,6 +153,8 @@ func (p numeronPersistence) StartNumeron(id string, user *model.User) error {
 	// TODO: numeron_playerなども作成
 	numeron.Status = 1
 
+	db := config.Connect()
+	defer config.Close()
 	if err := db.Omit("Join", "Leave", "Players").Create(&numeron).Error; err != nil {
 		return err
 	}
@@ -145,7 +162,7 @@ func (p numeronPersistence) StartNumeron(id string, user *model.User) error {
 	return nil
 }
 
-func isContains(ids []uint, id uint) bool {
+func isContains(ids []string, id string) bool {
 	for _, i := range ids {
 		if i == id {
 			return true

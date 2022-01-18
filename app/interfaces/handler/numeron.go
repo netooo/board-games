@@ -51,7 +51,7 @@ func NewNumeronHandler(u usecase.NumeronUseCase) NumeronHandler {
 	}
 }
 func (h numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *http.Request) {
-	_, err := authentication.SessionUser(request)
+	user, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
 		response.Unauthorized(writer, "Invalid Session")
@@ -61,7 +61,7 @@ func (h numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *ht
 	//TODO: Check request_user already join other numeron?
 	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
 
-	numerons, err := h.numeronUseCase.GetNumerons()
+	numerons, err := h.numeronUseCase.GetNumerons(user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
@@ -102,7 +102,7 @@ func (h numeronHandler) HandleNumeronCreate(writer http.ResponseWriter, request 
 	var requestBody createRequest
 	_ = json.Unmarshal(body, &requestBody)
 
-	numeronId, err := h.numeronUseCase.CreateNumeron(requestBody.Name, user)
+	numeronId, err := h.numeronUseCase.CreateNumeron(requestBody.Name, user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
@@ -115,7 +115,7 @@ func (h numeronHandler) HandleNumeronCreate(writer http.ResponseWriter, request 
 }
 
 func (h numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *http.Request) {
-	_, err := authentication.SessionUser(request)
+	user, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
 		response.Unauthorized(writer, "Invalid Session")
@@ -125,7 +125,7 @@ func (h numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *h
 	vars := mux.Vars(request)
 	numeronId := vars["id"]
 
-	numeron, err := h.numeronUseCase.ShowNumeron(numeronId)
+	numeron, err := h.numeronUseCase.ShowNumeron(numeronId, user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
@@ -159,7 +159,7 @@ func (h numeronHandler) HandleNumeronEntry(writer http.ResponseWriter, request *
 	vars := mux.Vars(request)
 	id := vars["id"]
 
-	err = h.numeronUseCase.EntryNumeron(id, user)
+	err = h.numeronUseCase.EntryNumeron(id, user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
@@ -180,7 +180,7 @@ func (h numeronHandler) HandleNumeronStart(writer http.ResponseWriter, request *
 	vars := mux.Vars(request)
 	id := vars["id"]
 
-	err = h.numeronUseCase.StartNumeron(id, user)
+	err = h.numeronUseCase.StartNumeron(id, user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return

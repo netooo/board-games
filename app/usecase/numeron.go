@@ -8,11 +8,11 @@ import (
 )
 
 type NumeronUseCase interface {
-	GetNumerons() ([]*model.Numeron, error)
-	CreateNumeron(name string, user *model.User) (uint, error)
-	ShowNumeron(id string) (*model.Numeron, error)
-	EntryNumeron(id string, user *model.User) error
-	StartNumeron(id string, user *model.User) error
+	GetNumerons(userId string) ([]*model.Numeron, error)
+	CreateNumeron(name string, userId string) (uint, error)
+	ShowNumeron(id string, userId string) (*model.Numeron, error)
+	EntryNumeron(id string, userId string) error
+	StartNumeron(id string, userId string) error
 }
 
 type numeronUseCase struct {
@@ -25,8 +25,8 @@ func NewNumeronUseCase(r repository.NumeronRepository) NumeronUseCase {
 	}
 }
 
-func (u numeronUseCase) GetNumerons() ([]*model.Numeron, error) {
-	numerons, err := u.numeronRepository.GetNumerons()
+func (u numeronUseCase) GetNumerons(userId string) ([]*model.Numeron, error) {
+	numerons, err := u.numeronRepository.GetNumerons(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (u numeronUseCase) GetNumerons() ([]*model.Numeron, error) {
 	return numerons, nil
 }
 
-func (u numeronUseCase) CreateNumeron(name string, user *model.User) (uint, error) {
+func (u numeronUseCase) CreateNumeron(name string, userId string) (uint, error) {
 	// リクエストパラメータのバリデーション
 	validateNumeron := &validators.CreateNumeron{
 		Name: name,
@@ -44,7 +44,7 @@ func (u numeronUseCase) CreateNumeron(name string, user *model.User) (uint, erro
 		return 0, err
 	}
 
-	numeronId, err := u.numeronRepository.CreateNumeron(name, user)
+	numeronId, err := u.numeronRepository.CreateNumeron(name, userId)
 	if err != nil {
 		return 0, err
 	}
@@ -52,12 +52,12 @@ func (u numeronUseCase) CreateNumeron(name string, user *model.User) (uint, erro
 	return numeronId, nil
 }
 
-func (u numeronUseCase) ShowNumeron(id string) (*model.Numeron, error) {
+func (u numeronUseCase) ShowNumeron(id string, userId string) (*model.Numeron, error) {
 	if id == "" {
 		return nil, errors.New("ID Not Found")
 	}
 
-	numeron, err := u.numeronRepository.ShowNumeron(id)
+	numeron, err := u.numeronRepository.ShowNumeron(id, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -65,12 +65,12 @@ func (u numeronUseCase) ShowNumeron(id string) (*model.Numeron, error) {
 	return numeron, nil
 }
 
-func (u numeronUseCase) EntryNumeron(id string, user *model.User) error {
+func (u numeronUseCase) EntryNumeron(id string, userId string) error {
 	if id == "" {
 		return errors.New("ID Not Found")
 	}
 
-	err := u.numeronRepository.EntryNumeron(id, user)
+	err := u.numeronRepository.EntryNumeron(id, userId)
 	if err != nil {
 		return err
 	}
@@ -78,12 +78,12 @@ func (u numeronUseCase) EntryNumeron(id string, user *model.User) error {
 	return nil
 }
 
-func (u numeronUseCase) StartNumeron(id string, user *model.User) error {
+func (u numeronUseCase) StartNumeron(id string, userId string) error {
 	if id == "" {
 		return errors.New("ID Not Found")
 	}
 
-	err := u.numeronRepository.StartNumeron(id, user)
+	err := u.numeronRepository.StartNumeron(id, userId)
 	if err != nil {
 		return err
 	}

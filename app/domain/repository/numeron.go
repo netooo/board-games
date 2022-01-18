@@ -5,9 +5,9 @@ import (
 )
 
 type NumeronRepository interface {
-	GetNumerons() ([]*model.Numeron, error)
-	CreateNumeron(name string, user *model.User) (uint, error)
-	ShowNumeron(id string) (*model.Numeron, error)
-	EntryNumeron(id string, user *model.User) error
-	StartNumeron(id string, user *model.User) error
+	GetNumerons(userId string) ([]*model.Numeron, error)
+	CreateNumeron(name string, userId string) (uint, error)
+	ShowNumeron(id string, userId string) (*model.Numeron, error)
+	EntryNumeron(id string, userId string) error
+	StartNumeron(id string, userId string) error
 }
