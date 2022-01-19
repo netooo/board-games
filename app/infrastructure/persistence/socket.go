@@ -33,7 +33,7 @@ func (sp socketPersistence) ConnectSocket(user *model.User, socket *websocket.Co
 	return nil
 }
 
-func (sp socketPersistence) DisconnectSocket(user *model.User, socket *websocket.Conn) error {
+func (sp socketPersistence) DisconnectSocket(user *model.User) error {
 	oldUser, ok := SocketUsers[user.UserId]
 	if !ok {
 		return nil

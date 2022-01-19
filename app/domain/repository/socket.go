@@ -7,5 +7,5 @@ import (
 
 type SocketRepository interface {
 	ConnectSocket(user *model.User, socket *websocket.Conn) error
-	DisconnectSocket(user *model.User, socket *websocket.Conn) error
+	DisconnectSocket(user *model.User) error
 }

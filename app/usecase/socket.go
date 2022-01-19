@@ -9,7 +9,7 @@ import (
 
 type SocketUseCase interface {
 	ConnectSocket(user *model.User, socket *websocket.Conn) error
-	DisconnectSocket(user *model.User, socket *websocket.Conn) error
+	DisconnectSocket(user *model.User) error
 }
 
 type socketUseCase struct {
@@ -30,8 +30,8 @@ func (su socketUseCase) ConnectSocket(user *model.User, socket *websocket.Conn) 
 	return nil
 }
 
-func (su socketUseCase) DisconnectSocket(user *model.User, socket *websocket.Conn) error {
-	if err := su.socketRepository.DisconnectSocket(user, socket); err != nil {
+func (su socketUseCase) DisconnectSocket(user *model.User) error {
+	if err := su.socketRepository.DisconnectSocket(user); err != nil {
 		return err
 	}
 
