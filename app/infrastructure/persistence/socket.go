@@ -20,24 +20,15 @@ func NewSocketPersistence(conn *gorm.DB) repository.SocketRepository {
 }
 
 func (sp socketPersistence) ConnectSocket(user *model.User, socket *websocket.Conn) error {
-	// WebSocket接続中だった場合は前のコネクションを切断しルーム情報を引き継ぐ
-	// 新しいSocketにルーム情報を引き継がせる方が良いかも
 	oldUser, ok := SocketUsers[user.UserId]
-	if !ok {
-		if game := oldUser.Game; game != nil {
-			user.Game = game
-			game.Leave <- oldUser
-		}
+	if ok {
 		_ = oldUser.Socket.Close()
-		delete(SocketUsers, oldUser.UserId)
+		oldUser.Socket = socket
+	} else {
+		user.Socket = socket
+		SocketUsers[user.UserId] = user
+		go user.Read()
 	}
-
-	// Socketに紐付いたユーザをmapに格納
-	user.Socket = socket
-	SocketUsers[user.UserId] = user
-
-	// Messageを受け取るゴルーチンを起動する
-	go user.Read()
 
 	return nil
 }
@@ -48,8 +39,16 @@ func (sp socketPersistence) DisconnectSocket(user *model.User, socket *websocket
 		return nil
 	}
 
-	if game := oldUser.Game; game != nil {
-		game.Leave <- oldUser
+	// Join中のゲームから退出させる。
+	// TODO: User#Gameをstringで持っているが、interfaceにしてポインタ参照させてswitchを辞めたい。
+	if game := oldUser.Game; game != "" {
+		switch game[:3] {
+		case "NMR":
+			if numeron := Numerons[game]; numeron != nil {
+				numeron.Leave <- oldUser
+			}
+			return nil
+		}
 	}
 	_ = oldUser.Socket.Close()
 	delete(SocketUsers, oldUser.UserId)

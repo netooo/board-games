@@ -43,6 +43,7 @@ func (s Status) String() string {
 
 func (n *Numeron) Run(user *User) {
 	// 作成者を入室させる
+	user.Game = n.DisplayId
 	n.Players[user] = true
 
 	for {
@@ -52,14 +53,15 @@ func (n *Numeron) Run(user *User) {
 		case player := <-n.Join:
 			for p := range n.Players {
 				if err := p.Socket.WriteJSON(player); err != nil {
-					delete(n.Players, p)
+					n.Leave <- user
 				}
 			}
+			player.Game = n.DisplayId
 			n.Players[player] = true
 
 		/* Leaveチャネルに動きがあった場合(ユーザの退室) */
 		case player := <-n.Leave:
-			// Player mapから対象ユーザを削除する
+			player.Game = ""
 			delete(n.Players, player)
 		}
 	}
