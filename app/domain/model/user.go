@@ -11,7 +11,7 @@ type User struct {
 	Name     string          `json:"name"`
 	Email    string          `json:"email"`
 	Password string          `json:"password"`
-	Game     *interface{}    `json:"-"`
+	Game     string          `json:"-"`
 	Socket   *websocket.Conn `json:"-"`
 }
 
@@ -41,4 +41,5 @@ func (user *User) Read() {
 		}
 	}
 	_ = user.Socket.Close()
+	// TODO: 入室中のゲームから退出させる?
 }
