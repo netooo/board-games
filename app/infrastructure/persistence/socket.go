@@ -13,7 +13,7 @@ type socketPersistence struct {
 }
 
 // Websocket接続中のユーザを格納した配列
-var SocketUsers map[string]*model.User
+var SocketUsers = map[string]*model.User{}
 
 func NewSocketPersistence(conn *gorm.DB) repository.SocketRepository {
 	return &socketPersistence{Conn: conn}

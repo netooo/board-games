@@ -15,7 +15,7 @@ type numeronPersistence struct {
 }
 
 // 立ち上がっているNumeronを格納した配列
-var Numerons map[string]*model.Numeron
+var Numerons = map[string]*model.Numeron{}
 
 func NewNumeronPersistence(conn *gorm.DB) repository.NumeronRepository {
 	return &numeronPersistence{Conn: conn}
