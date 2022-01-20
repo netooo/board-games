@@ -1,10 +1,10 @@
 <label>Name</label><br>
-<input type="text" id="name" name="name" maxlength="50" value="room1"><br>
-<button onclick="createRoom();">作成</button>
+<input type="text" id="name" name="name" maxlength="50" value="numeron1"><br>
+<button onclick="create();">作成</button>
 
 <script>
-    function createRoom() {
-        const url = 'http://localhost:8082/api/rooms';
+    function create() {
+        const url = 'http://localhost:8082/api/numerons';
         const data = JSON.stringify({
             name: document.getElementById("name").value
         });
@@ -17,9 +17,9 @@
 
         xhr.addEventListener('readystatechange', function () {
             if (this.readyState === this.DONE) {
-                let roomId = JSON.parse(this.responseText)['RoomId'];
-                if (roomId != null) {
-                    window.location.href = 'http://localhost:3000/room.html?id='+roomId;
+                let display_id = JSON.parse(this.responseText)['display_id'];
+                if (display_id !== "") {
+                    window.location.href = `http://localhost:3000/numeron.html?id=${display_id}`
                 }
             }
         })

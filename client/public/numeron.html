@@ -1,24 +1,24 @@
-<h2 id="room_name"></h2>
-Status: <a id="room_status"></a>
+<h2 id="name"></h2>
+Status: <a id="status"></a>
 <br>
-Participant: <a id="room_participants"></a>
+Participant: <a id="participants"></a>
 <br>
 <button onclick="startGame();">開始</button>
 
 <script>
     const url = new URL(window.location.href);
     const params = url.searchParams;
-    const room_id = params.get('id');
-    window.addEventListener('load', getRoom(room_id));
+    const display_id = params.get('id');
+    window.addEventListener('load', getNumeron(display_id));
 
-    function getRoom(id) {
-        if (id == null) {
+    function getNumeron(display_id) {
+        if (display_id === "") {
             return
         }
-        const room_name = document.getElementById('room_name');
-        const room_status = document.getElementById('room_status');
-        const room_participants = document.getElementById('room_participants');
-        const url = 'http://localhost:8082/api/rooms/'+id;
+        const name = document.getElementById('name');
+        const status = document.getElementById('status');
+        const participants = document.getElementById('participants');
+        const url = 'http://localhost:8082/api/numerons/'+display_id;
         const xhr = new XMLHttpRequest()
         xhr.withCredentials = true
         xhr.open('GET', url);
@@ -39,17 +39,17 @@ Participant: <a id="room_participants"></a>
         }
 
         xhr.addEventListener('readystatechange', function() {
-            let participants;
+            let players;
 
             if (this.readyState === this.DONE) {
                 if (this.status === 200) {
-                    room_name.innerHTML = JSON.parse(this.responseText)['name'];
-                    room_status.innerHTML = statusToString(JSON.parse(this.responseText)['status']);
-                    participants = JSON.parse(this.responseText)['players'];
-                    if (participants != null) {
-                        for (let i = 0; i < participants.length; i++) {
-                            room_participants.innerHTML +=
-                                '<ul>参加者' + (i+1) + ': ' + participants[i] + '</ul>';
+                    name.innerHTML = JSON.parse(this.responseText)['name'];
+                    status.innerHTML = statusToString(JSON.parse(this.responseText)['status']);
+                    players = JSON.parse(this.responseText)['players'];
+                    if (players != null) {
+                        for (let i = 0; i < players.length; i++) {
+                            participants.innerHTML +=
+                                '<ul>参加者' + (i+1) + ': ' + players[i] + '</ul>';
                         }
                     }
                 }
@@ -58,11 +58,11 @@ Participant: <a id="room_participants"></a>
     }
 
     function startGame() {
-        if (room_id == null) {
+        if (display_id === "") {
             return
         }
 
-        const url = 'http://localhost:8082/api/rooms/'+room_id+'/start';
+        const url = 'http://localhost:8082/api/numerons/'+display_id+'/start';
         const xhr = new XMLHttpRequest()
         xhr.withCredentials = true
         xhr.open('POST', url);
