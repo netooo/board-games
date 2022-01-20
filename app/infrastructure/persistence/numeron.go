@@ -36,11 +36,11 @@ func (p numeronPersistence) GetNumerons(userId string) ([]*model.Numeron, error)
 	return numerons, nil
 }
 
-func (p numeronPersistence) CreateNumeron(name string, userId string) (uint, error) {
+func (p numeronPersistence) CreateNumeron(name string, userId string) (string, error) {
 	// SocketUsersからuserを取得
 	user, ok := SocketUsers[userId]
 	if !ok {
-		return 0, errors.New("Invalid Request User")
+		return "", errors.New("Invalid Request User")
 	}
 
 	// Numeron のインスタンスを作成
@@ -62,7 +62,7 @@ func (p numeronPersistence) CreateNumeron(name string, userId string) (uint, err
 	// Numeron の部屋を起動する
 	go numeron.Run(user)
 
-	return numeron.ID, nil
+	return numeron.DisplayId, nil
 }
 
 func (p numeronPersistence) EntryNumeron(id string, userId string) error {

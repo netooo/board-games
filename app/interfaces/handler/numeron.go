@@ -27,22 +27,22 @@ type createRequest struct {
 }
 
 type getResponse struct {
-	Id      uint   `json:"id"`
-	Name    string `json:"name"`
-	Owner   string `json:"owner"`
-	Players int    `json:"players"`
+	DisplayId string `json:"display_id"`
+	Name      string `json:"name"`
+	Owner     string `json:"owner"`
+	Players   int    `json:"players"`
 }
 
 type createResponse struct {
-	NumeronId uint
+	DisplayId string `json:"display_id"`
 }
 
 type showResponse struct {
-	Id      uint     `json:"id"`
-	Name    string   `json:"name"`
-	Status  int      `json:"status"`
-	Owner   string   `json:"owner"`
-	Players []string `json:"players"`
+	DisplayId string   `json:"display_id"`
+	Name      string   `json:"name"`
+	Status    int      `json:"status"`
+	Owner     string   `json:"owner"`
+	Players   []string `json:"players"`
 }
 
 func NewNumeronHandler(u usecase.NumeronUseCase) NumeronHandler {
@@ -70,10 +70,10 @@ func (h numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *ht
 	var res []*getResponse
 	for _, r_ := range numerons {
 		r := getResponse{
-			Id:      r_.ID,
-			Name:    r_.Name,
-			Owner:   r_.Owner.Name,
-			Players: len(r_.Players),
+			DisplayId: r_.DisplayId,
+			Name:      r_.Name,
+			Owner:     r_.Owner.Name,
+			Players:   len(r_.Players),
 		}
 		res = append(res, &r)
 	}
@@ -102,14 +102,14 @@ func (h numeronHandler) HandleNumeronCreate(writer http.ResponseWriter, request 
 	var requestBody createRequest
 	_ = json.Unmarshal(body, &requestBody)
 
-	numeronId, err := h.numeronUseCase.CreateNumeron(requestBody.Name, user.UserId)
+	displayId, err := h.numeronUseCase.CreateNumeron(requestBody.Name, user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
 	}
 
 	res := createResponse{
-		NumeronId: numeronId,
+		DisplayId: displayId,
 	}
 	response.Success(writer, res)
 }
@@ -123,9 +123,9 @@ func (h numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *h
 	}
 
 	vars := mux.Vars(request)
-	numeronId := vars["id"]
+	displayId := vars["display_id"]
 
-	numeron, err := h.numeronUseCase.ShowNumeron(numeronId, user.UserId)
+	numeron, err := h.numeronUseCase.ShowNumeron(displayId, user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
@@ -137,11 +137,11 @@ func (h numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *h
 	}
 
 	res := showResponse{
-		Id:      numeron.ID,
-		Name:    numeron.Name,
-		Status:  numeron.Status,
-		Owner:   numeron.Owner.Name,
-		Players: names,
+		DisplayId: numeron.DisplayId,
+		Name:      numeron.Name,
+		Status:    numeron.Status,
+		Owner:     numeron.Owner.Name,
+		Players:   names,
 	}
 
 	response.Success(writer, res)
@@ -157,9 +157,9 @@ func (h numeronHandler) HandleNumeronEntry(writer http.ResponseWriter, request *
 
 	// パスパラメータを取得
 	vars := mux.Vars(request)
-	id := vars["id"]
+	displayId := vars["display_id"]
 
-	err = h.numeronUseCase.EntryNumeron(id, user.UserId)
+	err = h.numeronUseCase.EntryNumeron(displayId, user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
@@ -178,9 +178,9 @@ func (h numeronHandler) HandleNumeronStart(writer http.ResponseWriter, request *
 
 	// パスパラメータを取得
 	vars := mux.Vars(request)
-	id := vars["id"]
+	displayId := vars["display_id"]
 
-	err = h.numeronUseCase.StartNumeron(id, user.UserId)
+	err = h.numeronUseCase.StartNumeron(displayId, user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return

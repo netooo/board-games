@@ -9,7 +9,7 @@ import (
 
 type NumeronUseCase interface {
 	GetNumerons(userId string) ([]*model.Numeron, error)
-	CreateNumeron(name string, userId string) (uint, error)
+	CreateNumeron(name string, userId string) (string, error)
 	ShowNumeron(id string, userId string) (*model.Numeron, error)
 	EntryNumeron(id string, userId string) error
 	StartNumeron(id string, userId string) error
@@ -34,22 +34,22 @@ func (u numeronUseCase) GetNumerons(userId string) ([]*model.Numeron, error) {
 	return numerons, nil
 }
 
-func (u numeronUseCase) CreateNumeron(name string, userId string) (uint, error) {
+func (u numeronUseCase) CreateNumeron(name string, userId string) (string, error) {
 	// リクエストパラメータのバリデーション
 	validateNumeron := &validators.CreateNumeron{
 		Name: name,
 	}
 
 	if err := validators.CreateNumeronValidate(validateNumeron); err != nil {
-		return 0, err
+		return "", err
 	}
 
-	numeronId, err := u.numeronRepository.CreateNumeron(name, userId)
+	displayId, err := u.numeronRepository.CreateNumeron(name, userId)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
-	return numeronId, nil
+	return displayId, nil
 }
 
 func (u numeronUseCase) ShowNumeron(id string, userId string) (*model.Numeron, error) {
