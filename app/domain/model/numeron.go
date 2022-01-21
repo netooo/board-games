@@ -16,9 +16,9 @@ type Numeron struct {
 	Players   map[*User]bool `json:"-"`
 }
 
-type StartOrder struct {
-	First  string
-	Second string
+type Message struct {
+	Action string
+	Value  string
 }
 
 type Status int
@@ -51,8 +51,12 @@ func (n *Numeron) Run(user *User) {
 		select {
 		/* Joinチャネルに動きがあった場合(ユーザの入室) */
 		case player := <-n.Join:
+			msg := Message{
+				Action: "join",
+				Value:  player.Name,
+			}
 			for p := range n.Players {
-				if err := p.Socket.WriteJSON(player); err != nil {
+				if err := p.Socket.WriteJSON(msg); err != nil {
 					p.Game = ""
 					delete(n.Players, p)
 				}
@@ -64,6 +68,17 @@ func (n *Numeron) Run(user *User) {
 		case player := <-n.Leave:
 			player.Game = ""
 			delete(n.Players, player)
+			msg := Message{
+				Action: "leave",
+				Value:  player.Name,
+			}
+			for p := range n.Players {
+				if err := p.Socket.WriteJSON(msg); err != nil {
+					p.Game = ""
+					delete(n.Players, p)
+					// ここでもleave?
+				}
+			}
 		}
 	}
 }
