@@ -27,7 +27,6 @@ func (sp socketPersistence) ConnectSocket(user *model.User, socket *websocket.Co
 	} else {
 		user.Socket = socket
 		SocketUsers[user.UserId] = user
-		go user.Read()
 	}
 
 	return nil

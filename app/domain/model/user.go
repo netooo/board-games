@@ -14,32 +14,3 @@ type User struct {
 	Game     string          `json:"-"`
 	Socket   *websocket.Conn `json:"-"`
 }
-
-type Message struct {
-	Id     int
-	Game   string
-	Action string
-	Value  string
-}
-
-type PushMessage struct {
-	RoomId uint
-}
-
-/*
-対象ユーザから送られてきたsocketメッセージを受け取る
-*/
-func (user *User) Read() {
-	// websocketからjson形式でメッセージを読み出す。
-	// 読み込みは無限ループで実行される。
-	for {
-		var msg *Message
-		if err := user.Socket.ReadJSON(&msg); err != nil {
-			break
-		} else {
-
-		}
-	}
-	_ = user.Socket.Close()
-	// TODO: 入室中のゲームから退出させる?
-}
