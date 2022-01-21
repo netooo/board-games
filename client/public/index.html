@@ -1,12 +1,21 @@
-<h2>ユーザ登録</h2>
-<label>Name</label><br>
-<input type="text" id="name" name="name" maxlength="12" value="" placeholder="mitsue010101"><br>
-<label>Address</label><br>
-<input type="text" id="email" name="email" value="" placeholder="010101@example.com"><br>
-<label>Password</label><br>
-<input type="text" id="password" name="password" value="" placeholder="Password0"><br>
-<br>
-<button onclick="signUp();">signUp</button>
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src='./socket.js'></script>
+    </head>
+    <body>
+        <h2>ユーザ登録</h2>
+        <label>Name</label><br>
+        <input type="text" id="name" name="name" maxlength="12" value="" placeholder="mitsue010101"><br>
+        <label>Address</label><br>
+        <input type="text" id="email" name="email" value="" placeholder="010101@example.com"><br>
+        <label>Password</label><br>
+        <input type="text" id="password" name="password" value="" placeholder="Password0"><br>
+        <br>
+        <button onclick="signUp();">signUp</button>
+    </body>
+</html>
 
 <script>
     function signUp() {
@@ -23,6 +32,8 @@
             if (this.readyState === this.DONE) {
                 if (this.status === 200 ) {
                     connectSocket()
+                    // 本当はこのタイミングのみでWebsocket接続したい。
+                    window.location.href = 'http://localhost:3000/games.html';
                 }
             }
         });
@@ -30,14 +41,5 @@
         xhr.open('POST', url);
         xhr.setRequestHeader('content-type', 'application/json');
         xhr.send(data);
-    }
-
-    function connectSocket() {
-        const url = 'ws://localhost:8082/api/ws/connect';
-        const socket = new WebSocket(url);
-
-        socket.addEventListener('open', function (event) {
-            window.location.href = 'http://localhost:3000/games.html';
-        });
     }
 </script>
