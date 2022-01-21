@@ -53,7 +53,8 @@ func (n *Numeron) Run(user *User) {
 		case player := <-n.Join:
 			for p := range n.Players {
 				if err := p.Socket.WriteJSON(player); err != nil {
-					n.Leave <- user
+					p.Game = ""
+					delete(n.Players, p)
 				}
 			}
 			player.Game = n.DisplayId
