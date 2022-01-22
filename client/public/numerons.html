@@ -1,0 +1,51 @@
+<h2>部屋一覧</h2>
+<button onclick="location.href='http://localhost:3000/create_numeron.html'">部屋作成</button>
+<hr>
+<ul id="numeron_list"></ul>
+
+<script>
+    window.addEventListener('load', getNumerons);
+
+    function getNumerons() {
+        const numeron_list = document.getElementById('numeron_list');
+        const url = 'http://localhost:8082/api/numerons';
+        const xhr = new XMLHttpRequest()
+        xhr.withCredentials = true
+        xhr.open('GET', url);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send();
+
+        xhr.addEventListener('readystatechange', function() {
+            if (this.readyState === this.DONE) {
+                let numerons = JSON.parse(this.responseText)
+                if (numerons != null) {
+                    for (i = 0; i < numerons.length; i++) {
+                        numeron_list.innerHTML +=
+                            '<article>' +
+                            '<h3>ルーム名:' + numerons[i]['name'] + '</h3>' +
+                            '<h3>作成者:' + numerons[i]['owner'] + '</h3>' +
+                            '<h3>参加人数:' + numerons[i]['players'] + '人</h3>' +
+                            '<button onClick="join(`' + numerons[i]['display_id'] + '`);">入室</button>' +
+                            '</article><hr>';
+                    }
+                }
+            }
+        });
+    }
+
+    function join(display_id) {
+        const url = 'http://localhost:8082/api/numerons/'+display_id+'/entry';
+        const xhr = new XMLHttpRequest()
+        xhr.withCredentials = true
+        xhr.open('POST', url);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send();
+
+        xhr.addEventListener('readystatechange', function () {
+            if (this.readyState === this.DONE) {
+                window.location.href = 'http://localhost:3000/numeron.html?id='+display_id;
+            }
+        })
+    }
+</script>
+

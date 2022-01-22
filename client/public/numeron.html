@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src='./socket.js'></script>
+    <script type="text/javascript" src='./numeron.js'></script>
+</head>
+<body>
+    <h2 id="name"></h2>
+    Status: <a id="status"></a>
+    <br>
+    Participant: <a id="participants"></a>
+    <br>
+    <hr>
+    <div id="chat-content">
+    </div>
+    <hr>
+    <button onclick="startGame();">開始</button>
+</body>
+</html>
+
+<script>
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    const display_id = params.get('id');
+    window.addEventListener('load', getNumeron(display_id));
+    window.addEventListener('load', connectSocket(display_id));
+    // 本当はsignin/upのタイミングでWebsocket接続すべきだが、
+    // 異なるHTML間でsocket変数の受け渡しができなかったため、このファイルでsocket接続を行い変数を持つ。
+    // SPA化すれば解決するはず。
+</script>
+

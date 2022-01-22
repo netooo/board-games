@@ -5,29 +5,28 @@ import (
 	"github.com/netooo/board-games/app/domain/model"
 	"github.com/netooo/board-games/app/domain/repository"
 	validators "github.com/netooo/board-games/app/interfaces/validators/numeron"
-	"strconv"
 )
 
 type NumeronUseCase interface {
-	GetNumerons() ([]*model.Numeron, error)
-	CreateNumeron(name string, user *model.User) (uint, error)
-	ShowNumeron(id string) (*model.Numeron, error)
-	EntryNumeron(id string, user *model.User) error
-	StartNumeron(id string, user *model.User) error
+	GetNumerons(userId string) ([]*model.Numeron, error)
+	CreateNumeron(name string, userId string) (string, error)
+	ShowNumeron(id string, userId string) (*model.Numeron, error)
+	EntryNumeron(id string, userId string) error
+	StartNumeron(id string, userId string) error
 }
 
 type numeronUseCase struct {
 	numeronRepository repository.NumeronRepository
 }
 
-func NewNumeronUseCase(rr repository.NumeronRepository) NumeronUseCase {
+func NewNumeronUseCase(r repository.NumeronRepository) NumeronUseCase {
 	return &numeronUseCase{
-		numeronRepository: rr,
+		numeronRepository: r,
 	}
 }
 
-func (ru numeronUseCase) GetNumerons() ([]*model.Numeron, error) {
-	numerons, err := ru.numeronRepository.GetNumerons()
+func (u numeronUseCase) GetNumerons(userId string) ([]*model.Numeron, error) {
+	numerons, err := u.numeronRepository.GetNumerons(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -35,37 +34,30 @@ func (ru numeronUseCase) GetNumerons() ([]*model.Numeron, error) {
 	return numerons, nil
 }
 
-func (ru numeronUseCase) CreateNumeron(name string, user *model.User) (uint, error) {
+func (u numeronUseCase) CreateNumeron(name string, userId string) (string, error) {
 	// リクエストパラメータのバリデーション
 	validateNumeron := &validators.CreateNumeron{
 		Name: name,
 	}
 
 	if err := validators.CreateNumeronValidate(validateNumeron); err != nil {
-		return 0, err
+		return "", err
 	}
 
-	numeronId, err := ru.numeronRepository.CreateNumeron(name, user)
+	displayId, err := u.numeronRepository.CreateNumeron(name, userId)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
-	return numeronId, nil
+	return displayId, nil
 }
 
-func (ru numeronUseCase) ShowNumeron(id string) (*model.Numeron, error) {
+func (u numeronUseCase) ShowNumeron(id string, userId string) (*model.Numeron, error) {
 	if id == "" {
 		return nil, errors.New("ID Not Found")
 	}
 
-	numeronId_, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		return nil, errors.New("Invalid ID")
-	}
-
-	var numeronId uint = uint(numeronId_)
-
-	numeron, err := ru.numeronRepository.ShowNumeron(numeronId)
+	numeron, err := u.numeronRepository.ShowNumeron(id, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -73,19 +65,12 @@ func (ru numeronUseCase) ShowNumeron(id string) (*model.Numeron, error) {
 	return numeron, nil
 }
 
-func (ru numeronUseCase) EntryNumeron(id string, user *model.User) error {
+func (u numeronUseCase) EntryNumeron(id string, userId string) error {
 	if id == "" {
 		return errors.New("ID Not Found")
 	}
 
-	numeronId_, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		return errors.New("Invalid ID")
-	}
-
-	var numeronId uint = uint(numeronId_)
-
-	err = ru.numeronRepository.EntryNumeron(numeronId, user)
+	err := u.numeronRepository.EntryNumeron(id, userId)
 	if err != nil {
 		return err
 	}
@@ -93,19 +78,12 @@ func (ru numeronUseCase) EntryNumeron(id string, user *model.User) error {
 	return nil
 }
 
-func (ru numeronUseCase) StartNumeron(id string, user *model.User) error {
+func (u numeronUseCase) StartNumeron(id string, userId string) error {
 	if id == "" {
 		return errors.New("ID Not Found")
 	}
 
-	numeronId_, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		return errors.New("Invalid ID")
-	}
-
-	var numeronId uint = uint(numeronId_)
-
-	err = ru.numeronRepository.StartNumeron(numeronId, user)
+	err := u.numeronRepository.StartNumeron(id, userId)
 	if err != nil {
 		return err
 	}

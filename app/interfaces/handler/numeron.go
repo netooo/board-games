@@ -27,31 +27,31 @@ type createRequest struct {
 }
 
 type getResponse struct {
-	Id      uint   `json:"id"`
-	Name    string `json:"name"`
-	Owner   string `json:"owner"`
-	Players int    `json:"players"`
+	DisplayId string `json:"display_id"`
+	Name      string `json:"name"`
+	Owner     string `json:"owner"`
+	Players   int    `json:"players"`
 }
 
 type createResponse struct {
-	NumeronId uint
+	DisplayId string `json:"display_id"`
 }
 
 type showResponse struct {
-	Id      uint     `json:"id"`
-	Name    string   `json:"name"`
-	Status  int      `json:"status"`
-	Owner   string   `json:"owner"`
-	Players []string `json:"players"`
+	DisplayId string   `json:"display_id"`
+	Name      string   `json:"name"`
+	Status    int      `json:"status"`
+	Owner     string   `json:"owner"`
+	Players   []string `json:"players"`
 }
 
-func NewNumeronHandler(ru usecase.NumeronUseCase) NumeronHandler {
+func NewNumeronHandler(u usecase.NumeronUseCase) NumeronHandler {
 	return &numeronHandler{
-		numeronUseCase: ru,
+		numeronUseCase: u,
 	}
 }
-func (rh numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *http.Request) {
-	_, err := authentication.SessionUser(request)
+func (h numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *http.Request) {
+	user, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
 		response.Unauthorized(writer, "Invalid Session")
@@ -61,7 +61,7 @@ func (rh numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *h
 	//TODO: Check request_user already join other numeron?
 	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
 
-	numerons, err := rh.numeronUseCase.GetNumerons()
+	numerons, err := h.numeronUseCase.GetNumerons(user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
@@ -70,10 +70,10 @@ func (rh numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *h
 	var res []*getResponse
 	for _, r_ := range numerons {
 		r := getResponse{
-			Id:      r_.ID,
-			Name:    r_.Name,
-			Owner:   r_.Owner.Name,
-			Players: len(r_.Players),
+			DisplayId: r_.DisplayId,
+			Name:      r_.Name,
+			Owner:     r_.Owner.Name,
+			Players:   len(r_.Players),
 		}
 		res = append(res, &r)
 	}
@@ -81,7 +81,7 @@ func (rh numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *h
 	response.Success(writer, res)
 }
 
-func (rh numeronHandler) HandleNumeronCreate(writer http.ResponseWriter, request *http.Request) {
+func (h numeronHandler) HandleNumeronCreate(writer http.ResponseWriter, request *http.Request) {
 	user, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
@@ -102,20 +102,20 @@ func (rh numeronHandler) HandleNumeronCreate(writer http.ResponseWriter, request
 	var requestBody createRequest
 	_ = json.Unmarshal(body, &requestBody)
 
-	numeronId, err := rh.numeronUseCase.CreateNumeron(requestBody.Name, user)
+	displayId, err := h.numeronUseCase.CreateNumeron(requestBody.Name, user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
 	}
 
 	res := createResponse{
-		NumeronId: numeronId,
+		DisplayId: displayId,
 	}
 	response.Success(writer, res)
 }
 
-func (rh numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *http.Request) {
-	_, err := authentication.SessionUser(request)
+func (h numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *http.Request) {
+	user, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
 		response.Unauthorized(writer, "Invalid Session")
@@ -123,9 +123,9 @@ func (rh numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *
 	}
 
 	vars := mux.Vars(request)
-	numeronId := vars["id"]
+	displayId := vars["display_id"]
 
-	numeron, err := rh.numeronUseCase.ShowNumeron(numeronId)
+	numeron, err := h.numeronUseCase.ShowNumeron(displayId, user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
@@ -137,17 +137,17 @@ func (rh numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *
 	}
 
 	res := showResponse{
-		Id:      numeron.ID,
-		Name:    numeron.Name,
-		Status:  numeron.Status,
-		Owner:   numeron.Owner.Name,
-		Players: names,
+		DisplayId: numeron.DisplayId,
+		Name:      numeron.Name,
+		Status:    numeron.Status,
+		Owner:     numeron.Owner.Name,
+		Players:   names,
 	}
 
 	response.Success(writer, res)
 }
 
-func (rh numeronHandler) HandleNumeronEntry(writer http.ResponseWriter, request *http.Request) {
+func (h numeronHandler) HandleNumeronEntry(writer http.ResponseWriter, request *http.Request) {
 	user, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
@@ -157,9 +157,9 @@ func (rh numeronHandler) HandleNumeronEntry(writer http.ResponseWriter, request 
 
 	// パスパラメータを取得
 	vars := mux.Vars(request)
-	id := vars["id"]
+	displayId := vars["display_id"]
 
-	err = rh.numeronUseCase.EntryNumeron(id, user)
+	err = h.numeronUseCase.EntryNumeron(displayId, user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
@@ -168,7 +168,7 @@ func (rh numeronHandler) HandleNumeronEntry(writer http.ResponseWriter, request 
 	response.Success(writer, "")
 }
 
-func (rh numeronHandler) HandleNumeronStart(writer http.ResponseWriter, request *http.Request) {
+func (h numeronHandler) HandleNumeronStart(writer http.ResponseWriter, request *http.Request) {
 	user, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
@@ -178,9 +178,9 @@ func (rh numeronHandler) HandleNumeronStart(writer http.ResponseWriter, request 
 
 	// パスパラメータを取得
 	vars := mux.Vars(request)
-	id := vars["id"]
+	displayId := vars["display_id"]
 
-	err = rh.numeronUseCase.StartNumeron(id, user)
+	err = h.numeronUseCase.StartNumeron(displayId, user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return

@@ -57,5 +57,17 @@ func (sh socketHandler) HandleSocketConnect(writer http.ResponseWriter, request 
 }
 
 func (sh socketHandler) HandleSocketDisconnect(writer http.ResponseWriter, request *http.Request) {
+	user, err := authentication.SessionUser(request)
+	if err != nil {
+		// TODO: redirect login form
+		response.Unauthorized(writer, "Invalid Session")
+		return
+	}
 
+	if err := sh.socketUseCase.DisconnectSocket(user); err != nil {
+		response.InternalServerError(writer, "Internal Server Error")
+		return
+	}
+
+	response.Success(writer, "")
 }
