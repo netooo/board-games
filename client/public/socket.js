@@ -1,4 +1,7 @@
-function connectSocket() {
+function connectSocket(display_id) {
+    if (display_id === "") {
+        return
+    }
     const url = 'ws://localhost:8082/api/ws/connect';
     let socket = new WebSocket(url);
     const chatContent = document.getElementById("chat-content");
@@ -17,8 +20,10 @@ function connectSocket() {
         let msg = JSON.parse(event.data);
         if (msg['Action'] === 'join') {
             chatContent.innerHTML += msg['Value'] + "が入室しました。";
+            getNumeron(display_id);
         } else if (msg['Action'] === 'leave') {
             chatContent.innerHTML += msg['Value'] + "が退出しました。";
+            getNumeron(display_id);
         }
     };
 }

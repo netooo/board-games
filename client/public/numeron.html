@@ -3,6 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <script type="text/javascript" src='./socket.js'></script>
+    <script type="text/javascript" src='./numeron.js'></script>
 </head>
 <body>
     <h2 id="name"></h2>
@@ -23,77 +24,9 @@
     const params = url.searchParams;
     const display_id = params.get('id');
     window.addEventListener('load', getNumeron(display_id));
-    window.addEventListener('load', connectSocket);
+    window.addEventListener('load', connectSocket(display_id));
     // 本当はsignin/upのタイミングでWebsocket接続すべきだが、
     // 異なるHTML間でsocket変数の受け渡しができなかったため、このファイルでsocket接続を行い変数を持つ。
     // SPA化すれば解決するはず。
-
-    function getNumeron(display_id) {
-        if (display_id === "") {
-            return
-        }
-        const name = document.getElementById('name');
-        const status = document.getElementById('status');
-        const participants = document.getElementById('participants');
-        const url = 'http://localhost:8082/api/numerons/'+display_id;
-        const xhr = new XMLHttpRequest()
-        xhr.withCredentials = true
-        xhr.open('GET', url);
-        xhr.setRequestHeader('content-type', 'application/json');
-        xhr.send();
-
-        function statusToString(status) {
-            switch (status) {
-                case 0:
-                    return "Ready";
-                case 1:
-                    return "Playing";
-                case 2:
-                    return "Finished";
-                default:
-                    return "Unknown";
-            }
-        }
-
-        xhr.addEventListener('readystatechange', function() {
-            let players;
-
-            if (this.readyState === this.DONE) {
-                if (this.status === 200) {
-                    name.innerHTML = JSON.parse(this.responseText)['name'];
-                    status.innerHTML = statusToString(JSON.parse(this.responseText)['status']);
-                    players = JSON.parse(this.responseText)['players'];
-                    if (players != null) {
-                        for (let i = 0; i < players.length; i++) {
-                            participants.innerHTML +=
-                                '<ul>参加者' + (i+1) + ': ' + players[i] + '</ul>';
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    function startGame() {
-        if (display_id === "") {
-            return
-        }
-
-        const url = 'http://localhost:8082/api/numerons/'+display_id+'/start';
-        const xhr = new XMLHttpRequest()
-        xhr.withCredentials = true
-        xhr.open('POST', url);
-        xhr.setRequestHeader('content-type', 'application/json');
-        xhr.send();
-
-        xhr.addEventListener('readystatechange', function() {
-
-            if (this.readyState === this.DONE) {
-                if (this.status === 200) {
-                    console.log("game start!!")
-                }
-            }
-        });
-    }
 </script>
 
