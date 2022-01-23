@@ -46,6 +46,27 @@ function getNumeron(display_id) {
     });
 }
 
+function leaveNumeron(display_id) {
+    if (display_id === "") {
+        return
+    }
+
+    const url = 'http://localhost:8082/api/numerons/'+display_id+'/leave';
+    const xhr = new XMLHttpRequest()
+    xhr.withCredentials = true
+    xhr.open('POST', url);
+    xhr.setRequestHeader('content-type', 'application/json');
+    xhr.send();
+
+    xhr.addEventListener('readystatechange', function() {
+        if (this.readyState === this.DONE) {
+            if (this.status === 200) {
+                window.location.href = 'http://localhost:3000/numerons.html';
+            }
+        }
+    });
+}
+
 function startGame() {
     if (display_id === "") {
         return
@@ -59,7 +80,6 @@ function startGame() {
     xhr.send();
 
     xhr.addEventListener('readystatechange', function() {
-
         if (this.readyState === this.DONE) {
             if (this.status === 200) {
                 console.log("game start!!")
