@@ -17,5 +17,6 @@ func NumeronInit(r *mux.Router) {
 	r.HandleFunc("/numerons", numeronHandler.HandleNumeronCreate).Methods("POST")
 	r.HandleFunc("/numerons/{display_id}", numeronHandler.HandleNumeronShow).Methods("GET")
 	r.HandleFunc("/numerons/{display_id}/entry", numeronHandler.HandleNumeronEntry).Methods("POST")
+	r.HandleFunc("/numerons/{display_id}/leave", numeronHandler.HandleNumeronLeave).Methods("POST")
 	r.HandleFunc("/numerons/{display_id}/start", numeronHandler.HandleNumeronStart).Methods("POST")
 }

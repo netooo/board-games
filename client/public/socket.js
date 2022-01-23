@@ -19,10 +19,10 @@ function connectSocket(display_id) {
     socket.onmessage = function(event) {
         let msg = JSON.parse(event.data);
         if (msg['Action'] === 'join') {
-            chatContent.innerHTML += msg['Value'] + "が入室しました。";
+            chatContent.innerHTML += msg['Value'] + "が入室しました。<br>";
             getNumeron(display_id);
         } else if (msg['Action'] === 'leave') {
-            chatContent.innerHTML += msg['Value'] + "が退出しました。";
+            chatContent.innerHTML += msg['Value'] + "が退出しました。<br>";
             getNumeron(display_id);
         }
     };

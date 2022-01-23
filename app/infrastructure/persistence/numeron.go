@@ -100,6 +100,43 @@ func (p numeronPersistence) EntryNumeron(id string, userId string) error {
 	return nil
 }
 
+func (p numeronPersistence) LeaveNumeron(id string, userId string) error {
+	// Numeronsからnumeronを取得
+	numeron, ok := Numerons[id]
+	if !ok {
+		return errors.New("Numeron Not Found")
+	}
+
+	// 部屋の状態をチェック
+	if numeron.Status == 2 {
+		return errors.New("Numeron was Finished")
+	}
+
+	// SocketUsersからuserを取得
+	user, ok := SocketUsers[userId]
+	if !ok {
+		return errors.New("Invalid Request User")
+	}
+
+	// 既に退室済みの場合は弾く
+	ok = false
+	for p := range numeron.Players {
+		if p.ID == user.ID {
+			ok = true
+			break
+		}
+	}
+
+	if !ok {
+		return errors.New("Already Leave the Numeron")
+	}
+
+	// Numeron の部屋から退室する
+	numeron.Leave <- user
+
+	return nil
+}
+
 func (p numeronPersistence) ShowNumeron(id string, userId string) (*model.Numeron, error) {
 	// SocketUsersからuserを取得
 	_, ok := SocketUsers[userId]

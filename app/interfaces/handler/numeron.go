@@ -15,6 +15,7 @@ type NumeronHandler interface {
 	HandleNumeronCreate(http.ResponseWriter, *http.Request)
 	HandleNumeronShow(http.ResponseWriter, *http.Request)
 	HandleNumeronEntry(http.ResponseWriter, *http.Request)
+	HandleNumeronLeave(http.ResponseWriter, *http.Request)
 	HandleNumeronStart(http.ResponseWriter, *http.Request)
 }
 
@@ -160,6 +161,27 @@ func (h numeronHandler) HandleNumeronEntry(writer http.ResponseWriter, request *
 	displayId := vars["display_id"]
 
 	err = h.numeronUseCase.EntryNumeron(displayId, user.UserId)
+	if err != nil {
+		response.InternalServerError(writer, err.Error())
+		return
+	}
+
+	response.Success(writer, "")
+}
+
+func (h numeronHandler) HandleNumeronLeave(writer http.ResponseWriter, request *http.Request) {
+	user, err := authentication.SessionUser(request)
+	if err != nil {
+		// TODO: redirect login form
+		response.Unauthorized(writer, "Invalid Session")
+		return
+	}
+
+	// パスパラメータを取得
+	vars := mux.Vars(request)
+	displayId := vars["display_id"]
+
+	err = h.numeronUseCase.LeaveNumeron(displayId, user.UserId)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return

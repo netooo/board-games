@@ -12,6 +12,7 @@ type NumeronUseCase interface {
 	CreateNumeron(name string, userId string) (string, error)
 	ShowNumeron(id string, userId string) (*model.Numeron, error)
 	EntryNumeron(id string, userId string) error
+	LeaveNumeron(id string, userId string) error
 	StartNumeron(id string, userId string) error
 }
 
@@ -71,6 +72,19 @@ func (u numeronUseCase) EntryNumeron(id string, userId string) error {
 	}
 
 	err := u.numeronRepository.EntryNumeron(id, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u numeronUseCase) LeaveNumeron(id string, userId string) error {
+	if id == "" {
+		return errors.New("ID Not Found")
+	}
+
+	err := u.numeronRepository.LeaveNumeron(id, userId)
 	if err != nil {
 		return err
 	}
