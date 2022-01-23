@@ -10,8 +10,8 @@ type Numeron struct {
 	Name           string           `json:"name"`
 	Status         int              `json:"status"`
 	OwnerId        uint             `json:"owner_id"`
-	Turn           int              `json:"turn"`
 	Owner          *User            `json:"-"`
+	Turn           int              `json:"turn"`
 	Join           chan *User       `json:"-"`
 	Leave          chan *User       `json:"-"`
 	Players        map[*User]bool   `json:"-"`
