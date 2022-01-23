@@ -6,7 +6,7 @@ import (
 
 type NumeronPlayer struct {
 	gorm.Model
-	NumeronId int `json:numeron_id`
+	NumeronId uint `json:numeron_id`
 	Numeron   *Numeron
 	UserId    int `json:user_id`
 	User      *User
