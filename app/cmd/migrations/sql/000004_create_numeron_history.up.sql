@@ -4,7 +4,7 @@ CREATE TABLE numeron_histories (
     `player_id` bigint(20) unsigned NOT NULL COMMENT 'ユーザID',
     `action` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT '回答番号',
     `result` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT '結果',
-    `turn` tinyint unsigned NOT NULL COMMENT 'ターン',
+    `turn` integer unsigned NOT NULL COMMENT 'ターン',
     `created_at` TIMESTAMP COMMENT '作成日時',
     `updated_at` TIMESTAMP COMMENT '更新日時',
     `deleted_at` TIMESTAMP COMMENT '更新日時',
