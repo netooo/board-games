@@ -26,18 +26,18 @@ function getNumeron(display_id) {
     }
 
     xhr.addEventListener('readystatechange', function() {
-        let players;
+        let users;
 
         if (this.readyState === this.DONE) {
             if (this.status === 200) {
                 name.innerHTML = JSON.parse(this.responseText)['name'];
                 status.innerHTML = statusToString(JSON.parse(this.responseText)['status']);
-                players = JSON.parse(this.responseText)['players'];
-                if (players != null) {
+                users = JSON.parse(this.responseText)['users'];
+                if (users != null) {
                     let participant_content = ''
-                    for (let i = 0; i < players.length; i++) {
+                    for (let i = 0; i < users.length; i++) {
                         participant_content +=
-                            '<ul>参加者' + (i+1) + ': ' + players[i] + '</ul>';
+                            '<ul>参加者' + (i+1) + ': ' + users[i] + '</ul>';
                     }
                     participants.innerHTML = participant_content;
                 }
