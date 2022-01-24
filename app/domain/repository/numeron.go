@@ -10,5 +10,5 @@ type NumeronRepository interface {
 	ShowNumeron(id string, userId string) (*model.Numeron, error)
 	EntryNumeron(id string, userId string) error
 	LeaveNumeron(id string, userId string) error
-	StartNumeron(id string, userId string) error
+	StartNumeron(id string, userId string, firstId string, secondId string) error
 }

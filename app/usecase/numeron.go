@@ -13,7 +13,7 @@ type NumeronUseCase interface {
 	ShowNumeron(id string, userId string) (*model.Numeron, error)
 	EntryNumeron(id string, userId string) error
 	LeaveNumeron(id string, userId string) error
-	StartNumeron(id string, userId string) error
+	StartNumeron(id string, userId string, firstId string, secondId string) error
 }
 
 type numeronUseCase struct {
@@ -92,12 +92,20 @@ func (u numeronUseCase) LeaveNumeron(id string, userId string) error {
 	return nil
 }
 
-func (u numeronUseCase) StartNumeron(id string, userId string) error {
+func (u numeronUseCase) StartNumeron(id string, userId string, firstId string, secondId string) error {
 	if id == "" {
 		return errors.New("ID Not Found")
 	}
 
-	err := u.numeronRepository.StartNumeron(id, userId)
+	if firstId == "" {
+		return errors.New("First ID Not Found")
+	}
+
+	if secondId == "" {
+		return errors.New("Second ID Not Found")
+	}
+
+	err := u.numeronRepository.StartNumeron(id, userId, firstId, secondId)
 	if err != nil {
 		return err
 	}
