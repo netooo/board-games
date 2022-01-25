@@ -62,7 +62,7 @@ func NewNumeronHandler(u usecase.NumeronUseCase) NumeronHandler {
 	}
 }
 func (h numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *http.Request) {
-	user, err := authentication.SessionUser(request)
+	_, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
 		response.Unauthorized(writer, "Invalid Session")
@@ -72,7 +72,7 @@ func (h numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *ht
 	//TODO: Check request_user already join other numeron?
 	// もしやるんだったら Userテーブルに Statusカラムを追加しないといけなさそう
 
-	numerons, err := h.numeronUseCase.GetNumerons(user.UserId)
+	numerons, err := h.numeronUseCase.GetNumerons()
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return

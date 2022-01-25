@@ -21,13 +21,7 @@ func NewNumeronPersistence(conn *gorm.DB) repository.NumeronRepository {
 	return &numeronPersistence{Conn: conn}
 }
 
-func (p numeronPersistence) GetNumerons(userId string) ([]*model.Numeron, error) {
-	// SocketUsersからuserを取得
-	_, ok := SocketUsers[userId]
-	if !ok {
-		return nil, errors.New("Invalid Request User")
-	}
-
+func (p numeronPersistence) GetNumerons() ([]*model.Numeron, error) {
 	var numerons []*model.Numeron
 	for _, v := range Numerons {
 		numerons = append(numerons, v)
