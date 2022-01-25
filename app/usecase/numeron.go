@@ -8,7 +8,7 @@ import (
 )
 
 type NumeronUseCase interface {
-	GetNumerons(userId string) ([]*model.Numeron, error)
+	GetNumerons() ([]*model.Numeron, error)
 	CreateNumeron(name string, userId string) (string, error)
 	ShowNumeron(id string, userId string) (*model.Numeron, error)
 	EntryNumeron(id string, userId string) error
@@ -26,8 +26,8 @@ func NewNumeronUseCase(r repository.NumeronRepository) NumeronUseCase {
 	}
 }
 
-func (u numeronUseCase) GetNumerons(userId string) ([]*model.Numeron, error) {
-	numerons, err := u.numeronRepository.GetNumerons(userId)
+func (u numeronUseCase) GetNumerons() ([]*model.Numeron, error) {
+	numerons, err := u.numeronRepository.GetNumerons()
 	if err != nil {
 		return nil, err
 	}
