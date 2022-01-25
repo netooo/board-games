@@ -27,11 +27,16 @@ type createRequest struct {
 	Name string
 }
 
+type startRequest struct {
+	First  string
+	Second string
+}
+
 type getResponse struct {
 	DisplayId string `json:"display_id"`
 	Name      string `json:"name"`
 	Owner     string `json:"owner"`
-	Players   int    `json:"players"`
+	UsersNum  int    `json:"users_num"`
 }
 
 type createResponse struct {
@@ -39,11 +44,16 @@ type createResponse struct {
 }
 
 type showResponse struct {
-	DisplayId string   `json:"display_id"`
-	Name      string   `json:"name"`
-	Status    int      `json:"status"`
-	Owner     string   `json:"owner"`
-	Players   []string `json:"players"`
+	DisplayId string             `json:"display_id"`
+	Name      string             `json:"name"`
+	Status    int                `json:"status"`
+	Owner     string             `json:"owner"`
+	Users     []showUserResponse `json:"users"`
+}
+
+type showUserResponse struct {
+	UserId string `json:"user_id"`
+	Name   string `json:"name"`
 }
 
 func NewNumeronHandler(u usecase.NumeronUseCase) NumeronHandler {
@@ -74,7 +84,7 @@ func (h numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *ht
 			DisplayId: r_.DisplayId,
 			Name:      r_.Name,
 			Owner:     r_.Owner.Name,
-			Players:   len(r_.Players),
+			UsersNum:  len(r_.Users),
 		}
 		res = append(res, &r)
 	}
@@ -132,9 +142,12 @@ func (h numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *h
 		return
 	}
 
-	var names []string
-	for k, _ := range numeron.Players {
-		names = append(names, k.Name)
+	var users []showUserResponse
+	for u, _ := range numeron.Users {
+		users = append(users, showUserResponse{
+			u.UserId,
+			u.Name,
+		})
 	}
 
 	res := showResponse{
@@ -142,7 +155,7 @@ func (h numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *h
 		Name:      numeron.Name,
 		Status:    numeron.Status,
 		Owner:     numeron.Owner.Name,
-		Players:   names,
+		Users:     users,
 	}
 
 	response.Success(writer, res)
@@ -202,7 +215,17 @@ func (h numeronHandler) HandleNumeronStart(writer http.ResponseWriter, request *
 	vars := mux.Vars(request)
 	displayId := vars["display_id"]
 
-	err = h.numeronUseCase.StartNumeron(displayId, user.UserId)
+	// リクエストボディを取得
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		response.BadRequest(writer, "Invalid Request Body")
+		return
+	}
+
+	var requestBody startRequest
+	_ = json.Unmarshal(body, &requestBody)
+
+	err = h.numeronUseCase.StartNumeron(displayId, user.UserId, requestBody.First, requestBody.Second)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return

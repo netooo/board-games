@@ -53,7 +53,8 @@ func (p numeronPersistence) CreateNumeron(name string, userId string) (string, e
 		Status:    0,
 		Join:      make(chan *model.User),
 		Leave:     make(chan *model.User),
-		Players:   make(map[*model.User]bool),
+		Users:     make(map[*model.User]bool),
+		Players:   make(map[int]*model.NumeronPlayer),
 	}
 
 	// 作成されたnumeronをmapに格納
@@ -88,8 +89,8 @@ func (p numeronPersistence) EntryNumeron(id string, userId string) error {
 	}
 
 	// 既に入室済みの場合は弾く
-	for p := range numeron.Players {
-		if p.ID == user.ID {
+	for u := range numeron.Users {
+		if u.ID == user.ID {
 			return errors.New("Already Join the Numeron")
 		}
 	}
@@ -120,8 +121,8 @@ func (p numeronPersistence) LeaveNumeron(id string, userId string) error {
 
 	// 既に退室済みの場合は弾く
 	ok = false
-	for p := range numeron.Players {
-		if p.ID == user.ID {
+	for u := range numeron.Users {
+		if u.ID == user.ID {
 			ok = true
 			break
 		}
@@ -153,7 +154,7 @@ func (p numeronPersistence) ShowNumeron(id string, userId string) (*model.Numero
 	return numeron, nil
 }
 
-func (p numeronPersistence) StartNumeron(id string, userId string) error {
+func (p numeronPersistence) StartNumeron(id string, userId string, firstId string, secondId string) error {
 	// SocketUsersからuserを取得
 	_, ok := SocketUsers[userId]
 	if !ok {
@@ -172,28 +173,59 @@ func (p numeronPersistence) StartNumeron(id string, userId string) error {
 	}
 
 	// 人数が妥当かチェック
-	if len(numeron.Players) != 2 {
+	if len(numeron.Users) != 2 {
 		return errors.New("Inappropriate Number of Players")
 	}
 
-	// Request UserがNumeronsに存在しない場合は弾く
 	var userIds []string
-	for k, _ := range numeron.Players {
-		userIds = append(userIds, k.UserId)
+	for u, _ := range numeron.Users {
+		userIds = append(userIds, u.UserId)
 	}
 
+	// Request UserがNumeronsに存在しない場合は弾く
 	if !isContains(userIds, userId) {
 		return errors.New("Invalid Request User")
 	}
 
+	// 先攻後攻UserがNumeronsに存在しない場合は弾く
+	if !isContains(userIds, firstId) {
+		return errors.New("Invalid First User")
+	}
+
+	if !isContains(userIds, secondId) {
+		return errors.New("Invalid Second User")
+	}
+
 	// Play中に変更
-	// TODO: numeron_playerなども作成
 	numeron.Status = 1
 
 	db := config.Connect()
 	defer config.Close()
-	if err := db.Omit("Join", "Leave", "Players").Create(&numeron).Error; err != nil {
+
+	// 部屋のレコードを作成
+	if err := db.Omit("Owner", "Join", "Leave", "Users", "Players").Create(&numeron).Error; err != nil {
 		return err
+	}
+
+	var users = []*model.User{SocketUsers[firstId], SocketUsers[secondId]}
+	// プレイヤーレコードを作成
+	for i, user := range users {
+		order := i + 1
+		player := model.NumeronPlayer{
+			NumeronId: numeron.ID,
+			Numeron:   numeron,
+			UserId:    user.ID,
+			User:      user,
+			Order:     order,
+			Code:      "",
+			Rank:      0,
+		}
+
+		if err := db.Omit("Numeron", "User").Create(&player).Error; err != nil {
+			return err
+		}
+
+		numeron.Players[order] = &player
 	}
 
 	return nil
