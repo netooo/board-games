@@ -16,7 +16,7 @@
     </div>
     <hr>
     <button onclick="leaveNumeron(display_id);">退室</button>
-    <button onclick="startGame();">開始</button>
+    <button onclick="startNumeron(display_id);">開始</button>
 </body>
 </html>
 
@@ -24,7 +24,44 @@
     const url = new URL(window.location.href);
     const params = url.searchParams;
     const display_id = params.get('id');
-    window.addEventListener('load', getNumeron(display_id));
+    window.addEventListener('load', function(){
+        showNumeron(display_id).then(result => {
+            if (result === null) {
+                return null
+            }
+
+            const name = document.getElementById('name');
+            const status = document.getElementById('status');
+            const participants = document.getElementById('participants');
+
+            function statusToString(status) {
+                switch (status) {
+                                    case 0:
+                                    return "Ready";
+                                    case 1:
+                                    return "Playing";
+                                    case 2:
+                                    return "Finished";
+                                    default:
+                                    return "Unknown";
+                                    }
+            }
+
+            let users;
+
+            name.innerHTML = result['name'];
+            status.innerHTML = statusToString(result['status']);
+            users = result['users'];
+            if (users != null) {
+                let participant_content = ''
+                for (let i = 0; i < users.length; i++) {
+                    participant_content +=
+                    '<ul>参加者' + (i+1) + ': ' + users[i]['name'] + '</ul>';
+                }
+                participants.innerHTML = participant_content;
+            }
+        })
+    });
     window.addEventListener('load', connectSocket(display_id));
     // 本当はsignin/upのタイミングでWebsocket接続すべきだが、
     // 異なるHTML間でsocket変数の受け渡しができなかったため、このファイルでsocket接続を行い変数を持つ。
