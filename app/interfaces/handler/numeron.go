@@ -44,11 +44,16 @@ type createResponse struct {
 }
 
 type showResponse struct {
-	DisplayId string   `json:"display_id"`
-	Name      string   `json:"name"`
-	Status    int      `json:"status"`
-	Owner     string   `json:"owner"`
-	Users     []string `json:"users"`
+	DisplayId string             `json:"display_id"`
+	Name      string             `json:"name"`
+	Status    int                `json:"status"`
+	Owner     string             `json:"owner"`
+	Users     []showUserResponse `json:"users"`
+}
+
+type showUserResponse struct {
+	UserId string `json:"user_id"`
+	Name   string `json:"name"`
 }
 
 func NewNumeronHandler(u usecase.NumeronUseCase) NumeronHandler {
@@ -137,9 +142,12 @@ func (h numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *h
 		return
 	}
 
-	var names []string
+	var users []showUserResponse
 	for u, _ := range numeron.Users {
-		names = append(names, u.Name)
+		users = append(users, showUserResponse{
+			u.UserId,
+			u.Name,
+		})
 	}
 
 	res := showResponse{
@@ -147,7 +155,7 @@ func (h numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *h
 		Name:      numeron.Name,
 		Status:    numeron.Status,
 		Owner:     numeron.Owner.Name,
-		Users:     names,
+		Users:     users,
 	}
 
 	response.Success(writer, res)
