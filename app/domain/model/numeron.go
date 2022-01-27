@@ -97,7 +97,6 @@ func (n *Numeron) Run(owner *User) {
 					// ここでもleave?
 				}
 			}
-			
 
 		/* SetCodeチャネルに動きがあった場合(コードの設定) */
 		case user := <-n.SetCode:
@@ -112,7 +111,7 @@ func (n *Numeron) Run(owner *User) {
 			if all {
 				msg := Message{
 					Action: "completed_code",
-					Value:  "",
+					Value:  user.UserId,
 				}
 
 				for _, p := range n.Players {
@@ -120,7 +119,7 @@ func (n *Numeron) Run(owner *User) {
 						// ここでもleave?
 					}
 				}
-			}else{
+			} else {
 				msg := Message{
 					Action: "set_code",
 					Value:  "",
