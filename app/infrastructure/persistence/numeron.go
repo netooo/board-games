@@ -152,7 +152,7 @@ func (p numeronPersistence) ShowNumeron(id string, userId string) (*model.Numero
 
 func (p numeronPersistence) StartNumeron(id string, userId string, firstId string, secondId string) error {
 	// SocketUsersからuserを取得
-	_, ok := SocketUsers[userId]
+	user, ok := SocketUsers[userId]
 	if !ok {
 		return errors.New("Invalid Request User")
 	}
@@ -223,6 +223,8 @@ func (p numeronPersistence) StartNumeron(id string, userId string, firstId strin
 
 		numeron.Players[order] = &player
 	}
+
+	numeron.Start <- user
 
 	return nil
 }
