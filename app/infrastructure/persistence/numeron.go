@@ -47,6 +47,8 @@ func (p numeronPersistence) CreateNumeron(name string, userId string) (string, e
 		Status:    0,
 		Join:      make(chan *model.User),
 		Leave:     make(chan *model.User),
+		Start:     make(chan *model.User),
+		SetCode:   make(chan *model.User),
 		Users:     make(map[*model.User]bool),
 		Players:   make(map[int]*model.NumeronPlayer),
 	}
@@ -197,7 +199,7 @@ func (p numeronPersistence) StartNumeron(id string, userId string, firstId strin
 	defer config.Close()
 
 	// 部屋のレコードを作成
-	if err := db.Omit("Owner", "Join", "Leave", "Users", "Players").Create(&numeron).Error; err != nil {
+	if err := db.Omit("Owner", "Join", "Leave", "Start", "SetCode", "Users", "Players").Create(&numeron).Error; err != nil {
 		return err
 	}
 
