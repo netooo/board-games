@@ -16,7 +16,6 @@ func Init() *mux.Router {
 	UserInit(s)
 	// Numeron
 	NumeronInit(s)
-	NumeronPlayerInit(s)
 
 	return s
 }

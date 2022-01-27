@@ -17,6 +17,7 @@ type NumeronHandler interface {
 	HandleNumeronEntry(http.ResponseWriter, *http.Request)
 	HandleNumeronLeave(http.ResponseWriter, *http.Request)
 	HandleNumeronStart(http.ResponseWriter, *http.Request)
+	HandleNumeronCode(http.ResponseWriter, *http.Request)
 }
 
 type numeronHandler struct {
@@ -30,6 +31,10 @@ type createRequest struct {
 type startRequest struct {
 	First  string
 	Second string
+}
+
+type codeRequest struct {
+	Code string
 }
 
 type getResponse struct {
@@ -226,6 +231,37 @@ func (h numeronHandler) HandleNumeronStart(writer http.ResponseWriter, request *
 	_ = json.Unmarshal(body, &requestBody)
 
 	err = h.numeronUseCase.StartNumeron(displayId, user.UserId, requestBody.First, requestBody.Second)
+	if err != nil {
+		response.InternalServerError(writer, err.Error())
+		return
+	}
+
+	response.Success(writer, "")
+}
+
+func (h numeronHandler) HandleNumeronCode(writer http.ResponseWriter, request *http.Request) {
+	user, err := authentication.SessionUser(request)
+	if err != nil {
+		// TODO: redirect login form
+		response.Unauthorized(writer, "Invalid Session")
+		return
+	}
+
+	// パスパラメータを取得
+	vars := mux.Vars(request)
+	displayId := vars["display_id"]
+
+	// リクエストボディを取得
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		response.BadRequest(writer, "Invalid Request Body")
+		return
+	}
+
+	var requestBody codeRequest
+	_ = json.Unmarshal(body, &requestBody)
+
+	err = h.numeronUseCase.CodeNumeron(displayId, user.UserId, requestBody.Code)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return

@@ -1,13 +1,9 @@
-function connectSocket(display_id) {
-    if (display_id === "") {
-        return
-    }
+function connectSocket() {
     const url = 'ws://localhost:8082/api/ws/connect';
     let socket = new WebSocket(url);
     const chatContent = document.getElementById("chat-content");
 
     socket.onopen = function (event) {
-        console.log("connected socket");
     };
 
     socket.onclose = function(event) {
@@ -18,6 +14,8 @@ function connectSocket(display_id) {
 
     socket.onmessage = function(event) {
         let msg = JSON.parse(event.data);
+        const mainContent = document.getElementById("main-content");
+
         if (msg['Action'] === 'join') {
             chatContent.innerHTML += msg['Value'] + "が入室しました。<br>";
             showNumeron(display_id).then(result => {
@@ -27,6 +25,40 @@ function connectSocket(display_id) {
             chatContent.innerHTML += msg['Value'] + "が退出しました。<br>";
             showNumeron(display_id).then(result => {
                 reflect(result);
+            })
+        } else if (msg['Action'] === 'start') {
+            mainContent.innerHTML =
+                '<input type="text" id="code" name="code" maxLength="3" value=""><br>' +
+                '<button onClick="setCodeNumeron(`' + display_id + '`);">設定</button><br>' +
+                '<a id="code-error"></a>';
+        } else if (msg['Action'] === 'set_code') {
+            mainContent.innerText = "対戦相手の設定をお待ちください";
+        } else if (msg['Action'] === 'completed_code') {
+            showNumeron(display_id).then(result => {
+                let users = result['users'];
+                let my = "";
+                let opponent = "";
+                for (let i = 0; i < users.length; i++) {
+                    if (users[i]['user_id'] === msg['Value'] ){
+                        my = users[i]['name'];
+                    } else {
+                        opponent = users[i]['name'];
+                    }
+                }
+                mainContent.innerHTML =
+                    '<h2>部屋名: ' + result['name'] + '</h2>' +
+                    '<hr>' +
+                    '対戦相手: ' + opponent + '<br>' +
+                    '宣言コード: ' + '<div id="opponent-call-code"></div><br>' +
+                    '宣言ログ:<br>' + '<div id="opponent-log"></div>' +
+                    '<hr>' +
+                    '自分: ' + my + '<br>' +
+                    '宣言コード: ' + '<div id="my-call-code"></div><br>' +
+                    '宣言ログ:<br>' + '<div id="my-log"></div>' +
+                    '<hr>' +
+                    '<input type="text" id="attack-code" name="attack-code" maxLength="3" value="">' +
+                    '<button onClick="attackCodeNumeron(`' + display_id + '`);">攻撃</button><br>' +
+                    '<a id="attack-code-result"></a>';
             })
         }
     };
@@ -53,10 +85,9 @@ function reflect(result) {
         }
     }
 
-    let users;
     name.innerHTML = result['name'];
     status.innerHTML = statusToString(result['status']);
-    users = result['users'];
+    let users = result['users'];
     if (users != null) {
         let participant_content = ''
         for (let i = 0; i < users.length; i++) {

@@ -6,17 +6,19 @@
     <script type="text/javascript" src='./numeron.js'></script>
 </head>
 <body>
-    <h2 id="name"></h2>
-    Status: <a id="status"></a>
-    <br>
-    Participant: <a id="participants"></a>
-    <br>
-    <hr>
-    <div id="chat-content">
+    <div id="main-content">
+        <h2 id="name"></h2>
+        Status: <a id="status"></a>
+        <br>
+        Participant: <a id="participants"></a>
+        <br>
+        <hr>
+        <div id="chat-content">
+        </div>
+        <hr>
+        <button onclick="leaveNumeron(display_id);">退室</button>
+        <button onclick="startNumeron(display_id);">開始</button>
     </div>
-    <hr>
-    <button onclick="leaveNumeron(display_id);">退室</button>
-    <button onclick="startNumeron(display_id);">開始</button>
 </body>
 </html>
 

@@ -47,6 +47,8 @@ func (p numeronPersistence) CreateNumeron(name string, userId string) (string, e
 		Status:    0,
 		Join:      make(chan *model.User),
 		Leave:     make(chan *model.User),
+		Start:     make(chan *model.User),
+		SetCode:   make(chan *model.User),
 		Users:     make(map[*model.User]bool),
 		Players:   make(map[int]*model.NumeronPlayer),
 	}
@@ -150,7 +152,7 @@ func (p numeronPersistence) ShowNumeron(id string, userId string) (*model.Numero
 
 func (p numeronPersistence) StartNumeron(id string, userId string, firstId string, secondId string) error {
 	// SocketUsersからuserを取得
-	_, ok := SocketUsers[userId]
+	user, ok := SocketUsers[userId]
 	if !ok {
 		return errors.New("Invalid Request User")
 	}
@@ -197,7 +199,7 @@ func (p numeronPersistence) StartNumeron(id string, userId string, firstId strin
 	defer config.Close()
 
 	// 部屋のレコードを作成
-	if err := db.Omit("Owner", "Join", "Leave", "Users", "Players").Create(&numeron).Error; err != nil {
+	if err := db.Omit("Owner", "Join", "Leave", "Start", "SetCode", "Users", "Players").Create(&numeron).Error; err != nil {
 		return err
 	}
 
@@ -221,6 +223,60 @@ func (p numeronPersistence) StartNumeron(id string, userId string, firstId strin
 
 		numeron.Players[order] = &player
 	}
+
+	numeron.Start <- user
+
+	return nil
+}
+
+func (p numeronPersistence) CodeNumeron(id string, userId string, code string) error {
+	// SocketUsersからuserを取得
+	user, ok := SocketUsers[userId]
+	if !ok {
+		return errors.New("Invalid Request User")
+	}
+
+	// Numeronsからnumeronを取得
+	numeron, ok := Numerons[id]
+	if !ok {
+		return errors.New("Numeron Not Found")
+	}
+
+	// 部屋の状態をチェック
+	if numeron.Status != 1 {
+		return errors.New("Numeron is not Playing")
+	}
+
+	// Numeron.PlayersからNumeronPlayerを取得
+	var player *model.NumeronPlayer
+	for _, p := range numeron.Players {
+		if p.User.ID == user.ID {
+			player = p
+			break
+		}
+	}
+
+	// Request UserがNumeron.Playersに存在しない場合は弾く
+	if (model.NumeronPlayer{}) == *player {
+		return errors.New("Player Not Found")
+	}
+
+	if player.Code != "" {
+		return errors.New("Already Set Code")
+	}
+
+	db := config.Connect()
+	defer config.Close()
+
+	if err := db.Model(&player).Omit("Numeron", "User").Update("Code", code).Error; err != nil {
+		return err
+	}
+
+	// NumeronPlayerのポインタに対して変更を行う
+	player.Code = code
+
+	// Numeron の部屋に通知する
+	numeron.SetCode <- user
 
 	return nil
 }

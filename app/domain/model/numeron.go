@@ -14,6 +14,8 @@ type Numeron struct {
 	Turn      int                    `json:"turn"`
 	Join      chan *User             `json:"-"`
 	Leave     chan *User             `json:"-"`
+	Start     chan *User             `json:"-"`
+	SetCode   chan *User             `json:"-"`
 	Users     map[*User]bool         `json:"-"`
 	Players   map[int]*NumeronPlayer `json:"-"`
 }
@@ -78,6 +80,52 @@ func (n *Numeron) Run(owner *User) {
 				if err := u.Socket.WriteJSON(msg); err != nil {
 					u.Game = ""
 					delete(n.Users, u)
+					// ここでもleave?
+				}
+			}
+
+		case user := <-n.Start:
+			msg := Message{
+				Action: "start",
+				Value:  user.Name,
+			}
+
+			for _, p := range n.Players {
+				if err := p.User.Socket.WriteJSON(msg); err != nil {
+					p.User.Game = ""
+					delete(n.Players, p.Order)
+					// ここでもleave?
+				}
+			}
+
+		/* SetCodeチャネルに動きがあった場合(コードの設定) */
+		case user := <-n.SetCode:
+			all := true
+			for _, p := range n.Players {
+				if p.Code == "" {
+					all = false
+					break
+				}
+			}
+
+			if all {
+				msg := Message{
+					Action: "completed_code",
+					Value:  user.UserId,
+				}
+
+				for _, p := range n.Players {
+					if err := p.User.Socket.WriteJSON(msg); err != nil {
+						// ここでもleave?
+					}
+				}
+			} else {
+				msg := Message{
+					Action: "set_code",
+					Value:  "",
+				}
+
+				if err := user.Socket.WriteJSON(msg); err != nil {
 					// ここでもleave?
 				}
 			}
