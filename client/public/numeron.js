@@ -79,7 +79,7 @@ function setCodeNumeron(display_id) {
     const codeError = document.getElementById("code-error");
     let code = document.getElementById("code").value;
 
-    const url = 'http://localhost:8082/api/numerons/' + display_id + '/code';
+    const url = 'http://localhost:8082/api/numerons/' + display_id + '/set';
     const data = JSON.stringify({
         code: code,
     });
