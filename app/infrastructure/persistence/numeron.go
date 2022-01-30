@@ -229,7 +229,7 @@ func (p numeronPersistence) StartNumeron(id string, userId string, firstId strin
 	return nil
 }
 
-func (p numeronPersistence) CodeNumeron(id string, userId string, code string) error {
+func (p numeronPersistence) SetNumeron(id string, userId string, code string) error {
 	// SocketUsersからuserを取得
 	user, ok := SocketUsers[userId]
 	if !ok {
