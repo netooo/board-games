@@ -15,6 +15,7 @@ type NumeronUseCase interface {
 	LeaveNumeron(id string, userId string) error
 	StartNumeron(id string, userId string, firstId string, secondId string) error
 	SetNumeron(id string, userId string, code string) error
+	AttackNumeron(id string, userId string, code string) error
 }
 
 type numeronUseCase struct {
@@ -119,8 +120,8 @@ func (u numeronUseCase) SetNumeron(id string, userId string, code string) error 
 		return errors.New("ID Not Found")
 	}
 
-	if code == "" {
-		return errors.New("Code ID Not Found")
+	if len(code) != 3 {
+		return errors.New("Length is Incorrect")
 	}
 
 	validateCode := &validators.SetCode{
@@ -128,7 +129,32 @@ func (u numeronUseCase) SetNumeron(id string, userId string, code string) error 
 	}
 
 	if err := validators.SetCodeValidate(validateCode); err != nil {
+		return errors.New("Invalid Code")
+	}
+
+	err := u.numeronRepository.SetNumeron(id, userId, code)
+	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (u numeronUseCase) AttackNumeron(id string, userId string, code string) error {
+	if id == "" {
+		return errors.New("ID Not Found")
+	}
+
+	if len(code) != 3 {
+		return errors.New("Length is Incorrect")
+	}
+
+	validateCode := &validators.AttackCode{
+		Code: code,
+	}
+
+	if err := validators.AttackCodeValidate(validateCode); err != nil {
+		return errors.New("Invalid Code")
 	}
 
 	err := u.numeronRepository.SetNumeron(id, userId, code)
