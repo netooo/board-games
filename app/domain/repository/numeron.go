@@ -12,4 +12,5 @@ type NumeronRepository interface {
 	LeaveNumeron(id string, userId string) error
 	StartNumeron(id string, userId string, firstId string, secondId string) error
 	SetNumeron(id string, userId string, code string) error
+	AttackNumeron(id string, userId string, code string) error
 }

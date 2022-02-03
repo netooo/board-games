@@ -8,6 +8,8 @@ import (
 	"github.com/netooo/board-games/app/config"
 	"github.com/netooo/board-games/app/domain/model"
 	"github.com/netooo/board-games/app/domain/repository"
+	"strconv"
+	"strings"
 )
 
 type numeronPersistence struct {
@@ -281,6 +283,85 @@ func (p numeronPersistence) SetNumeron(id string, userId string, code string) er
 	return nil
 }
 
+func (p numeronPersistence) AttackNumeron(id string, userId string, code string) error {
+	// SocketUsersからuserを取得
+	user, ok := SocketUsers[userId]
+	if !ok {
+		return errors.New("Invalid Request User")
+	}
+
+	// Numeronsからnumeronを取得
+	var numeron *model.Numeron
+	numeron, ok = Numerons[id]
+	if !ok {
+		return errors.New("Numeron Not Found")
+	}
+
+	// 部屋の状態をチェック
+	if numeron.Status != 1 {
+		return errors.New("Numeron is not Playing")
+	}
+
+	// Numeron.PlayersからNumeronPlayerを取得
+	var me *model.NumeronPlayer
+	var enemy *model.NumeronPlayer
+	for _, p := range numeron.Players {
+		if p.User.ID == user.ID {
+			me = p
+		} else {
+			enemy = p
+		}
+	}
+
+	// Request UserがNumeron.Playersに存在しない場合は弾く
+	if (model.NumeronPlayer{}) == *me {
+		return errors.New("Player Not Found")
+	}
+
+	// 攻撃順序が正しいかチェック
+	order := (numeron.Turn % 2) + 1
+	if numeron.Players[order].UserId != me.UserId {
+		return errors.New("This Player Turn is Invalid")
+	}
+
+	db := config.Connect()
+	defer config.Close()
+
+	// 1ターン進める
+	if err := db.Model(&numeron).Omit("Owner", "Join", "Leave", "Start", "SetCode").Update("Turn", numeron.Turn+1).Error; err != nil {
+		return err
+	}
+
+	numeron.Turn = numeron.Turn + 1
+
+	// Result チェック
+	result := compareCode(code, enemy.Code)
+
+	// NumeronHistoryを作成
+	history := model.NumeronHistory{
+		NumeronId:     numeron.ID,
+		Numeron:       numeron,
+		PlayerId:      me.ID,
+		NumeronPlayer: me,
+		Code:          code,
+		Result:        result,
+		Turn:          numeron.Turn,
+	}
+
+	if err := db.Omit("Numeron", "NumeronPlayer").Create(&history).Error; err != nil {
+		return err
+	}
+
+	// Numeron の部屋に通知する
+	if result == "30" {
+		numeron.Finish <- user
+	} else {
+		numeron.Attack <- user
+	}
+
+	return nil
+}
+
 func isContains(ids []string, id string) bool {
 	for _, i := range ids {
 		if i == id {
@@ -314,4 +395,21 @@ func generateDisplayId() string {
 	}
 
 	return id
+}
+
+func compareCode(code string, ans string) string {
+	hit := 0
+	bite := 0
+
+	codeSlice := strings.Split(code, "")
+	ansSlice := strings.Split(ans, "")
+	for i := 0; i < len(codeSlice); i++ {
+		if codeSlice[i] == ansSlice[i] {
+			hit++
+		} else if (strings.Index(ans, codeSlice[i])) != -1 {
+			bite++
+		}
+	}
+
+	return strconv.Itoa(hit) + strconv.Itoa(bite)
 }
