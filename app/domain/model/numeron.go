@@ -16,6 +16,7 @@ type Numeron struct {
 	Leave     chan *User             `json:"-"`
 	Start     chan *User             `json:"-"`
 	SetCode   chan *User             `json:"-"`
+	Attack    chan *User             `json:"-"`
 	Users     map[*User]bool         `json:"-"`
 	Players   map[int]*NumeronPlayer `json:"-"`
 }
@@ -129,6 +130,27 @@ func (n *Numeron) Run(owner *User) {
 					// ここでもleave?
 				}
 			}
+		/* SetCodeチャネルに動きがあった場合(コードの設定) */
+		case user := <-n.Attack:
+			var result string
+			for _, p := range n.Players {
+				if p.UserId == user.ID {
+					result = p.Result
+					break
+				}
+			}
+
+			msg := Message{
+				Action: "attack_code",
+				Value:  result,
+			}
+
+			for _, p := range n.Players {
+				if err := p.User.Socket.WriteJSON(msg); err != nil {
+					// ここでもleave?
+				}
+			}
+
 		}
 	}
 }

@@ -331,12 +331,13 @@ func (p numeronPersistence) AttackNumeron(id string, userId string, code string)
 	if err := db.Model(&numeron).Omit("Owner", "Join", "Leave", "Start", "SetCode").Update("Turn", numeron.Turn+1).Error; err != nil {
 		return err
 	}
-
 	numeron.Turn = numeron.Turn + 1
 
 	// Result チェック
 	result := compareCode(code, enemy.Code)
 
+	// 攻撃側のNumeronPlayerに結果を格納
+	me.Result = result
 	// NumeronHistoryを作成
 	history := model.NumeronHistory{
 		NumeronId:     numeron.ID,
