@@ -201,7 +201,7 @@ func (p numeronPersistence) StartNumeron(id string, userId string, firstId strin
 	defer config.Close()
 
 	// 部屋のレコードを作成
-	if err := db.Omit("Owner", "Join", "Leave", "Start", "SetCode", "Users", "Players").Create(&numeron).Error; err != nil {
+	if err := db.Omit("Owner", "Join", "Leave", "Start", "SetCode", "Attack", "Finish", "Users", "Players").Create(&numeron).Error; err != nil {
 		return err
 	}
 
@@ -219,7 +219,7 @@ func (p numeronPersistence) StartNumeron(id string, userId string, firstId strin
 			Rank:      0,
 		}
 
-		if err := db.Omit("Numeron", "User").Create(&player).Error; err != nil {
+		if err := db.Omit("Numeron", "User", "Result").Create(&player).Error; err != nil {
 			return err
 		}
 
@@ -270,7 +270,7 @@ func (p numeronPersistence) SetNumeron(id string, userId string, code string) er
 	db := config.Connect()
 	defer config.Close()
 
-	if err := db.Model(&player).Omit("Numeron", "User").Update("Code", code).Error; err != nil {
+	if err := db.Model(&player).Omit("Numeron", "User", "Result").Update("Code", code).Error; err != nil {
 		return err
 	}
 
@@ -328,7 +328,7 @@ func (p numeronPersistence) AttackNumeron(id string, userId string, code string)
 	defer config.Close()
 
 	// 1ターン進める
-	if err := db.Model(&numeron).Omit("Owner", "Join", "Leave", "Start", "SetCode").Update("Turn", numeron.Turn+1).Error; err != nil {
+	if err := db.Model(&numeron).Omit("Owner", "Join", "Leave", "Start", "SetCode", "Attack", "Finish").Update("Turn", numeron.Turn+1).Error; err != nil {
 		return err
 	}
 	numeron.Turn = numeron.Turn + 1
