@@ -219,7 +219,7 @@ func (p numeronPersistence) StartNumeron(id string, userId string, firstId strin
 			Rank:      0,
 		}
 
-		if err := db.Omit("Numeron", "User", "Result").Create(&player).Error; err != nil {
+		if err := db.Omit("Numeron", "User", "Attack", "Result").Create(&player).Error; err != nil {
 			return err
 		}
 
@@ -270,7 +270,7 @@ func (p numeronPersistence) SetNumeron(id string, userId string, code string) er
 	db := config.Connect()
 	defer config.Close()
 
-	if err := db.Model(&player).Omit("Numeron", "User", "Result").Update("Code", code).Error; err != nil {
+	if err := db.Model(&player).Omit("Numeron", "User", "Attack", "Result").Update("Code", code).Error; err != nil {
 		return err
 	}
 
@@ -336,8 +336,10 @@ func (p numeronPersistence) AttackNumeron(id string, userId string, code string)
 	// Result チェック
 	result := compareCode(code, enemy.Code)
 
-	// 攻撃側のNumeronPlayerに結果を格納
+	// 攻撃側のNumeronPlayerに攻撃コードと結果を格納
+	me.Attack = code
 	me.Result = result
+
 	// NumeronHistoryを作成
 	history := model.NumeronHistory{
 		NumeronId:     numeron.ID,

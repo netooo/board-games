@@ -27,6 +27,13 @@ type Message struct {
 	Value  string
 }
 
+type AttackMessage struct {
+	Action string
+	UserId string
+	Code   string
+	Result string
+}
+
 type Status int
 
 const (
@@ -134,17 +141,21 @@ func (n *Numeron) Run(owner *User) {
 
 		/* Attackチャネルに動きがあった場合(コードの宣言) */
 		case user := <-n.Attack:
-			var result string
+			var userId, code, result string
 			for _, p := range n.Players {
 				if p.UserId == user.ID {
+					userId = p.User.UserId
+					code = p.Attack
 					result = p.Result
 					break
 				}
 			}
 
-			msg := Message{
+			msg := AttackMessage{
 				Action: "attack_code",
-				Value:  result,
+				UserId: userId,
+				Code:   code,
+				Result: result,
 			}
 
 			for _, p := range n.Players {
