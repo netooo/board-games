@@ -60,8 +60,27 @@ function connectSocket() {
                     '<button onClick="attackCodeNumeron(`' + display_id + '`);">攻撃</button><br>' +
                     '<a id="attack-code-result"></a>';
             })
+        } else if (msg['Action'] === 'attack_code') {
+            showNumeron(display_id).then(result => {
+                let users = result['users'];
+                const myCallCode = document.getElementById('my-call-code');
+                const myLog = document.getElementById('my-log');
+                const opponentCallCode = document.getElementById('opponent-call-code');
+                const opponentLog = document.getElementById('opponent-log');
+                const result = document.getElementById('result');
+                for (let i = 0; i < users.length; i++) {
+                    if (users[i]['user_id'] === msg['user_id'] ){
+                        myCallCode.innerHTML = msg['code'];
+                        myLog.innerHTML += msg['code'] + '<br>';
+                    } else {
+                        opponentCallCode.innerHTML = msg['code'];
+                        opponentLog.innerHTML += msg['code'] + '<br>';
+                    }
+                }
+
+            });
         }
-    };
+    }
 }
 
 function reflect(result) {
