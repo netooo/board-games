@@ -118,12 +118,12 @@ func (n *Numeron) Run(owner *User) {
 			}
 
 			if all {
-				msg := Message{
-					Action: "completed_code",
-					Value:  user.UserId,
-				}
-
 				for _, p := range n.Players {
+					msg := Message{
+						Action: "completed_code",
+						Value:  p.User.UserId,
+					}
+
 					if err := p.User.Socket.WriteJSON(msg); err != nil {
 						// ここでもleave?
 					}
@@ -151,14 +151,14 @@ func (n *Numeron) Run(owner *User) {
 				}
 			}
 
-			msg := AttackMessage{
-				Action: "attack_code",
-				UserId: userId,
-				Code:   code,
-				Result: result,
-			}
-
 			for _, p := range n.Players {
+				msg := AttackMessage{
+					Action: "attack_code",
+					UserId: userId,
+					Code:   code,
+					Result: result,
+				}
+
 				if err := p.User.Socket.WriteJSON(msg); err != nil {
 					// ここでもleave?
 				}
