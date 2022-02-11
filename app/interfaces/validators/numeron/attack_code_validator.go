@@ -5,7 +5,7 @@ import (
 )
 
 type AttackCode struct {
-	Code string `validate:"required,len=3,set_code_validation"`
+	Code string `validate:"required,len=3,attack_code_validation"`
 }
 
 func AttackCodeValidate(i interface{}) error {

@@ -157,7 +157,7 @@ func (u numeronUseCase) AttackNumeron(id string, userId string, code string) err
 		return errors.New("Invalid Code")
 	}
 
-	err := u.numeronRepository.SetNumeron(id, userId, code)
+	err := u.numeronRepository.AttackNumeron(id, userId, code)
 	if err != nil {
 		return err
 	}
