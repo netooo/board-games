@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"errors"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
@@ -51,6 +52,8 @@ func (p numeronPersistence) CreateNumeron(name string, userId string) (string, e
 		Leave:     make(chan *model.User),
 		Start:     make(chan *model.User),
 		SetCode:   make(chan *model.User),
+		Attack:    make(chan *model.User),
+		Finish:    make(chan *model.User),
 		Users:     make(map[*model.User]bool),
 		Players:   make(map[int]*model.NumeronPlayer),
 	}
@@ -337,6 +340,7 @@ func (p numeronPersistence) AttackNumeron(id string, userId string, code string)
 	result := compareCode(code, enemy.Code)
 
 	// 攻撃側のNumeronPlayerに攻撃コードと結果を格納
+	fmt.Sprintf("code=%s, result=%s\n", code, result)
 	me.Attack = code
 	me.Result = result
 
@@ -356,9 +360,12 @@ func (p numeronPersistence) AttackNumeron(id string, userId string, code string)
 	}
 
 	// Numeron の部屋に通知する
+	fmt.Println("before send to channel")
 	if result == "30" {
+		fmt.Println("finish")
 		numeron.Finish <- user
 	} else {
+		fmt.Println("attack")
 		numeron.Attack <- user
 	}
 
