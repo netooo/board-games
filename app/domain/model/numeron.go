@@ -27,6 +27,12 @@ type Message struct {
 	Value  string
 }
 
+type StartMessage struct {
+	Action string
+	Value  string
+	UserId string
+}
+
 type AttackMessage struct {
 	Action string
 	UserId string
@@ -94,9 +100,10 @@ func (n *Numeron) Run(owner *User) {
 			}
 
 		case user := <-n.Start:
-			msg := Message{
+			msg := StartMessage{
 				Action: "start",
 				Value:  user.Name,
+				UserId: user.UserId,
 			}
 
 			for _, p := range n.Players {
