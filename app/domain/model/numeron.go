@@ -160,7 +160,7 @@ func (n *Numeron) Run(owner *User) {
 
 			for _, p := range n.Players {
 				msg := AttackMessage{
-					Action: "attack_code",
+					Action: "attack",
 					UserId: userId,
 					Code:   code,
 					Result: result,
