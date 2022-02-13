@@ -34,10 +34,11 @@ type StartMessage struct {
 }
 
 type AttackMessage struct {
-	Action string
-	UserId string
-	Code   string
-	Result string
+	Action     string
+	AttackUser string
+	UserId     string
+	Code       string
+	Result     string
 }
 
 type Status int
@@ -148,10 +149,10 @@ func (n *Numeron) Run(owner *User) {
 
 		/* Attackチャネルに動きがあった場合(コードの宣言) */
 		case user := <-n.Attack:
-			var userId, code, result string
+			var attackUser, code, result string
 			for _, p := range n.Players {
 				if p.UserId == user.ID {
-					userId = p.User.UserId
+					attackUser = p.User.UserId
 					code = p.Attack
 					result = p.Result
 					break
@@ -160,10 +161,11 @@ func (n *Numeron) Run(owner *User) {
 
 			for _, p := range n.Players {
 				msg := AttackMessage{
-					Action: "attack",
-					UserId: userId,
-					Code:   code,
-					Result: result,
+					Action:     "attack",
+					AttackUser: attackUser,
+					UserId:     p.User.UserId,
+					Code:       code,
+					Result:     result,
 				}
 
 				if err := p.User.Socket.WriteJSON(msg); err != nil {

@@ -57,28 +57,21 @@ function connectSocket() {
                     '宣言ログ:<br>' + '<div id="my-log"></div>' +
                     '<hr>' +
                     '<input type="text" id="attack-code" name="attack-code" maxLength="3" value="">' +
-                    '<button onClick="attackCodeNumeron(`' + display_id + '`);">攻撃</button><br>' +
-                    '<a id="attack-code-result"></a>';
+                    '<button onClick="attackCodeNumeron(`' + display_id + '`);">攻撃</button><br>'
             })
-        } else if (msg['Action'] === 'attack_code') {
-            showNumeron(display_id).then(result => {
-                let users = result['users'];
-                const myCallCode = document.getElementById('my-call-code');
-                const myLog = document.getElementById('my-log');
-                const opponentCallCode = document.getElementById('opponent-call-code');
-                const opponentLog = document.getElementById('opponent-log');
-                const result = document.getElementById('result');
-                for (let i = 0; i < users.length; i++) {
-                    if (users[i]['user_id'] === msg['user_id'] ){
-                        myCallCode.innerHTML = msg['code'];
-                        myLog.innerHTML += msg['code'] + '<br>';
-                    } else {
-                        opponentCallCode.innerHTML = msg['code'];
-                        opponentLog.innerHTML += msg['code'] + '<br>';
-                    }
-                }
+        } else if (msg['Action'] === 'attack') {
+            const myCallCode = document.getElementById('my-call-code');
+            const myLog = document.getElementById('my-log');
+            const opponentCallCode = document.getElementById('opponent-call-code');
+            const opponentLog = document.getElementById('opponent-log');
 
-            });
+            if (msg['AttackUser'] === msg['UserId']) {
+                myCallCode.innerHTML = msg['Code'];
+                myLog.innerHTML += msg['Code'] + '(' + msg['Result'] + ')<br>';
+            } else {
+                opponentCallCode.innerHTML = msg['Code'];
+                opponentLog.innerHTML += msg['Code'] + '(' + msg['Result'] + ')<br>';
+            }
         }
     }
 }
