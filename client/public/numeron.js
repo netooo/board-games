@@ -79,7 +79,7 @@ function setCodeNumeron(display_id) {
     const codeError = document.getElementById("code-error");
     let code = document.getElementById("code").value;
 
-    const url = 'http://localhost:8082/api/numerons/' + display_id + '/code';
+    const url = 'http://localhost:8082/api/numerons/' + display_id + '/set';
     const data = JSON.stringify({
         code: code,
     });
@@ -93,6 +93,28 @@ function setCodeNumeron(display_id) {
         if (this.readyState === this.DONE) {
             if (this.status !== 200) {
                 codeError.innerText = this.responseText;
+            }
+        }
+    });
+}
+
+function attackCodeNumeron(display_id) {
+    let code = document.getElementById("attack-code").value;
+
+    const url = 'http://localhost:8082/api/numerons/' + display_id + '/attack';
+    const data = JSON.stringify({
+        code: code,
+    });
+    const xhr = new XMLHttpRequest()
+    xhr.withCredentials = true
+    xhr.open('POST', url);
+    xhr.setRequestHeader('content-type', 'application/json');
+    xhr.send(data);
+
+    xhr.addEventListener('readystatechange', function () {
+        if (this.readyState === this.DONE) {
+            if (this.status !== 200) {
+                console.log(this.responseText);
             }
         }
     });

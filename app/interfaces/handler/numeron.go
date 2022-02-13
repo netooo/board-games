@@ -17,7 +17,8 @@ type NumeronHandler interface {
 	HandleNumeronEntry(http.ResponseWriter, *http.Request)
 	HandleNumeronLeave(http.ResponseWriter, *http.Request)
 	HandleNumeronStart(http.ResponseWriter, *http.Request)
-	HandleNumeronCode(http.ResponseWriter, *http.Request)
+	HandleNumeronSet(http.ResponseWriter, *http.Request)
+	HandleNumeronAttack(http.ResponseWriter, *http.Request)
 }
 
 type numeronHandler struct {
@@ -239,7 +240,7 @@ func (h numeronHandler) HandleNumeronStart(writer http.ResponseWriter, request *
 	response.Success(writer, "")
 }
 
-func (h numeronHandler) HandleNumeronCode(writer http.ResponseWriter, request *http.Request) {
+func (h numeronHandler) HandleNumeronSet(writer http.ResponseWriter, request *http.Request) {
 	user, err := authentication.SessionUser(request)
 	if err != nil {
 		// TODO: redirect login form
@@ -261,7 +262,38 @@ func (h numeronHandler) HandleNumeronCode(writer http.ResponseWriter, request *h
 	var requestBody codeRequest
 	_ = json.Unmarshal(body, &requestBody)
 
-	err = h.numeronUseCase.CodeNumeron(displayId, user.UserId, requestBody.Code)
+	err = h.numeronUseCase.SetNumeron(displayId, user.UserId, requestBody.Code)
+	if err != nil {
+		response.InternalServerError(writer, err.Error())
+		return
+	}
+
+	response.Success(writer, "")
+}
+
+func (h numeronHandler) HandleNumeronAttack(writer http.ResponseWriter, request *http.Request) {
+	user, err := authentication.SessionUser(request)
+	if err != nil {
+		// TODO: redirect login form
+		response.Unauthorized(writer, "Invalid Session")
+		return
+	}
+
+	// パスパラメータを取得
+	vars := mux.Vars(request)
+	displayId := vars["display_id"]
+
+	// リクエストボディを取得
+	body, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		response.BadRequest(writer, "Invalid Request Body")
+		return
+	}
+
+	var requestBody codeRequest
+	_ = json.Unmarshal(body, &requestBody)
+
+	err = h.numeronUseCase.AttackNumeron(displayId, user.UserId, requestBody.Code)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return

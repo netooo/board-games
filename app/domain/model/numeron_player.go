@@ -12,7 +12,9 @@ type NumeronPlayer struct {
 	User      *User
 	Order     int    `json:order`
 	Code      string `json:code`
-	Rank      int    `json:rank`
+	Attack    string
+	Result    string
+	Rank      int `json:rank`
 }
 
 type Order int

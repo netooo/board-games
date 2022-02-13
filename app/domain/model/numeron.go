@@ -16,6 +16,8 @@ type Numeron struct {
 	Leave     chan *User             `json:"-"`
 	Start     chan *User             `json:"-"`
 	SetCode   chan *User             `json:"-"`
+	Attack    chan *User             `json:"-"`
+	Finish    chan *User             `json:"-"`
 	Users     map[*User]bool         `json:"-"`
 	Players   map[int]*NumeronPlayer `json:"-"`
 }
@@ -23,6 +25,20 @@ type Numeron struct {
 type Message struct {
 	Action string
 	Value  string
+}
+
+type StartMessage struct {
+	Action string
+	Value  string
+	UserId string
+}
+
+type AttackMessage struct {
+	Action     string
+	AttackUser string
+	UserId     string
+	Code       string
+	Result     string
 }
 
 type Status int
@@ -85,9 +101,10 @@ func (n *Numeron) Run(owner *User) {
 			}
 
 		case user := <-n.Start:
-			msg := Message{
+			msg := StartMessage{
 				Action: "start",
 				Value:  user.Name,
+				UserId: user.UserId,
 			}
 
 			for _, p := range n.Players {
@@ -109,12 +126,12 @@ func (n *Numeron) Run(owner *User) {
 			}
 
 			if all {
-				msg := Message{
-					Action: "completed_code",
-					Value:  user.UserId,
-				}
-
 				for _, p := range n.Players {
+					msg := Message{
+						Action: "completed_code",
+						Value:  p.User.UserId,
+					}
+
 					if err := p.User.Socket.WriteJSON(msg); err != nil {
 						// ここでもleave?
 					}
@@ -126,6 +143,45 @@ func (n *Numeron) Run(owner *User) {
 				}
 
 				if err := user.Socket.WriteJSON(msg); err != nil {
+					// ここでもleave?
+				}
+			}
+
+		/* Attackチャネルに動きがあった場合(コードの宣言) */
+		case user := <-n.Attack:
+			var attackUser, code, result string
+			for _, p := range n.Players {
+				if p.UserId == user.ID {
+					attackUser = p.User.UserId
+					code = p.Attack
+					result = p.Result
+					break
+				}
+			}
+
+			for _, p := range n.Players {
+				msg := AttackMessage{
+					Action:     "attack",
+					AttackUser: attackUser,
+					UserId:     p.User.UserId,
+					Code:       code,
+					Result:     result,
+				}
+
+				if err := p.User.Socket.WriteJSON(msg); err != nil {
+					// ここでもleave?
+				}
+			}
+
+		/* Finishチャネルに動きがあった場合(ゲーム終了) */
+		case user := <-n.Finish:
+			msg := Message{
+				Action: "finish",
+				Value:  user.Name,
+			}
+
+			for _, p := range n.Players {
+				if err := p.User.Socket.WriteJSON(msg); err != nil {
 					// ここでもleave?
 				}
 			}

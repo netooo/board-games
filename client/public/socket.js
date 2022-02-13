@@ -58,10 +58,26 @@ function connectSocket() {
                     '<hr>' +
                     '<input type="text" id="attack-code" name="attack-code" maxLength="3" value="">' +
                     '<button onClick="attackCodeNumeron(`' + display_id + '`);">攻撃</button><br>' +
-                    '<a id="attack-code-result"></a>';
+                    '<a id="numeron-message"></a>';
             })
+        } else if (msg['Action'] === 'attack') {
+            const myCallCode = document.getElementById('my-call-code');
+            const myLog = document.getElementById('my-log');
+            const opponentCallCode = document.getElementById('opponent-call-code');
+            const opponentLog = document.getElementById('opponent-log');
+
+            if (msg['AttackUser'] === msg['UserId']) {
+                myCallCode.innerHTML = msg['Code'];
+                myLog.innerHTML += msg['Code'] + '(' + msg['Result'] + ')<br>';
+            } else {
+                opponentCallCode.innerHTML = msg['Code'];
+                opponentLog.innerHTML += msg['Code'] + '(' + msg['Result'] + ')<br>';
+            }
+        } else if (msg['Action'] === 'finish') {
+            const numeronMessage = document.getElementById('numeron-message');
+            numeronMessage.innerText = 'Winner: ' + msg['Value'];
         }
-    };
+    }
 }
 
 function reflect(result) {
