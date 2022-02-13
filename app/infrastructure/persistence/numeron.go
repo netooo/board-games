@@ -329,11 +329,6 @@ func (p numeronPersistence) AttackNumeron(id string, userId string, code string)
 	db := config.Connect()
 	defer config.Close()
 
-	// 1ターン進める
-	if err := db.Model(&numeron).Omit("Owner", "Join", "Leave", "Start", "SetCode", "Attack", "Finish").Update("Turn", numeron.Turn+1).Error; err != nil {
-		return err
-	}
-
 	// Result チェック
 	result := compareCode(code, enemy.Code)
 
@@ -358,8 +353,18 @@ func (p numeronPersistence) AttackNumeron(id string, userId string, code string)
 
 	// Numeron の部屋に通知する
 	if result == "30" {
+		// 終了
+		if err := db.Model(&numeron).Omit("Owner", "Join", "Leave", "Start", "SetCode", "Attack", "Finish").Update("Status", 2).Error; err != nil {
+			return err
+		}
+
 		numeron.Finish <- user
 	} else {
+		// 1ターン進める
+		if err := db.Model(&numeron).Omit("Owner", "Join", "Leave", "Start", "SetCode", "Attack", "Finish").Update("Turn", numeron.Turn+1).Error; err != nil {
+			return err
+		}
+
 		numeron.Attack <- user
 	}
 

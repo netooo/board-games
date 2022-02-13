@@ -57,7 +57,8 @@ function connectSocket() {
                     '宣言ログ:<br>' + '<div id="my-log"></div>' +
                     '<hr>' +
                     '<input type="text" id="attack-code" name="attack-code" maxLength="3" value="">' +
-                    '<button onClick="attackCodeNumeron(`' + display_id + '`);">攻撃</button><br>'
+                    '<button onClick="attackCodeNumeron(`' + display_id + '`);">攻撃</button><br>' +
+                    '<a id="numeron-message"></a>';
             })
         } else if (msg['Action'] === 'attack') {
             const myCallCode = document.getElementById('my-call-code');
@@ -72,6 +73,9 @@ function connectSocket() {
                 opponentCallCode.innerHTML = msg['Code'];
                 opponentLog.innerHTML += msg['Code'] + '(' + msg['Result'] + ')<br>';
             }
+        } else if (msg['Action'] === 'finish') {
+            const numeronMessage = document.getElementById('numeron-message');
+            numeronMessage.innerText = 'Winner: ' + msg['Value'];
         }
     }
 }
