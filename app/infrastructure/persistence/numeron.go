@@ -333,7 +333,6 @@ func (p numeronPersistence) AttackNumeron(id string, userId string, code string)
 	if err := db.Model(&numeron).Omit("Owner", "Join", "Leave", "Start", "SetCode", "Attack", "Finish").Update("Turn", numeron.Turn+1).Error; err != nil {
 		return err
 	}
-	numeron.Turn = numeron.Turn + 1
 
 	// Result チェック
 	result := compareCode(code, enemy.Code)
