@@ -67,6 +67,7 @@ func NewNumeronHandler(u usecase.NumeronUseCase) NumeronHandler {
 		numeronUseCase: u,
 	}
 }
+
 func (h numeronHandler) HandleNumeronGet(writer http.ResponseWriter, request *http.Request) {
 	_, err := authentication.SessionUser(request)
 	if err != nil {
