@@ -120,7 +120,7 @@ func (h numeronHandler) HandleNumeronCreate(writer http.ResponseWriter, request 
 	var requestBody createRequest
 	_ = json.Unmarshal(body, &requestBody)
 
-	displayId, err := h.numeronUseCase.CreateNumeron(requestBody.Name, user.UserId)
+	displayId, err := h.numeronUseCase.CreateNumeron(requestBody.Name, user.DisplayId)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
@@ -143,7 +143,7 @@ func (h numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *h
 	vars := mux.Vars(request)
 	displayId := vars["display_id"]
 
-	numeron, err := h.numeronUseCase.ShowNumeron(displayId, user.UserId)
+	numeron, err := h.numeronUseCase.ShowNumeron(displayId, user.DisplayId)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return
@@ -152,7 +152,7 @@ func (h numeronHandler) HandleNumeronShow(writer http.ResponseWriter, request *h
 	var users []showUserResponse
 	for u, _ := range numeron.Users {
 		users = append(users, showUserResponse{
-			u.UserId,
+			u.DisplayId,
 			u.Name,
 		})
 	}
@@ -180,7 +180,7 @@ func (h numeronHandler) HandleNumeronEntry(writer http.ResponseWriter, request *
 	vars := mux.Vars(request)
 	displayId := vars["display_id"]
 
-	err = h.numeronUseCase.EntryNumeron(displayId, user.UserId)
+	err = h.numeronUseCase.EntryNumeron(displayId, user.DisplayId)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
@@ -201,7 +201,7 @@ func (h numeronHandler) HandleNumeronLeave(writer http.ResponseWriter, request *
 	vars := mux.Vars(request)
 	displayId := vars["display_id"]
 
-	err = h.numeronUseCase.LeaveNumeron(displayId, user.UserId)
+	err = h.numeronUseCase.LeaveNumeron(displayId, user.DisplayId)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
@@ -232,7 +232,7 @@ func (h numeronHandler) HandleNumeronStart(writer http.ResponseWriter, request *
 	var requestBody startRequest
 	_ = json.Unmarshal(body, &requestBody)
 
-	err = h.numeronUseCase.StartNumeron(displayId, user.UserId, requestBody.First, requestBody.Second)
+	err = h.numeronUseCase.StartNumeron(displayId, user.DisplayId, requestBody.First, requestBody.Second)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
@@ -263,7 +263,7 @@ func (h numeronHandler) HandleNumeronSet(writer http.ResponseWriter, request *ht
 	var requestBody codeRequest
 	_ = json.Unmarshal(body, &requestBody)
 
-	err = h.numeronUseCase.SetNumeron(displayId, user.UserId, requestBody.Code)
+	err = h.numeronUseCase.SetNumeron(displayId, user.DisplayId, requestBody.Code)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return
@@ -294,7 +294,7 @@ func (h numeronHandler) HandleNumeronAttack(writer http.ResponseWriter, request 
 	var requestBody codeRequest
 	_ = json.Unmarshal(body, &requestBody)
 
-	err = h.numeronUseCase.AttackNumeron(displayId, user.UserId, requestBody.Code)
+	err = h.numeronUseCase.AttackNumeron(displayId, user.DisplayId, requestBody.Code)
 	if err != nil {
 		response.InternalServerError(writer, err.Error())
 		return

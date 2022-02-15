@@ -119,7 +119,7 @@ func (n *Numeron) Run(owner *User) {
 			msg := StartMessage{
 				Action: "start",
 				Name:   user.Name,
-				UserId: user.UserId,
+				UserId: user.DisplayId,
 			}
 
 			for _, p := range n.Players {
@@ -144,7 +144,7 @@ func (n *Numeron) Run(owner *User) {
 				for _, p := range n.Players {
 					msg := SetMessage{
 						Action: "completed_code",
-						UserId: p.User.UserId,
+						UserId: p.User.DisplayId,
 					}
 
 					if err := p.User.Socket.WriteJSON(msg); err != nil {
@@ -167,7 +167,7 @@ func (n *Numeron) Run(owner *User) {
 			var attackUser, code, result string
 			for _, p := range n.Players {
 				if p.UserId == user.ID {
-					attackUser = p.User.UserId
+					attackUser = p.User.DisplayId
 					code = p.Attack
 					result = p.Result
 					break
@@ -178,7 +178,7 @@ func (n *Numeron) Run(owner *User) {
 				msg := AttackMessage{
 					Action:     "attack",
 					AttackUser: attackUser,
-					UserId:     p.User.UserId,
+					UserId:     p.User.DisplayId,
 					Code:       code,
 					Result:     result,
 				}

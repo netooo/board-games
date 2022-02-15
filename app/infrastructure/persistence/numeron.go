@@ -179,7 +179,7 @@ func (p numeronPersistence) StartNumeron(id string, userId string, firstId strin
 
 	var userIds []string
 	for u, _ := range numeron.Users {
-		userIds = append(userIds, u.UserId)
+		userIds = append(userIds, u.DisplayId)
 	}
 
 	// Request UserがNumeronsに存在しない場合は弾く
