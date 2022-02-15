@@ -17,12 +17,12 @@ function connectSocket() {
         const mainContent = document.getElementById("main-content");
 
         if (msg['Action'] === 'join') {
-            chatContent.innerHTML += msg['Value'] + "が入室しました。<br>";
+            chatContent.innerHTML += msg['Name'] + "が入室しました。<br>";
             showNumeron(display_id).then(result => {
                 reflect(result);
             })
         } else if (msg['Action'] === 'leave') {
-            chatContent.innerHTML += msg['Value'] + "が退出しました。<br>";
+            chatContent.innerHTML += msg['Name'] + "が退出しました。<br>";
             showNumeron(display_id).then(result => {
                 reflect(result);
             })
@@ -39,7 +39,7 @@ function connectSocket() {
                 let my = "";
                 let opponent = "";
                 for (let i = 0; i < users.length; i++) {
-                    if (users[i]['user_id'] === msg['Value'] ){
+                    if (users[i]['user_id'] === msg['UserId'] ){
                         my = users[i]['name'];
                     } else {
                         opponent = users[i]['name'];
@@ -75,7 +75,7 @@ function connectSocket() {
             }
         } else if (msg['Action'] === 'finish') {
             const numeronMessage = document.getElementById('numeron-message');
-            numeronMessage.innerText = 'Winner: ' + msg['Value'];
+            numeronMessage.innerText = 'Winner: ' + msg['Name'];
         }
     }
 }
