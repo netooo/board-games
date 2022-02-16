@@ -20,20 +20,20 @@ func NewSocketPersistence(conn *gorm.DB) repository.SocketRepository {
 }
 
 func (sp socketPersistence) ConnectSocket(user *model.User, socket *websocket.Conn) error {
-	oldUser, ok := SocketUsers[user.UserId]
+	oldUser, ok := SocketUsers[user.DisplayId]
 	if ok {
 		_ = oldUser.Socket.Close()
 		oldUser.Socket = socket
 	} else {
 		user.Socket = socket
-		SocketUsers[user.UserId] = user
+		SocketUsers[user.DisplayId] = user
 	}
 
 	return nil
 }
 
 func (sp socketPersistence) DisconnectSocket(user *model.User) error {
-	oldUser, ok := SocketUsers[user.UserId]
+	oldUser, ok := SocketUsers[user.DisplayId]
 	if !ok {
 		return nil
 	}
@@ -50,7 +50,7 @@ func (sp socketPersistence) DisconnectSocket(user *model.User) error {
 		}
 	}
 	_ = oldUser.Socket.Close()
-	delete(SocketUsers, oldUser.UserId)
+	delete(SocketUsers, oldUser.DisplayId)
 
 	return nil
 }

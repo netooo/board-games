@@ -18,10 +18,10 @@ func NewUserPersistence(conn *gorm.DB) repository.UserRepository {
 
 func (up userPersistence) Insert(userId, name, email, password string) (*model.User, error) {
 	user := model.User{
-		UserId:   userId,
-		Name:     name,
-		Email:    email,
-		Password: password,
+		DisplayId: userId,
+		Name:      name,
+		Email:     email,
+		Password:  password,
 	}
 
 	db := config.Connect()

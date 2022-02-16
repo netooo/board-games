@@ -68,7 +68,7 @@ func (uh userHandler) HandleUserSignup(writer http.ResponseWriter, request *http
 	}
 
 	// Create and Return Session
-	session, err := authentication.SessionCreate(user.UserId)
+	session, err := authentication.SessionCreate(user.DisplayId)
 	if err != nil {
 		response.Unauthorized(writer, "Invalid Session")
 	}
