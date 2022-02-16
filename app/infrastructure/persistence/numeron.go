@@ -66,6 +66,22 @@ func (p numeronPersistence) CreateNumeron(name string, userId string) (string, e
 	return numeron.DisplayId, nil
 }
 
+func (p numeronPersistence) ShowNumeron(id string, userId string) (*model.Numeron, error) {
+	// SocketUsersからuserを取得
+	_, ok := SocketUsers[userId]
+	if !ok {
+		return nil, errors.New("Invalid Request User")
+	}
+
+	// Numeronsからnumeronを取得
+	numeron, ok := Numerons[id]
+	if !ok {
+		return nil, errors.New("Numeron Not Found")
+	}
+
+	return numeron, nil
+}
+
 func (p numeronPersistence) EntryNumeron(id string, userId string) error {
 	// Numeronsからnumeronを取得
 	numeron, ok := Numerons[id]
@@ -138,22 +154,6 @@ func (p numeronPersistence) LeaveNumeron(id string, userId string) error {
 	return nil
 }
 
-func (p numeronPersistence) ShowNumeron(id string, userId string) (*model.Numeron, error) {
-	// SocketUsersからuserを取得
-	_, ok := SocketUsers[userId]
-	if !ok {
-		return nil, errors.New("Invalid Request User")
-	}
-
-	// Numeronsからnumeronを取得
-	numeron, ok := Numerons[id]
-	if !ok {
-		return nil, errors.New("Numeron Not Found")
-	}
-
-	return numeron, nil
-}
-
 func (p numeronPersistence) StartNumeron(id string, userId string, firstId string, secondId string) error {
 	// SocketUsersからuserを取得
 	user, ok := SocketUsers[userId]
@@ -179,7 +179,7 @@ func (p numeronPersistence) StartNumeron(id string, userId string, firstId strin
 
 	var userIds []string
 	for u, _ := range numeron.Users {
-		userIds = append(userIds, u.UserId)
+		userIds = append(userIds, u.DisplayId)
 	}
 
 	// Request UserがNumeronsに存在しない場合は弾く
@@ -323,7 +323,7 @@ func (p numeronPersistence) AttackNumeron(id string, userId string, code string)
 	// 攻撃順序が正しいかチェック
 	order := (numeron.Turn % 2) + 1
 	if numeron.Players[order].UserId != me.UserId {
-		return errors.New("This Player Turn is Invalid")
+		return errors.New("Not Your Turn")
 	}
 
 	db := config.Connect()

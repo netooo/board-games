@@ -22,15 +22,30 @@ type Numeron struct {
 	Players   map[int]*NumeronPlayer `json:"-"`
 }
 
-type Message struct {
+type JoinMessage struct {
 	Action string
-	Value  string
+	Name   string
+}
+
+type LeaveMessage struct {
+	Action string
+	Name   string
 }
 
 type StartMessage struct {
 	Action string
-	Value  string
+	Name   string
 	UserId string
+}
+
+type SetMessage struct {
+	Action string
+	UserId string
+}
+
+type FinishMessage struct {
+	Action string
+	Name   string
 }
 
 type AttackMessage struct {
@@ -71,9 +86,9 @@ func (n *Numeron) Run(owner *User) {
 		select {
 		/* Joinチャネルに動きがあった場合(ユーザの入室) */
 		case user := <-n.Join:
-			msg := Message{
+			msg := JoinMessage{
 				Action: "join",
-				Value:  user.Name,
+				Name:   user.Name,
 			}
 			for u := range n.Users {
 				if err := u.Socket.WriteJSON(msg); err != nil {
@@ -88,9 +103,9 @@ func (n *Numeron) Run(owner *User) {
 		case user := <-n.Leave:
 			user.Game = ""
 			delete(n.Users, user)
-			msg := Message{
+			msg := LeaveMessage{
 				Action: "leave",
-				Value:  user.Name,
+				Name:   user.Name,
 			}
 			for u := range n.Users {
 				if err := u.Socket.WriteJSON(msg); err != nil {
@@ -103,8 +118,8 @@ func (n *Numeron) Run(owner *User) {
 		case user := <-n.Start:
 			msg := StartMessage{
 				Action: "start",
-				Value:  user.Name,
-				UserId: user.UserId,
+				Name:   user.Name,
+				UserId: user.DisplayId,
 			}
 
 			for _, p := range n.Players {
@@ -127,9 +142,9 @@ func (n *Numeron) Run(owner *User) {
 
 			if all {
 				for _, p := range n.Players {
-					msg := Message{
+					msg := SetMessage{
 						Action: "completed_code",
-						Value:  p.User.UserId,
+						UserId: p.User.DisplayId,
 					}
 
 					if err := p.User.Socket.WriteJSON(msg); err != nil {
@@ -137,9 +152,9 @@ func (n *Numeron) Run(owner *User) {
 					}
 				}
 			} else {
-				msg := Message{
+				msg := SetMessage{
 					Action: "set_code",
-					Value:  "",
+					UserId: "",
 				}
 
 				if err := user.Socket.WriteJSON(msg); err != nil {
@@ -152,7 +167,7 @@ func (n *Numeron) Run(owner *User) {
 			var attackUser, code, result string
 			for _, p := range n.Players {
 				if p.UserId == user.ID {
-					attackUser = p.User.UserId
+					attackUser = p.User.DisplayId
 					code = p.Attack
 					result = p.Result
 					break
@@ -163,7 +178,7 @@ func (n *Numeron) Run(owner *User) {
 				msg := AttackMessage{
 					Action:     "attack",
 					AttackUser: attackUser,
-					UserId:     p.User.UserId,
+					UserId:     p.User.DisplayId,
 					Code:       code,
 					Result:     result,
 				}
@@ -175,9 +190,9 @@ func (n *Numeron) Run(owner *User) {
 
 		/* Finishチャネルに動きがあった場合(ゲーム終了) */
 		case user := <-n.Finish:
-			msg := Message{
+			msg := FinishMessage{
 				Action: "finish",
-				Value:  user.Name,
+				Name:   user.Name,
 			}
 
 			for _, p := range n.Players {
