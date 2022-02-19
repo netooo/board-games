@@ -17,7 +17,7 @@ const (
 	ContextSessionKey = "sessionKey"
 )
 
-func SessionCreate(userId string) (*sessions.Session, error) {
+func SessionCreate(displayId string) (*sessions.Session, error) {
 	// Session Config
 	store.Options = &sessions.Options{
 		Secure:   false, // とりあえず開発用に
@@ -35,7 +35,7 @@ func SessionCreate(userId string) (*sessions.Session, error) {
 	mc := memcache.New("memcached:11211")
 	err := mc.Set(&memcache.Item{
 		Key:        sessionId,
-		Value:      []byte(userId),
+		Value:      []byte(displayId),
 		Expiration: 60 * 60 * 24 * 1,
 	})
 
@@ -53,7 +53,7 @@ func SessionUser(r *http.Request) (*model.User, error) {
 	}
 
 	mc := memcache.New("memcached:11211")
-	byteUserId, err := mc.Get(cookie.Value)
+	byteDisplayId, err := mc.Get(cookie.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -62,8 +62,8 @@ func SessionUser(r *http.Request) (*model.User, error) {
 	defer config.Close()
 
 	var user model.User
-	userId := string(byteUserId.Value)
-	if err := db.Where("user_id = ?", userId).Find(&user).Error; err != nil {
+	displayId := string(byteDisplayId.Value)
+	if err := db.Where("display_id = ?", displayId).Find(&user).Error; err != nil {
 		return nil, err
 	}
 
