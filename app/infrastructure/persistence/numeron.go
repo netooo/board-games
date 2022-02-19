@@ -26,7 +26,9 @@ func NewNumeronPersistence(conn *gorm.DB) repository.NumeronRepository {
 func (p numeronPersistence) GetNumerons() ([]*model.Numeron, error) {
 	var numerons []*model.Numeron
 	for _, v := range Numerons {
-		numerons = append(numerons, v)
+		if v.Status == int(model.Ready) {
+			numerons = append(numerons, v)
+		}
 	}
 
 	return numerons, nil
