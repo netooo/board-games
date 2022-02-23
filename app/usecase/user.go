@@ -11,6 +11,7 @@ import (
 type UserUseCase interface {
 	GetByUserId(userId string) (*model.User, error)
 	Insert(name, email, password string) (*model.User, error)
+	BasicSignin(email, password string) (*model.User, error)
 }
 
 type userUseCase struct {
@@ -51,6 +52,14 @@ func (uu userUseCase) Insert(name, email, password string) (*model.User, error) 
 	// domainを介してinfrastructureで実装した関数を呼び出す。
 	// Persistence（Repository）を呼出
 	user, err := uu.userRepository.Insert(userId.String(), name, email, password)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (uu userUseCase) BasicSignin(email, password string) (*model.User, error) {
+	user, err := uu.userRepository.BasicSignin(email, password)
 	if err != nil {
 		return nil, err
 	}
