@@ -12,7 +12,7 @@ import (
 )
 
 type UserHandler interface {
-	HandleUserGet(http.ResponseWriter, *http.Request)
+	HandleUserFind(http.ResponseWriter, *http.Request)
 	HandleUserSignup(http.ResponseWriter, *http.Request)
 	HandleUserSignin(http.ResponseWriter, *http.Request)
 }
@@ -38,13 +38,13 @@ func NewUserHandler(uu usecase.UserUseCase) UserHandler {
 	}
 }
 
-func (uh userHandler) HandleUserGet(writer http.ResponseWriter, request *http.Request) {
+func (uh userHandler) HandleUserFind(writer http.ResponseWriter, request *http.Request) {
 	// Contextから認証済みのユーザIdを取得
 	vars := mux.Vars(request)
 	userId := vars["user_id"]
 
 	// UseCaseレイヤを操作して、ユーザデータ取得
-	user, err := uh.userUseCase.GetByUserId(userId)
+	user, err := uh.userUseCase.FindByUserId(userId)
 	if err != nil {
 		response.InternalServerError(writer, "Internal Server Error")
 		return

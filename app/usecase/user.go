@@ -9,7 +9,7 @@ import (
 )
 
 type UserUseCase interface {
-	GetByUserId(userId string) (*model.User, error)
+	FindByUserId(userId string) (*model.User, error)
 	Insert(name, email, password string) (*model.User, error)
 	BasicSignin(email, password string) (*model.User, error)
 }
@@ -24,8 +24,8 @@ func NewUserUseCase(ur repository.UserRepository) UserUseCase {
 	}
 }
 
-func (uu userUseCase) GetByUserId(userId string) (*model.User, error) {
-	user, err := uu.userRepository.GetByUserId(userId)
+func (uu userUseCase) FindByUserId(userId string) (*model.User, error) {
+	user, err := uu.userRepository.FindByUserId(userId)
 	if err != nil {
 		return nil, err
 	}

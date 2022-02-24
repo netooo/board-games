@@ -5,7 +5,7 @@ import (
 )
 
 type UserRepository interface {
-	GetByUserId(userId string) (*model.User, error)
+	FindByUserId(userId string) (*model.User, error)
 	Insert(userId, name, email, password string) (*model.User, error)
 	BasicSignin(email, password string) (*model.User, error)
 }

@@ -16,7 +16,7 @@ func NewUserPersistence(conn *gorm.DB) repository.UserRepository {
 	return &userPersistence{Conn: conn}
 }
 
-func (up userPersistence) GetByUserId(userId string) (*model.User, error) {
+func (up userPersistence) FindByUserId(userId string) (*model.User, error) {
 	// check the session
 	var user model.User
 
