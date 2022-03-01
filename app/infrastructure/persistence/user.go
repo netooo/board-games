@@ -16,6 +16,20 @@ func NewUserPersistence(conn *gorm.DB) repository.UserRepository {
 	return &userPersistence{Conn: conn}
 }
 
+func (up userPersistence) FindByUserId(userId string) (*model.User, error) {
+	// check the session
+	var user model.User
+
+	db := config.Connect()
+	defer config.Close()
+
+	if err := db.First(&user, "user_id = ?", userId).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func (up userPersistence) Insert(userId, name, email, password string) (*model.User, error) {
 	user := model.User{
 		DisplayId: userId,
@@ -34,14 +48,13 @@ func (up userPersistence) Insert(userId, name, email, password string) (*model.U
 	return &user, nil
 }
 
-func (up userPersistence) GetByUserId(userId string) (*model.User, error) {
-	// check the session
+func (up userPersistence) BasicSignin(email, password string) (*model.User, error) {
 	var user model.User
 
 	db := config.Connect()
 	defer config.Close()
 
-	if err := db.First(&user, "user_id = ?", userId).Error; err != nil {
+	if err := db.First(&user, "email = ? AND password = ?", email, password).Error; err != nil {
 		return nil, err
 	}
 
