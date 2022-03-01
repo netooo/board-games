@@ -15,6 +15,6 @@ func UserInit(r *mux.Router) {
 	userHandler := handler.NewUserHandler(userUseCase)
 
 	r.HandleFunc("/users/{user_id}", userHandler.HandleUserFind).Methods("GET")
-	r.HandleFunc("/users/signup", userHandler.HandleUserSignup).Methods("POST")
+	r.HandleFunc("/users", userHandler.HandleUserSignup).Methods("POST")
 	r.HandleFunc("/users/signin", userHandler.HandleUserSignin).Methods("POST")
 }
