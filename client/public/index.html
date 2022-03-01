@@ -7,13 +7,21 @@
     <body>
         <h2>ユーザ登録</h2>
         <label>Name</label><br>
-        <input type="text" id="name" name="name" maxlength="12" value="" placeholder="mitsue010101"><br>
+        <input type="text" id="name-up" name="name" maxlength="12" value="" placeholder="sample user"><br>
         <label>Address</label><br>
-        <input type="text" id="email" name="email" value="" placeholder="010101@example.com"><br>
+        <input type="text" id="email-up" name="email" value="" placeholder="010101@example.com"><br>
         <label>Password</label><br>
-        <input type="text" id="password" name="password" value="" placeholder="Password0"><br>
+        <input type="text" id="password-up" name="password" value="" placeholder="Password0"><br>
         <br>
         <button onclick="signUp();">signUp</button>
+        <hr>
+        <h2>ログイン</h2>
+        <label>Address</label><br>
+        <input type="text" id="email-in" name="email" value="" placeholder="010101@example.com"><br>
+        <label>Password</label><br>
+        <input type="text" id="password-in" name="password" value="" placeholder="Password0"><br>
+        <br>
+        <button onclick="signIn();">signIn</button>
     </body>
 </html>
 
@@ -21,9 +29,33 @@
     function signUp() {
         const url = 'http://localhost:8082/api/users';
         const data = JSON.stringify({
-            name: document.getElementById("name").value,
-            email: document.getElementById("email").value,
-            password: document.getElementById("password").value
+            name: document.getElementById("name-up").value,
+            email: document.getElementById("email-up").value,
+            password: document.getElementById("password-up").value
+        });
+        const xhr = new XMLHttpRequest()
+        xhr.withCredentials = true
+
+        xhr.addEventListener('readystatechange', function() {
+            if (this.readyState === this.DONE) {
+                if (this.status === 200 ) {
+                    connectSocket()
+                    // 本当はこのタイミングのみでWebsocket接続したい。
+                    window.location.href = 'http://localhost:3000/games.html';
+                }
+            }
+        });
+
+        xhr.open('POST', url);
+        xhr.setRequestHeader('content-type', 'application/json');
+        xhr.send(data);
+    }
+
+    function signIn() {
+        const url = 'http://localhost:8082/api/users/signin';
+        const data = JSON.stringify({
+            email: document.getElementById("email-in").value,
+            password: document.getElementById("password-in").value
         });
         const xhr = new XMLHttpRequest()
         xhr.withCredentials = true
